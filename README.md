@@ -1,11 +1,70 @@
-# Joy Prototypes
+<p align="center">
+  <a href="https://joy-prototypes.web.app"><img src="docs/readme/hub.png" alt="Hub Joy Prototypes: thẻ prototype của Joy Loyalty và Joy Wishlist, nhóm theo trạng thái, có ô tìm tính năng" width="900"></a>
+</p>
 
-Hub All-in-one và các prototype HTML của Joy. Repo này chỉ chứa prototype tĩnh với dữ liệu giả: không có code production của Joy, không có dữ liệu merchant/khách, không có secret.
+<h1 align="center">Joy Prototypes</h1>
+
+<p align="center">
+  Mọi prototype của Joy Loyalty và Joy Wishlist ở một link.<br>
+  Bấm như app thật, dữ liệu giả, mỗi Pull Request có link xem thử riêng.
+</p>
+
+<p align="center">
+  <a href="https://joy-prototypes.web.app"><b>Mở hub</b></a> ·
+  <a href="https://joy-prototypes.web.app/starter/"><b>Xem bộ khung chuẩn</b></a> ·
+  <a href="GUIDELINE.md">Guideline</a> ·
+  <a href="#bắt-đầu-6-bước">Bắt đầu trong 6 bước</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/live.yml"><img src="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/live.yml/badge.svg" alt="Deploy live"></a>
+  <a href="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/pull-request.yml"><img src="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/pull-request.yml/badge.svg" alt="Check và link xem thử"></a>
+</p>
+
+Repo này chỉ chứa prototype tĩnh với dữ liệu giả: không có code production của Joy, không có dữ liệu merchant/khách, không có secret.
+
+| | |
+|---|---|
+| **Hub All-in-one** | Mọi prototype xếp theo trạng thái (đang review, chờ dev, đang làm, đã live), tìm theo tên tính năng, lọc theo sản phẩm. |
+| **Bộ khung chuẩn** | Một lệnh tạo prototype mới trong khung Shopify admin + Polaris, đủ 9 trạng thái, form, modal, drawer, chạy được từ 375px tới 1440px. |
+| **Cổng kiểm tự động** | Mỗi Pull Request quét secret, link nội bộ, email thật, tên merchant thật (cả chữ trong ảnh), license, rồi test trình duyệt trước khi có link xem thử. |
 
 - **Link chung (live):** https://joy-prototypes.web.app — chỉ đổi khi một Pull Request được merge vào `main`.
 - **Link xem thử:** mỗi Pull Request có link riêng `https://joy-prototypes--pr<số>-….web.app`, bot tự comment vào PR và cập nhật sau mỗi lần push.
 
 Prototype khác trong hub là link tới trang riêng của chúng (khai báo trong `hub/data/registry.json`); source của chúng không nằm ở đây.
+
+### Một màn, bảy trạng thái
+
+Nút **Prototype** màu hổ phách (không phải UI sản phẩm) đổi màn giữa Default, Empty, Loading, Error, Disabled, Overflow và Worst case, để người duyệt thấy cả những trạng thái hay bị quên. Cộng hover và focus (rê chuột, phím Tab) là đủ 9 trạng thái mà [`GUIDELINE.md`](GUIDELINE.md) bắt mọi màn phải có.
+
+<p align="center">
+  <img src="docs/readme/starter-states.gif" alt="Màn Rewards của bộ khung chuẩn lần lượt ở 7 trạng thái: Default, Empty, Loading, Error, Disabled, Overflow, Worst case" width="800">
+</p>
+
+<table>
+  <tr>
+    <td width="66%"><img src="docs/readme/starter-states-panel.png" alt="Bảng Prototype mở trên màn Rewards, liệt kê 7 trạng thái màn"></td>
+    <td width="34%" align="center"><img src="docs/readme/starter-375.png" alt="Màn Rewards trên điện thoại 375px, nút Prototype nằm trong dải riêng dưới nội dung" width="240"></td>
+  </tr>
+  <tr>
+    <td>Bảng trạng thái và trang component + token, tách khỏi sản phẩm bằng màu hổ phách.</td>
+    <td align="center">Điện thoại: nút nằm trong dải riêng, không che dòng nào.</td>
+  </tr>
+</table>
+
+### Prototype mới trong một lệnh
+
+```bash
+npm run new -- birthday-reward "Birthday reward"
+npm run dev -- birthday-reward
+```
+
+Lệnh đầu chép bộ khung chuẩn vào `demos/birthday-reward/`, thêm thẻ "Đang review" vào hub và chụp ảnh thẻ. Đủ 6 bước từ clone tới merge ở ngay dưới.
+
+<p align="center">
+  <img src="docs/readme/starter-form.png" alt="Form Create reward của bộ khung chuẩn trong khung Shopify admin" width="900">
+</p>
 
 ## Bắt đầu: 6 bước
 
@@ -53,6 +112,7 @@ Xem bản build hoàn chỉnh như trên Firebase: `npm run build`, rồi `npm r
 hub/                    Hub All-in-one (React + Vite). Dữ liệu thẻ: hub/data/registry.json
 demos/<slug>/           Mỗi demo một app Vite riêng; hub dựng nó ở /<product>/<slug>/
 templates/demo/         Bộ khung chuẩn (starter) mà npm run new chép ra; hub phục vụ ở /starter/
+docs/readme/            Ảnh của README này (cũng đi qua cổng đọc chữ trong ảnh)
 GUIDELINE.md            Cách dựng prototype: khung, component, 9 trạng thái, điều cấm
 THIRD_PARTY_LICENSES.md License của dependency và font
 privacy/blocklist.json  Mã băm tên merchant/brand thật cần chặn

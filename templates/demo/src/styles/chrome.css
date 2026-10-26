@@ -463,7 +463,7 @@ body:has(.kit-proto) .adm-content {
   box-sizing: border-box;
   height: calc(100dvh - var(--chrome-topbar-height) - 56px - var(--proto-lane));
   overflow-y: auto;
-  padding-bottom: 64px;
+  padding-bottom: 16px; /* the lane below already keeps the button off the last row */
   scroll-padding-block: 16px;
 }
 body:has(.kit-proto) .Polaris-Frame-ToastManager {
