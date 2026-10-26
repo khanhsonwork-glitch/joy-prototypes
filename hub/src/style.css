@@ -327,3 +327,4 @@ h3 { font-size: var(--type-section); font-weight: 600; letter-spacing: -.02em; }
   .feature-grid .feature-card:not(.is-spot) .card-bottom { position: static; padding: 0 var(--space-3) var(--space-3) calc(112px + var(--space-3) * 2); }
   .feature-grid .feature-card:not(.is-spot) .card-meta { flex: 1; }
 }
+.pr-proof{margin:0;padding:4px 10px;border-radius:999px;background:#fff;color:#c4122f;font-size:13px;font-weight:600;align-self:center}
