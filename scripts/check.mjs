@@ -8,6 +8,10 @@ requireNode();
 const playwright = path.join(ROOT, 'node_modules/.bin/playwright');
 run(playwright, ['install', ...(process.env.CI ? ['--with-deps'] : []), 'chromium']);
 run(process.execPath, [path.join(ROOT, 'scripts/check-source.mjs')]);
+run(process.execPath, [path.join(ROOT, 'scripts/check-images.mjs')]);
+run(process.execPath, [path.join(ROOT, 'scripts/check-licenses.mjs')]);
+run(process.execPath, [path.join(ROOT, 'test/gates-check.mjs')]);
+run(process.execPath, [path.join(ROOT, 'test/scaffold-check.mjs')]);
 run(process.execPath, [path.join(ROOT, 'scripts/build.mjs')]);
 run(process.execPath, [path.join(ROOT, 'scripts/check-bundle.mjs')]);
 
@@ -26,6 +30,8 @@ async function ready(url) {
 }
 await ready(`http://127.0.0.1:${port}/`);
 const result = spawnSync(process.execPath, [path.join(ROOT, 'test/hub-check.mjs'), `http://127.0.0.1:${port}`], {stdio: 'inherit'});
+const starter = spawnSync(process.execPath, [path.join(ROOT, 'test/starter-check.mjs'), `http://127.0.0.1:${port}`], {stdio: 'inherit'});
 server.kill();
 if (result.status !== 0) fail('Hub chưa đạt. Sửa rồi chạy lại npm run check.');
+if (starter.status !== 0) fail('Starter hoặc một demo chưa đạt. Sửa rồi chạy lại npm run check.');
 console.log('\nTất cả kiểm tra PASS. Ảnh chụp ở evidence/.');

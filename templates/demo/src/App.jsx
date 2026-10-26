@@ -1,53 +1,26 @@
-import React from 'react';
-import {AppProvider, Badge, BlockStack, Button, Card, Frame, IndexTable, Page, Text} from '@shopify/polaris';
+import React, {useEffect} from 'react';
+import {AppProvider, Card, Frame, Page} from '@shopify/polaris';
 import en from '@shopify/polaris/locales/en.json';
 import {AdminChrome} from './shell/AdminChrome.jsx';
 import {HashLink, RouterProvider, useRoute} from './shell/router.jsx';
-import {ShellProvider, useShell} from './shell/ShellContext.jsx';
-import {MEMBERS, num} from './data/index.js';
+import {ShellProvider} from './shell/ShellContext.jsx';
+import {ScenarioProvider} from './kit/scenario.jsx';
+import {ProtoControls} from './kit/ProtoControls.jsx';
+import {EmptyView} from './kit/StateView.jsx';
+import {RewardsProvider} from './state/rewards.jsx';
+import {RewardsList} from './pages/RewardsList.jsx';
+import {RewardEdit} from './pages/RewardEdit.jsx';
+import {KitPage} from './pages/KitPage.jsx';
+import {DEMO} from './demo.config.js';
 
-// Replace this screen with the feature you are prototyping. Keep the admin chrome around it.
-function DemoPage() {
-  const {notify} = useShell();
-  return (
-    <Page title="__DEMO_NAME__" primaryAction={{content: 'Save', onAction: () => notify('Saved')}}>
-      <BlockStack gap="400">
-        <Card>
-          <BlockStack gap="200">
-            <Text as="h2" variant="headingMd">What this screen does</Text>
-            <Text as="p" variant="bodyMd" tone="subdued">One sentence about the merchant problem this prototype answers.</Text>
-          </BlockStack>
-        </Card>
-        <Card padding="0">
-          <IndexTable
-            resourceName={{singular: 'member', plural: 'members'}}
-            itemCount={MEMBERS.length}
-            selectable={false}
-            headings={[{title: 'Customer'}, {title: 'Email'}, {title: 'Tier'}, {title: 'Points', alignment: 'end'}]}
-          >
-            {MEMBERS.map((m, index) => (
-              <IndexTable.Row id={m.id} key={m.id} position={index}>
-                <IndexTable.Cell><Text as="span" fontWeight="semibold">{m.name}</Text></IndexTable.Cell>
-                <IndexTable.Cell>{m.email}</IndexTable.Cell>
-                <IndexTable.Cell><Badge>{m.tier}</Badge></IndexTable.Cell>
-                <IndexTable.Cell><Text as="span" alignment="end" numeric>{num(m.points)}</Text></IndexTable.Cell>
-              </IndexTable.Row>
-            ))}
-          </IndexTable>
-        </Card>
-      </BlockStack>
-    </Page>
-  );
-}
-
+// Routes: #/demo (list) · #/demo/new · #/demo/<id> · #/kit (components). Replace the reward screens with your feature.
 function NotFound() {
   return (
     <Page title="Page not found">
       <Card>
-        <BlockStack gap="300">
-          <Text as="p" variant="bodyMd">This prototype has no screen here yet.</Text>
-          <div><Button url="/demo">Back to the demo</Button></div>
-        </BlockStack>
+        <EmptyView heading="There's no page at this address" action={{content: 'Back to rewards', url: '/demo'}}>
+          Check the link, or go back to the list.
+        </EmptyView>
       </Card>
     </Page>
   );
@@ -55,18 +28,30 @@ function NotFound() {
 
 function Screen() {
   const {segments} = useRoute();
-  return <AdminChrome>{segments[0] === 'demo' ? <DemoPage /> : <NotFound />}</AdminChrome>;
+  useEffect(() => {
+    document.title = `${DEMO.name} · Joy prototype`;
+  }, []);
+  let page = <NotFound />;
+  if (segments[0] === 'demo' && segments.length === 1) page = <RewardsList />;
+  else if (segments[0] === 'demo' && segments.length === 2) page = <RewardEdit key={segments[1]} id={segments[1]} />;
+  else if (segments[0] === 'kit' && segments.length === 1) page = <KitPage />;
+  return <AdminChrome>{page}</AdminChrome>;
 }
 
 export default function App() {
   return (
     <AppProvider i18n={en} linkComponent={HashLink}>
       <RouterProvider>
-        <Frame>
-          <ShellProvider>
-            <Screen />
-          </ShellProvider>
-        </Frame>
+        <ScenarioProvider>
+          <RewardsProvider>
+            <Frame>
+              <ShellProvider>
+                <Screen />
+                <ProtoControls />
+              </ShellProvider>
+            </Frame>
+          </RewardsProvider>
+        </ScenarioProvider>
       </RouterProvider>
     </AppProvider>
   );

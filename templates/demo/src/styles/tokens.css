@@ -1,3 +1,12 @@
+/* Inter, the Shopify admin / Polaris font, self-hosted (SIL OFL 1.1, src/fonts/OFL.txt): no request leaves the prototype. */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Colours that are NOT Polaris tokens live here, as variables. Everything else uses var(--p-…). */
 :root {
   /* Shopify admin chrome, sampled from refs/membership.png */

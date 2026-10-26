@@ -4,19 +4,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {ROOT, fail, walk, loadBlocklist, blockedMatches} from './lib.mjs';
+import {ROOT, fail, walk, loadBlocklist, blockedMatches, hiddenCardProblems} from './lib.mjs';
 import {SECRETS} from './check-bundle.mjs';
 
 const TEXT = /\.(html|js|jsx|mjs|cjs|ts|tsx|css|json|txt|svg|md|ya?ml|xml|csv|gitignore|npmrc|nvmrc)$|^[^.]+$/i;
 const SKIP = /(^|\/)(node_modules|dist|evidence|\.git|\.firebase)(\/|$)|package-lock\.json$|privacy\/blocklist\.json$/;
-const INTERNAL = [
+export const INTERNAL = [
   [/notion\.(so|site)\//i, 'link Notion nội bộ'],
   [/gitlab\.com|git\.avada\.net|avada\.slack\.com|docs\.google\.com|drive\.google\.com/i, 'link nội bộ'],
   [/[a-z0-9-]+\.myshopify\.com/i, 'store Shopify', /pomelo-park-goods\.myshopify\.com/],
 ];
 // Fake people use example.com or the fictional brand; the one product address is what Joy prints in every email.
-const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
-const ALLOWED_EMAIL = /@(example\.(com|org|net)|pomelopark\.com)$|^joyio_noreply@send\.avada\.io$/i;
+export const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
+export const ALLOWED_EMAIL = /@(example\.(com|org|net)|[a-z0-9.-]+\.example|pomelopark\.com)$|^joyio_noreply@send\.avada\.io$/i;
 
 function sourceFiles() {
   const git = spawnSync('git', ['ls-files', '-co', '--exclude-standard'], {cwd: ROOT, encoding: 'utf8'});
@@ -36,6 +36,7 @@ export function scanSource(files = sourceFiles(), blocklist = loadBlocklist()) {
     for (const email of text.match(EMAIL) || []) if (!ALLOWED_EMAIL.test(email)) problems.push(`${rel}: email thật? ${email} (dùng @example.com)`);
     if (blockedMatches(text, blocklist.keywords).length) problems.push(`${rel}: trùng tên merchant/brand thật trong privacy/blocklist.json`);
   }
+  problems.push(...hiddenCardProblems(JSON.parse(fs.readFileSync(path.join(ROOT, 'hub/data/registry.json'), 'utf8'))));
   return {problems, files: files.length};
 }
 

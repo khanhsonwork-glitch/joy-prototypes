@@ -55,7 +55,7 @@ function Home() {
     <div className="wrap home-body"><div id="feature-panel" role="tabpanel" aria-labelledby={`tab-${product}`} className="bands">
       {groups.map(([status, group]) => <section key={status} className={`band band-${status}`} aria-labelledby={`band-${status}`}><h2 id={`band-${status}`} className={`band-heading ${status}`}><i aria-hidden="true"/>{statuses[status]}<span className="section-count">{group.length}</span></h2><div className={`feature-grid${status === 'review' ? ` grid-review${group.length === 1 ? ' solo' : ''}` : ''}`}>{group.map((f, index) => <Card key={`${f.product}/${f.slug}`} feature={f} product={product} spot={status === 'review' && index === 0}/>)}</div></section>)}
       {!visible.length && <p className="empty-state" role="status">{query ? 'Không tìm thấy tính năng phù hợp.' : `Chưa có prototype đang hoạt động cho ${products[product]}.`}</p>}
-    </div><footer className="home-footer"><img src="/brand/joyso-logo-red.svg" alt="Joy.so" width="2840" height="820"/>{runtime && <span>Joy master {runtime.sha.slice(0,7)} · {date(runtime.date, true)}</span>}</footer></div></>;
+    </div><footer className="home-footer"><img src="/brand/joyso-logo-red.svg" alt="Joy.so" width="2840" height="820"/><a className="starter-link" href="/starter/">Bộ khung để dựng prototype mới (starter)</a>{runtime && <span>Joy master {runtime.sha.slice(0,7)} · {date(runtime.date, true)}</span>}</footer></div></>;
 }
 // JOY Drive dots on JOY Red (Brand Guidelines 2.0, p.24 Grid + Radial Circle, p.26 short title on red).
 function BrandPattern() {

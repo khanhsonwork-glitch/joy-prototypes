@@ -7,33 +7,20 @@ Hub All-in-one và các prototype HTML của Joy. Repo này chỉ chứa prototy
 
 Prototype khác trong hub là link tới trang riêng của chúng (khai báo trong `hub/data/registry.json`); source của chúng không nằm ở đây.
 
-## Cài một lần
+## Bắt đầu: 6 bước
 
-Cần Node 22.12 trở lên (`node -v`; thiếu thì `nvm install 22 && nvm use 22`) và quyền push vào repo (nhờ người giữ hub mời làm collaborator).
+Cần Node 22.12 trở lên (`node -v`; thiếu thì `nvm install 22 && nvm use 22`) và quyền push vào repo (nhờ người giữ hub mời làm collaborator). Bước 1 chỉ làm một lần trên mỗi máy.
 
-```sh
-git clone https://github.com/khanhsonwork-glitch/joy-prototypes.git
-cd joy-prototypes
-npm ci          # cài cả hub lẫn từng demo
-```
+1. **Cài:** `git clone https://github.com/khanhsonwork-glitch/joy-prototypes.git && cd joy-prototypes && npm ci`
+2. **Mở nhánh:** `git switch main && git pull && git switch -c <tên-việc>` (ví dụ `birthday-reward`)
+3. **Tạo prototype:** `npm run new -- birthday-reward "Birthday reward"` — chép bộ khung chuẩn vào `demos/birthday-reward/`, cài, thêm thẻ "Đang review" vào hub và chụp ảnh thẻ. Tuỳ chọn: `--product wishlist`, `--area "Membership"`.
+4. **Sửa:** `npm run dev -- birthday-reward`, sửa màn trong `demos/birthday-reward/src/pages/` theo [`GUIDELINE.md`](GUIDELINE.md) (khung, component, 9 trạng thái, điều cấm). Xem mẫu chuẩn trước: https://joy-prototypes.web.app/starter/
+5. **Kiểm:** `npm run shot -- birthday-reward --replace` (ảnh thẻ mới), rồi `npm run check` — đúng bộ kiểm CI sẽ chạy.
+6. **Gửi duyệt:** `git add -A && git commit -m "<sửa gì>" && git push -u origin <tên-việc>`, mở Pull Request từ link GitHub in ra. CI dựng link xem thử riêng và comment vào PR; gửi link đó cho người duyệt; merge khi check xanh thì link chung tự cập nhật.
 
-## Sửa → xem thử → lên link chung
+Sửa một demo đã có: bỏ bước 3, ở bước 4 dùng `npm run dev -- <tên>` (danh sách: `npm run dev`). Sửa hub: `npm run dev -- hub`.
 
-```sh
-git switch main && git pull               # lấy bản mới nhất
-git switch -c <tên-việc>                  # nhánh riêng, ví dụ birthday-reward
-npm run dev -- hub                        # hoặc: npm run dev -- points-giveaway  (danh sách: npm run dev)
-#   ... sửa, trình duyệt tự tải lại ...
-npm run check                             # đúng bộ kiểm CI sẽ chạy
-git add -A && git commit -m "<sửa gì>"
-git push -u origin <tên-việc>             # GitHub in sẵn link mở Pull Request
-```
-
-1. **Mở Pull Request vào `main`.** CI chạy `npm run check` rồi dựng link xem thử riêng cho PR, comment vào PR. Push thêm commit thì link tự cập nhật.
-2. **Gửi link xem thử cho người duyệt.** Link chung chưa đổi.
-3. **Merge khi check xanh.** CI chạy lại toàn bộ kiểm rồi cập nhật link chung. Không ai đẩy thẳng lên `main` hay deploy tay: `main` bị khoá, chỉ nhận PR có check xanh.
-
-Hai merge sát nhau: deploy chạy lần lượt, bản mới nhất thắng.
+Không ai đẩy thẳng lên `main` hay deploy tay: `main` bị khoá, chỉ nhận PR có check xanh. Hai merge sát nhau: deploy chạy lần lượt, bản mới nhất thắng.
 
 ### Khi bị xung đột
 
@@ -43,25 +30,20 @@ GitHub báo PR "This branch has conflicts" khi hai người sửa cùng chỗ m�
 2. Mở file git báo, giữ phần của cả hai người (với `registry.json`: giữ cả hai thẻ, không xoá thẻ của người kia).
 3. `npm run check`, rồi `git add`, `git commit`, `git push`. PR tự chạy lại check và link xem thử.
 
-`npm run new-demo` chèn thẻ mới theo thứ tự tên chứ không dồn vào cuối file, nên hai người cùng thêm demo mới thường không xung đột.
+`npm run new` chèn thẻ mới theo thứ tự tên chứ không dồn vào cuối file, nên hai người cùng thêm demo mới thường không xung đột.
 
-## Thêm một demo mới
+## Sửa thẻ trên hub
 
-```sh
-npm run new-demo -- birthday-reward "Birthday reward"
-npm run dev -- birthday-reward
-npm run shot -- birthday-reward       # chụp ảnh thẻ cho hub (check báo lỗi nếu thiếu)
-```
-
-Lệnh tạo `demos/birthday-reward/` từ `templates/demo/` và thêm một thẻ "Đang review" vào hub. Quy ước (dữ liệu giả, không import code production, routing bằng hash) nằm trong [`templates/demo/README.md`](templates/demo/README.md). Tuỳ chọn: `--product wishlist`, `--area "Membership"`.
-
-Đổi tên, khu vực, trạng thái, ảnh của thẻ: sửa đúng record đó trong `hub/data/registry.json`. Ảnh thẻ ở `hub/public/shots/`, tối đa 1600×900.
+Đổi tên, khu vực, trạng thái, ảnh của thẻ: sửa đúng record đó trong `hub/data/registry.json`. Ảnh thẻ ở `hub/public/shots/`, tối đa 1600×900, là ảnh màn prototype. Thẻ không dùng nữa thì xoá cả record (repo public: link giữ lại trong thẻ ẩn vẫn bị lộ, và `npm run check` chặn).
 
 ## `npm run check` kiểm gì
 
-1. Quét toàn bộ file trong repo: secret/token, link nội bộ (Notion, GitLab, Google Docs…), email thật (chỉ cho `@example.com`), tên merchant thật trong `privacy/blocklist.json` (lưu dạng mã băm; thêm tên: `npm run privacy:add -- "<tên>"`).
-2. Build `dist/` (hub + demo + `dist/firebase.json` sinh từ registry), quét lại bundle công khai.
-3. Test trình duyệt cho hub: thẻ, tìm kiếm, redirect, trang 404, font, ảnh. Ảnh chụp ở `evidence/` (không đưa lên Git; trên CI nằm trong artifact `evidence`).
+1. Quét toàn bộ file trong repo: secret/token, link nội bộ (Notion, GitLab, Google Docs…), email thật (chỉ cho `@example.com`, `*.example`), tên merchant thật trong `privacy/blocklist.json` (lưu dạng mã băm; thêm tên: `npm run privacy:add -- "<tên>"`), thẻ ẩn còn giữ link.
+2. Đọc chữ trong mọi ảnh (OCR chạy offline) và chặn cùng các thứ trên, cộng chữ của ghi chú nội bộ (UAT, staging, mã task).
+3. License: mọi package đã cài (kể cả gói con) phải có license đã duyệt, mọi font phải là SIL OFL có file license đi kèm. Danh sách: [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).
+4. Tự kiểm các cổng trên (gài lỗi giả, phải bắt được) và lệnh `npm run new` (tên sai, tên dành riêng, trùng, ghi đè, đường thành công).
+5. Build `dist/` (hub + starter + demo + `dist/firebase.json` sinh từ registry), quét lại bundle công khai.
+6. Test trình duyệt: hub (thẻ, tìm kiếm, redirect, 404, font, ảnh), starter (9 trạng thái, form, modal, drawer, bàn phím, 375/768/1440px, không gọi ra ngoài) và mọi demo (mở được, không lỗi, không cuộn ngang). Ảnh chụp ở `evidence/` (không đưa lên Git; trên CI nằm trong artifact `evidence`).
 
 Xem bản build hoàn chỉnh như trên Firebase: `npm run build`, rồi `npm run serve`.
 
@@ -70,10 +52,12 @@ Xem bản build hoàn chỉnh như trên Firebase: `npm run build`, rồi `npm r
 ```text
 hub/                    Hub All-in-one (React + Vite). Dữ liệu thẻ: hub/data/registry.json
 demos/<slug>/           Mỗi demo một app Vite riêng; hub dựng nó ở /<product>/<slug>/
-templates/demo/         Mẫu cho demo mới
+templates/demo/         Bộ khung chuẩn (starter) mà npm run new chép ra; hub phục vụ ở /starter/
+GUIDELINE.md            Cách dựng prototype: khung, component, 9 trạng thái, điều cấm
+THIRD_PARTY_LICENSES.md License của dependency và font
 privacy/blocklist.json  Mã băm tên merchant/brand thật cần chặn
-scripts/                build, dev, serve, new-demo, shot, check
-test/                   Test trình duyệt của hub
+scripts/                build, dev, serve, new-demo (npm run new), shot, check-*
+test/                   Test trình duyệt (hub, starter) và test cho cổng kiểm + lệnh scaffold
 .github/workflows/      pull-request.yml: check + link xem thử · live.yml: merge vào main → link chung
 ```
 
