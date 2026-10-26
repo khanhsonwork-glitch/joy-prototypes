@@ -3,38 +3,6 @@
   "features": [
     {
       "product": "loyalty",
-      "slug": "ai-entry-points",
-      "name": "Joy AI entry points",
-      "area": "Home",
-      "surfaces": [
-        "Admin"
-      ],
-      "status": "paused",
-      "stage": null,
-      "stageCheckedAt": "2026-10-20",
-      "statusEvidence": "",
-      "updated": "2026-08-07",
-      "round": null,
-      "notion": null,
-      "prd": null,
-      "migrated": false,
-      "shot": null,
-      "reviewUrl": "https://joy-ai-workspace.vercel.app",
-      "kind": "prototype",
-      "legacy": [
-        {
-          "url": "https://joy-ai-workspace.vercel.app",
-          "label": "Prototype",
-          "updated": "2026-08-07",
-          "current": true
-        }
-      ],
-      "parity": null,
-      "quarantined": true,
-      "quarantineReason": ""
-    },
-    {
-      "product": "loyalty",
       "slug": "analytics-revamp",
       "name": "Analytics revamp",
       "area": "Analytics",
@@ -1012,42 +980,6 @@
         }
       ],
       "parity": null
-    },
-    {
-      "product": "loyalty",
-      "slug": "store-credit-only",
-      "name": "Store credit only mode",
-      "area": "Programs",
-      "surfaces": [
-        "Admin",
-        "Widget"
-      ],
-      "status": "paused",
-      "stage": "Analyzing",
-      "stageCheckedAt": "2026-10-20",
-      "statusEvidence": "",
-      "updated": "2026-09-04",
-      "round": null,
-      "notion": null,
-      "prd": null,
-      "migrated": false,
-      "shot": null,
-      "reviewUrl": "https://joy-store-credit-only.vercel.app",
-      "kind": "prototype",
-      "aliases": [
-        "Store credit"
-      ],
-      "legacy": [
-        {
-          "url": "https://joy-store-credit-only.vercel.app",
-          "label": "Prototype",
-          "updated": "2026-09-04",
-          "current": true
-        }
-      ],
-      "parity": null,
-      "quarantined": true,
-      "quarantineReason": ""
     },
     {
       "product": "loyalty",

@@ -438,6 +438,10 @@
     box-shadow: none;
   }
   /* animate only when the drawer opens: crossing the breakpoint (window resize) hides the nav at once, never mid-slide */
+  /* off-screen nav must not take keyboard focus */
+  .adm-nav:not(.is-open) {
+    visibility: hidden;
+  }
   .adm-nav.is-open {
     transform: none;
     transition: transform 160ms ease-out;
@@ -495,4 +499,11 @@
 .adm-sidekick:focus-visible {
   outline: 2px solid var(--p-color-border-focus);
   outline-offset: -2px;
+}
+
+/* Respect the OS "reduce motion" setting: the phone nav opens without sliding. */
+@media (prefers-reduced-motion: reduce) {
+  .adm-nav.is-open {
+    transition: none;
+  }
 }

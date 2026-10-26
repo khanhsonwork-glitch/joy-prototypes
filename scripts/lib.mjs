@@ -97,6 +97,14 @@ export function blockedMatches(text, entries) {
   }
   return hits;
 }
+// A hidden (quarantined) card must not carry any link: the repo is public, so a link kept "for later" in
+// hub/data/registry.json is published even though the hub hides it. Delete the card, or clean its target first.
+export function hiddenCardProblems(registry) {
+  return registry.features.filter(f => f.quarantined).flatMap(f => {
+    const links = [f.reviewUrl, ...(f.legacy || []).map(link => link.url), ...Object.values(f.alsoInUrls || {})].filter(Boolean);
+    return links.length ? [`hub/data/registry.json: thẻ ẩn ${f.product}/${f.slug} vẫn giữ link (${links[0]}). Xoá thẻ, hoặc bỏ mọi link khỏi thẻ.`] : [];
+  });
+}
 export const hostBlocked = (url, blocklist) => {
   let host = '';
   try {host = new URL(url, 'https://joy-prototypes.web.app').hostname;} catch {return false;}

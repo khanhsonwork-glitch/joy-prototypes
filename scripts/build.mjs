@@ -2,7 +2,7 @@
 // the Firebase Hosting config that CI deploys from dist/. Usage: node scripts/build.mjs
 import fs from 'node:fs';
 import path from 'node:path';
-import {ROOT, DIST, SITES, fail, requireNode, run, demoDir, viteBin, ensureInstalled, resetDir} from './lib.mjs';
+import {ROOT, DIST, SITES, fail, requireNode, run, demoDir, viteBin, ensureInstalled, resetDir, hiddenCardProblems} from './lib.mjs';
 import {normalizeFeature, statuses, kindLabels, featureProducts, canonical, reviewTarget} from '../hub/src/registry.mjs';
 
 requireNode();
@@ -13,6 +13,8 @@ const noindex = {source: '**', headers: [{key: 'X-Robots-Tag', value: 'noindex, 
 
 function loadRegistry() {
   const source = JSON.parse(fs.readFileSync(path.join(ROOT, 'hub/data/registry.json'), 'utf8'));
+  const hidden = hiddenCardProblems(source);
+  if (hidden.length) throw Error(hidden.join('\n'));
   const registry = {...source, features: source.features.map(normalizeFeature)};
   const seen = new Set();
   for (const f of registry.features) {
@@ -61,6 +63,10 @@ function buildHub() {
       fs.writeFileSync(entry, html.replace('<script type="module"', `${shim}\n    <script type="module"`));
     }
   }
+  // The golden starter (templates/demo, what `npm run new` copies) is served at /starter/ so anyone can click through it.
+  const starter = path.join(ROOT, 'templates/demo');
+  ensureInstalled(starter);
+  run(process.execPath, [viteBin(starter), 'build', '--base', '/starter/', '--outDir', path.join(out, 'starter'), '--emptyOutDir'], {cwd: starter});
   const redirects = registry.features.flatMap(f => featureProducts(f).flatMap(product => {
     const route = canonical(f, product);
     const destination = reviewTarget(f, product);

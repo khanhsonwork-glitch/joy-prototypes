@@ -24,6 +24,7 @@ import {
   TargetFilledIcon,
 } from '@shopify/polaris-icons';
 import {STORE} from '../data/index.js';
+import {DEMO} from '../demo.config.js';
 import {JoyIcon, ShopifyWordmark} from './icons.jsx';
 import {useRoute} from './router.jsx';
 import {useShell} from './ShellContext.jsx';
@@ -102,23 +103,25 @@ function NavSection({label, onClick}) {
   );
 }
 
+// The Joy app's own pages in the Shopify sidebar. Point `href` at a route of this prototype to make it live;
+// rows without `href` show a toast instead (they exist only for the look of the real app).
 const JOY_SUB = [
-  {id: 'customers', label: 'Customers', href: '#/customers'},
-  {id: 'rewards', label: 'Reward programs'},
-  {id: 'membership', label: 'Membership', href: '#/membership'},
+  {id: 'customers', label: 'Customers'},
+  {id: 'rewards', label: 'Reward programs', href: '#/demo', routes: ['demo']},
+  {id: 'membership', label: 'Membership'},
   {id: 'onsite', label: 'On-site content'},
   {id: 'analytics', label: 'Analytics'},
   {id: 'integrations', label: 'Integrations'},
   {id: 'settings', label: 'Settings'},
 ];
+const APP_NAME = DEMO.product === 'wishlist' ? 'Joy: Wishlist' : 'Joy: Loyalty Program';
 
 function Navigation({open, onClose}) {
   const route = useRoute();
   const {notYet} = useShell();
 
   const section = route.segments[0];
-  const selectedSub = section === 'membership' || section === 'points-giveaway' ? 'membership' : section === 'customers' ? 'customers' : null;
-  const selIdx = JOY_SUB.findIndex((s) => s.id === selectedSub);
+  const selIdx = JOY_SUB.findIndex((s) => s.routes?.includes(section));
 
   const stub = () => {
     notYet();
@@ -150,7 +153,7 @@ function Navigation({open, onClose}) {
 
         <div className="adm-nav__group">
           <NavSection label="Apps" onClick={stub} />
-          <NavRow app={<JoyIcon size={20} />} label="Joy: Loyalty Program" href="#/home" selected={section === 'home'} onClick={onClose} />
+          <NavRow app={<JoyIcon size={20} />} label={APP_NAME} href="#/demo" onClick={onClose} />
           <div className="adm-sub">
             {JOY_SUB.map((item, idx) => {
               const selected = idx === selIdx;
@@ -192,7 +195,7 @@ function AppTitleBar() {
     <div className="adm-appbar">
       <div className="adm-appbar__title">
         <JoyIcon size={20} />
-        <span>Joy: Loyalty Program</span>
+        <span>{APP_NAME}</span>
       </div>
       <button type="button" className="adm-appbar__more" aria-label="More" onClick={notYet}>
         <Icon source={MenuHorizontalIcon} />
@@ -216,8 +219,20 @@ export function AdminChrome({children}) {
   const [navOpen, setNavOpen] = useState(false);
   const route = useRoute();
 
-  // close the mobile drawer whenever the route changes
+  // close the mobile drawer whenever the route changes, and on Esc
   useEffect(() => setNavOpen(false), [route.path]);
+  useEffect(() => {
+    if (!navOpen) return undefined;
+    const onKey = (event) => {
+      if (event.key === 'Escape') {
+        setNavOpen(false);
+        document.querySelector('.adm-top__menu')?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    document.querySelector('.adm-nav a, .adm-nav button')?.focus();
+    return () => document.removeEventListener('keydown', onKey);
+  }, [navOpen]);
 
   return (
     <div className="adm">

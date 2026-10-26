@@ -13,13 +13,18 @@
     "build": "node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",
     "new-demo": "node scripts/new-demo.mjs",
+    "new": "node scripts/new-demo.mjs",
     "shot": "node scripts/shot.mjs",
     "check": "node scripts/check.mjs",
     "check:bundle": "node scripts/check-bundle.mjs",
     "privacy:add": "node scripts/privacy-add.mjs",
-    "check:source": "node scripts/check-source.mjs"
+    "check:source": "node scripts/check-source.mjs",
+    "check:images": "node scripts/check-images.mjs",
+    "check:licenses": "node scripts/check-licenses.mjs"
   },
   "devDependencies": {
-    "playwright": "1.61.1"
+    "@tesseract.js-data/eng": "1.0.0",
+    "playwright": "1.61.1",
+    "tesseract.js": "7.0.0"
   }
 }

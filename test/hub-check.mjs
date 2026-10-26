@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {normalizeFeature} from '../hub/src/registry.mjs';
-import {loadBlocklist, blockedMatches, hostBlocked} from '../scripts/lib.mjs';
+import {loadBlocklist, blockedMatches, hostBlocked, hiddenCardProblems} from '../scripts/lib.mjs';
 import {imageSize} from './image-size.mjs';
 const base = new URL(process.argv[2] || 'http://127.0.0.1:4173');
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -150,29 +150,24 @@ await check('Non-quarantined current/history destinations',async()=> {
   assert.deepEqual(problems,[]);
   return `${targets.length} destinations`;
 });
-await check('F4a: quarantine removed from every deployed file',async()=> {
+await check('F4a: hidden cards carry no link, in the repo or the bundle',async()=> {
+  // The repo is public: a hidden card's link would be published by registry.json even if the hub hides it.
   const source=JSON.parse(await fs.readFile(path.join(root,'hub/data/registry.json'),'utf8'));
-  const quarantined=source.features.filter(f=>f.quarantined);
-  assert(quarantined.length,'Quarantine fixtures are required');
-  const hosts=[...new Set(quarantined.flatMap(f=>[f.reviewUrl,...(f.legacy||[]).map(l=>l.url),...Object.values(f.alsoInUrls||{})]).filter(Boolean).map(link=>new URL(link,base).hostname))];
+  assert.deepEqual(hiddenCardProblems(source),[]);
+  for(const raw of source.features.filter(f=>f.quarantined)) {
+    const f=features.find(f=>f.product===raw.product&&f.slug===raw.slug);
+    assert.deepEqual(f.legacy,[]);
+    for(const field of ['reviewUrl','quarantineReason','alsoInUrls']) assert(!Object.hasOwn(f,field),`Public quarantine field: ${field}`);
+  }
+  // The two builds taken out on 26/10 must not come back through any file of the bundle.
   async function scan(dir) {
     for(const item of await fs.readdir(dir,{withFileTypes:true})) {
       const file=path.join(dir,item.name);
       if(item.isDirectory()) await scan(file);
-      else {const bytes=await fs.readFile(file); for(const host of hosts) assert(!bytes.includes(Buffer.from(host)),`Quarantined hostname in ${file}`);}
+      else {const bytes=await fs.readFile(file); for(const host of ['joy-ai-workspace','joy-store-credit-only']) assert(!bytes.includes(Buffer.from(host)),`Removed build ${host} in ${file}`);}
     }
   }
   await scan(deploy);
-  for(const raw of quarantined) {
-    const f=features.find(f=>f.product===raw.product&&f.slug===raw.slug);
-    assert.deepEqual(f.legacy,[]);
-    for(const field of ['reviewUrl','quarantineReason','alsoInUrls']) assert(!Object.hasOwn(f,field),`Public quarantine field: ${field}`);
-    assert.deepEqual(normalizeFeature(raw),f);
-    for(const host of hosts) {
-      await go(`/?q=${encodeURIComponent(host)}`); assert.equal(await page.locator('.feature-card,.paused-results').count(),0);
-      await go(`/archive?q=${encodeURIComponent(host)}`); await rowCount(0);
-    }
-  }
   await go('/archive');
   // Paused builds (all quarantined ones are paused) are hidden from the hub list since 21/10; they must not appear at all.
   for(const f of features.filter(f=>f.status==='paused')) assert.equal(await page.locator(`[data-archive-feature="${f.slug}"]`).count(),0,`paused ${f.slug} listed`);
@@ -337,11 +332,12 @@ await check('Responsive, no code-lane shortcut on home (/app/ still served), hov
 await check('Hub font local, no external requests, no errors',async()=> {
   await go('/');
   const fonts=await page.evaluate(()=>[...document.fonts].map(f=>({family:f.family,status:f.status,weight:f.weight})));
-  // A + Joy branding (21/10): Be Vietnam Pro for Vietnamese UI, General Sans for the Latin wordmark, both self-hosted.
+  // Be Vietnam Pro (SIL OFL) for the whole hub, self-hosted. General Sans left 26/10: its license forbids a public repo.
   for(const weight of ['400','500','600']) assert(fonts.some(f=>f.family.replace(/"/g,'')==='Be Vietnam Pro'&&f.status==='loaded'&&f.weight===weight),JSON.stringify(fonts));
-  assert(fonts.some(f=>f.family.replace(/"/g,'')==='General Sans'&&f.status==='loaded'),JSON.stringify(fonts));
+  assert(!fonts.some(f=>f.family.replace(/"/g,'')==='General Sans'),'General Sans must stay out: its license forbids a public repo');
   const woff=(await fs.readdir(path.join(deploy,'fonts'))).filter(f=>f.endsWith('.woff2'));
-  for(const file of ['be-vietnam-pro-regular.woff2','be-vietnam-pro-medium.woff2','be-vietnam-pro-semibold.woff2','be-vietnam-pro-bold.woff2','general-sans-600.woff2']) assert(woff.includes(file),file);
+  for(const file of ['be-vietnam-pro-regular.woff2','be-vietnam-pro-medium.woff2','be-vietnam-pro-semibold.woff2','be-vietnam-pro-bold.woff2']) assert(woff.includes(file),file);
+  assert(!woff.includes('general-sans-600.woff2'),'general-sans-600.woff2 must not ship');
   assert.deepEqual([...requests].filter(origin=>origin!==base.origin),[]);
   assert.deepEqual(errors,[]);
   assert(config.headers.find(h=>h.source==='**')?.headers.some(h=>h.key==='X-Robots-Tag'&&h.value==='noindex, nofollow'));
@@ -405,7 +401,7 @@ for(const scheme of ['light','dark']) {
   await page.emulateMedia({colorScheme:scheme});
   for(const width of [1440,768,375]) {
     await page.setViewportSize({width,height:900});
-    for(const [name,route] of [['home','/'],['info','/loyalty/custom-plan/info'],['archive','/archive'],['paused','/?q=pulse'],['sea','/loyalty/sea-survey/info'],['quarantine','/loyalty/ai-entry-points/info'],['wishlist','/?product=wishlist']]) {
+    for(const [name,route] of [['home','/'],['info','/loyalty/custom-plan/info'],['archive','/archive'],['paused','/?q=pulse'],['sea','/loyalty/sea-survey/info'],['wishlist','/?product=wishlist']]) {
       await go(route);
       const file=path.join(evidence,`${name}-${width}-${scheme}.png`);
       await page.screenshot({path:file,animations:'disabled'});
