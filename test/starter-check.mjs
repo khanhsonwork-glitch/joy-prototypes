@@ -287,6 +287,20 @@ await check('Prototype panel switches state, Esc closes it, focus returns to its
   } finally {await context.close();}
 });
 
+await check('A state typed before the # works too, and switching state drops it', async () => {
+  const {context, page} = await session();
+  try {
+    await page.goto(`${STARTER}?state=empty#/demo`, {waitUntil: 'networkidle'});
+    await page.locator('[data-state-view="empty"]').waitFor();
+    await page.getByRole('button', {name: /Prototype/}).click();
+    await page.getByLabel(/^Error/).check();
+    await page.locator('[data-state-view="error"]').waitFor();
+    const url = new URL(page.url());
+    assert.equal(url.searchParams.get('state'), null, 'no stale ?state= left before the #');
+    assert.match(url.hash, /state=error/);
+  } finally {await context.close();}
+});
+
 await check('Components page: every overlay works (toast, error toast, modal, drawer)', async () => {
   const {context, page, errors} = await session();
   try {

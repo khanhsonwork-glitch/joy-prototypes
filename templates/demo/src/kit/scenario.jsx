@@ -18,14 +18,18 @@ const ScenarioContext = createContext({state: 'default', setState: () => {}});
 
 export function ScenarioProvider({children}) {
   const {query} = useRoute();
-  const initial = query.get('state');
+  // Accept ?state= after the # (what the panel writes) and before it (what people type by hand).
+  const initial = query.get('state') || new URLSearchParams(window.location.search).get('state');
   const [state, setStateRaw] = useState(VALID.has(initial) ? initial : 'default');
   const setState = useCallback((next) => {
     if (!VALID.has(next)) return;
     setStateRaw(next);
     // Keep the URL shareable: the current route plus ?state=<next> (default = no query).
     const [path] = window.location.hash.replace(/^#/, '').split('?');
-    window.history.replaceState(null, '', `${window.location.search}#${path || '/demo'}${next === 'default' ? '' : `?state=${next}`}`);
+    const search = new URLSearchParams(window.location.search);
+    search.delete('state');
+    const rest = search.toString();
+    window.history.replaceState(null, '', `${window.location.pathname}${rest ? `?${rest}` : ''}#${path || '/demo'}${next === 'default' ? '' : `?state=${next}`}`);
   }, []);
   const value = useMemo(() => ({state, setState}), [state, setState]);
   return <ScenarioContext.Provider value={value}>{children}</ScenarioContext.Provider>;

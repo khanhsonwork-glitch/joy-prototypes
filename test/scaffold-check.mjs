@@ -12,7 +12,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'joy-scaffold-'));
 fs.cpSync(path.join(root, 'templates/demo'), path.join(tmp, 'templates/demo'), {recursive: true, filter: s => !/node_modules|[/\\]dist([/\\]|$)/.test(s)});
 fs.mkdirSync(path.join(tmp, 'hub/data'), {recursive: true});
-fs.copyFileSync(path.join(root, 'hub/data/registry.json'), path.join(tmp, 'hub/data/registry.json'));
+// The real registry, minus the slugs this test creates: someone following the README example
+// (`npm run new -- birthday-reward …`) must still get a green `npm run check`.
+const TEST_SLUGS = ['birthday-reward', 'wishlist-share'];
+const realRegistry = JSON.parse(fs.readFileSync(path.join(root, 'hub/data/registry.json'), 'utf8'));
+realRegistry.features = realRegistry.features.filter(f => !TEST_SLUGS.includes(f.slug));
+fs.writeFileSync(path.join(tmp, 'hub/data/registry.json'), JSON.stringify(realRegistry, null, 2) + '\n');
+const takenSlug = realRegistry.features[0].slug;
 fs.mkdirSync(path.join(tmp, 'demos/points-giveaway'), {recursive: true});
 fs.writeFileSync(path.join(tmp, 'demos/points-giveaway/package.json'), '{}');
 
@@ -41,7 +47,7 @@ const refusals = [
   ['markup in name', ['birthday-reward', '<b>Birthday</b>']],
   ['unknown product', ['birthday-reward', 'Birthday reward', '--product', 'shop']],
   ['existing demo folder', ['points-giveaway', 'Points Giveaway again']],
-  ['slug already on the hub', ['custom-plan', 'Custom plan again']],
+  ['slug already on the hub', [takenSlug, 'Same card again']],
 ];
 for (const [label, args] of refusals) {
   check(`refuses: ${label}`, () => {
