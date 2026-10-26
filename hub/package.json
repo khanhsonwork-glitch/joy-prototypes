@@ -1,0 +1,1 @@
+{"name":"joy-prototypes-hub","private":true,"version":"1.0.0","type":"module","scripts":{"dev":"vite --host 127.0.0.1","build":"vite build"},"dependencies":{"react":"^19.2.0","react-dom":"^19.2.0","react-router-dom":"^7.9.4"},"devDependencies":{"vite":"^7.1.10"}}

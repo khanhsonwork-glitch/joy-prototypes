@@ -1,0 +1,82 @@
+/* Canonical product UI tokens from DESIGN.md, including its dark overrides. */
+:root {
+  /* Surfaces — tonal, purple-tinted, never neutral gray */
+  --color-bg:          #faf8ff;
+  --color-card:        #ffffff;
+  --color-card-hover:  #f8f9ff;
+  --color-surface:     #f2f3ff;
+  --color-surface-alt: #ecedf6;
+
+  /* Borders — ghost: felt, not seen */
+  --color-border:        rgba(67,70,85,0.08);
+  --color-border-strong: rgba(67,70,85,0.12);
+  --color-ghost:         rgba(67,70,85,0.06);
+
+  /* Brand */
+  --color-primary:       #2563eb;
+  --color-primary-deep:  #004ac6;
+  --color-primary-muted: #dbeafe;
+  --color-primary-light: #eef4ff;
+  --color-primary-fixed: rgba(37,99,235,0.08);
+
+  /* Text — never pure black */
+  --color-text:          #131b2e;
+  --color-text-secondary:#434655;
+  --color-text-tertiary: #8b8fa3;
+  --color-text-inverse:  #ffffff;
+
+  /* Status — darker than Tailwind defaults for authority */
+  --color-success:       #0a7b4f;
+  --color-success-muted: rgba(10,123,79,0.08);
+  --color-warning:       #943700;
+  --color-warning-muted: rgba(148,55,0,0.08);
+  --color-danger:        #ba1a1a;
+  --color-danger-muted:  rgba(186,26,26,0.07);
+  --color-info:          #2563eb;
+  --color-info-muted:    rgba(37,99,235,0.08);
+
+  /* Shadows — tinted with text color, single layer, large blur */
+  --shadow-ambient: 0 4px 20px rgba(19,27,46,0.04);
+  --shadow-lifted:  0 8px 30px rgba(19,27,46,0.06);
+  --shadow-float:   0 16px 48px rgba(19,27,46,0.1);
+
+  /* Layout */
+  --radius-sm: 6px;
+  --radius:    8px;
+  --radius-lg: 12px;
+  --sidebar-w: 220px;
+  --header-h:  56px;
+
+  /* Motion */
+  --duration-fast:   120ms;
+  --duration-normal: 180ms;
+  --duration-slow:   300ms;
+  --ease:            cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-slide:      cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Chart palette — accessible, distinct under color blindness */
+  --c1: #2563eb;  --c2: #7c3aed;  --c3: #0891b2;
+  --c4: #059669;  --c5: #d97706;  --c6: #dc2626;  --c7: #64748b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f1117;  --color-card: #161b22;  --color-card-hover: #1c2129;
+    --color-surface: #1a1f2e;  --color-surface-alt: #21262d;
+    --color-border: rgba(200,210,230,0.08);  --color-ghost: rgba(200,210,230,0.06);
+    --color-text: #e6edf3;  --color-text-secondary: #8b949e;  --color-text-tertiary: #6e7681;
+    --color-primary: #60a5fa;  --color-primary-deep: #3b82f6;
+    --color-primary-muted: rgba(96,165,250,0.15);
+    --shadow-ambient: 0 4px 20px rgba(0,0,0,0.2);
+    --shadow-lifted: 0 8px 30px rgba(0,0,0,0.3);
+    --shadow-float: 0 16px 48px rgba(0,0,0,0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

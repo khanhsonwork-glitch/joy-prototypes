@@ -1,0 +1,25 @@
+{
+  "name": "joy-prototypes",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Hub All-in-one và các prototype HTML của Joy. Không chứa code production.",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "postinstall": "node scripts/setup.mjs",
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "new-demo": "node scripts/new-demo.mjs",
+    "shot": "node scripts/shot.mjs",
+    "check": "node scripts/check.mjs",
+    "check:bundle": "node scripts/check-bundle.mjs",
+    "privacy:add": "node scripts/privacy-add.mjs",
+    "check:source": "node scripts/check-source.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}

@@ -1,0 +1,1241 @@
+{
+  "generatedAt": "2026-10-20T11:30:00Z",
+  "features": [
+    {
+      "product": "loyalty",
+      "slug": "ai-entry-points",
+      "name": "Joy AI entry points",
+      "area": "Home",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "paused",
+      "stage": null,
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-08-07",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://joy-ai-workspace.vercel.app",
+      "kind": "prototype",
+      "legacy": [
+        {
+          "url": "https://joy-ai-workspace.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-08-07",
+          "current": true
+        }
+      ],
+      "parity": null,
+      "quarantined": true,
+      "quarantineReason": ""
+    },
+    {
+      "product": "loyalty",
+      "slug": "analytics-revamp",
+      "name": "Analytics revamp",
+      "area": "Analytics",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "live",
+      "stage": "Done",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-05-27",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-analytics-revamp.jpg",
+      "reviewUrl": "https://joy-analytics-revamp-v3.vercel.app/analytics",
+      "kind": "prototype",
+      "aliases": [
+        "Analytics V2"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-analytics-revamp-v3.vercel.app/analytics",
+          "label": "v3 (bản cuối)",
+          "updated": "2026-05-27",
+          "current": true
+        },
+        {
+          "url": "https://joy-analytics-revamp-v4.vercel.app",
+          "label": "v4",
+          "updated": "2026-05-26",
+          "current": false
+        },
+        {
+          "url": "https://joy-analytics-revamp-v2.vercel.app",
+          "label": "v2",
+          "updated": "2026-05-26",
+          "current": false
+        },
+        {
+          "url": "https://joy-analytics-revamp.vercel.app/analytics",
+          "label": "v1",
+          "updated": "2026-05-22",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "app-migration",
+      "name": "Migration from other apps",
+      "area": "Customers",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "building",
+      "stage": "Doing",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-06-10",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-app-migration.jpg",
+      "reviewUrl": "https://migration-api-redesign.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Import",
+        "Migrate"
+      ],
+      "legacy": [
+        {
+          "url": "https://migration-api-redesign.vercel.app",
+          "label": "Prototype (hiện tại vs đề xuất)",
+          "updated": "2026-06-10",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "cross-app-menu",
+      "name": "Cross-app menu",
+      "area": "Navigation",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": "Ready",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-20",
+      "round": 5,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-cross-app-menu.jpg",
+      "reviewUrl": "https://joy-cross-app-menu.vercel.app/?s=loyalty",
+      "kind": "prototype",
+      "alsoIn": [
+        "wishlist"
+      ],
+      "aliases": [
+        "Wishlist menu",
+        "Seguno"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-cross-app-menu.vercel.app/?s=loyalty",
+          "label": "Prototype",
+          "updated": "2026-10-20",
+          "current": true
+        }
+      ],
+      "parity": null,
+      "alsoInUrls": {
+        "wishlist": "https://joy-cross-app-menu.vercel.app/?s=wishlist"
+      }
+    },
+    {
+      "product": "loyalty",
+      "slug": "custom-plan",
+      "name": "Custom plan",
+      "area": "Subscription",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": "Ready",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-20",
+      "round": 11,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://joy-custom-plan-proto.vercel.app/#/customize_plan",
+      "kind": "prototype",
+      "aliases": [
+        "Custom pricing",
+        "Dev Zone",
+        "Extra features"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-custom-plan-proto.vercel.app/#/customize_plan",
+          "label": "Prototype",
+          "updated": "2026-10-20",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "earning-by-market",
+      "name": "Earning amounts by market",
+      "area": "Programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "building",
+      "stage": "QA/UAT",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-08",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-earning-by-market.jpg",
+      "reviewUrl": "https://joy-earning-market-bar.vercel.app/#/programs/place-order",
+      "kind": "prototype",
+      "aliases": [
+        "Multi market",
+        "Markets"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-earning-market-bar.vercel.app/#/programs/place-order",
+          "label": "Prototype",
+          "updated": "2026-10-08",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "email-builder",
+      "name": "Email V2",
+      "area": "Settings",
+      "surfaces": [
+        "Email",
+        "Admin"
+      ],
+      "status": "live",
+      "stage": "Done",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-06-24",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-email-builder.jpg",
+      "reviewUrl": "https://joy-email-v2-preview.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Email builder",
+        "Email templates"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-email-v2-preview.vercel.app",
+          "label": "Thư viện mẫu",
+          "updated": "2026-06-17",
+          "current": true
+        },
+        {
+          "url": "https://email-builder-v2.vercel.app",
+          "label": "Trình soạn email",
+          "updated": "2026-05-22",
+          "current": false
+        },
+        {
+          "url": "https://preview-rho-seven.vercel.app",
+          "label": "MJML pilot",
+          "updated": "2026-06-24",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "home-dashboard",
+      "name": "Home dashboard",
+      "area": "Home",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "live",
+      "stage": "Done",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-08-04",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-home-dashboard.jpg",
+      "reviewUrl": "https://joy-rooms-live.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Rooms",
+        "Dashboard"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-rooms-live.vercel.app",
+          "label": "Rooms · live",
+          "updated": "2026-08-04",
+          "current": true
+        },
+        {
+          "url": "https://joy-rooms-current.vercel.app",
+          "label": "Rooms · hiện tại",
+          "updated": "2026-08-03",
+          "current": false
+        },
+        {
+          "url": "https://joy-home-final.vercel.app",
+          "label": "Bản thiết kế cuối",
+          "updated": "2026-07-28",
+          "current": false
+        },
+        {
+          "url": "https://joy-home-journey.vercel.app",
+          "label": "3 phòng theo hành trình",
+          "updated": "2026-07-28",
+          "current": false
+        },
+        {
+          "url": "https://joy-home-visualizer.vercel.app",
+          "label": "Visualizer",
+          "updated": "2026-07-28",
+          "current": false
+        },
+        {
+          "url": "https://static-bice-eta.vercel.app",
+          "label": "Rooms · bản tĩnh",
+          "updated": "2026-07-28",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "instagram-dm-automation",
+      "name": "Instagram DM automation",
+      "area": "Programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "paused",
+      "stage": null,
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-05-15",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://instagram-dm-automation-ten.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Instagram",
+        "DM"
+      ],
+      "legacy": [
+        {
+          "url": "https://instagram-dm-automation-ten.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-05-15",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "joy-pulse",
+      "name": "Joy Pulse",
+      "area": "On-site content",
+      "surfaces": [
+        "Widget"
+      ],
+      "status": "paused",
+      "stage": "Pending",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-08-24",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://joy-pulse-mobile.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Pulse",
+        "Dynamic Island"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-pulse-mobile.vercel.app",
+          "label": "Mobile (MR)",
+          "updated": "2026-08-24",
+          "current": true
+        },
+        {
+          "url": "https://dynamic-island-concepts.vercel.app",
+          "label": "Dynamic Island concepts",
+          "updated": "2026-06-24",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "max-discount-uses",
+      "name": "Maximum discount uses (UX fix)",
+      "area": "Programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "paused",
+      "stage": null,
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-06-03",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://discount-uses-heading-fix.vercel.app",
+      "kind": "prototype",
+      "legacy": [
+        {
+          "url": "https://discount-uses-heading-fix.vercel.app",
+          "label": "Trước / sau",
+          "updated": "2026-06-03",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "member-exclusive-deal",
+      "name": "Member exclusive deals",
+      "area": "Membership",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "paused",
+      "stage": "To do",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-05",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://joy-member-deals.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "MED",
+        "Exclusive deal"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-member-deals.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-10-05",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "wishlist",
+      "slug": "metrics-revamp",
+      "name": "Metrics revamp",
+      "area": "Dashboard",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "building",
+      "stage": "Testing",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-05-25",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/wishlist-metrics-revamp.jpg",
+      "reviewUrl": "https://joy-wishlist-prototype.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Wishlist metrics"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-wishlist-prototype.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-05-25",
+          "current": true
+        },
+        {
+          "url": "https://metrics-revamp-before-after.vercel.app",
+          "label": "Trước / sau",
+          "updated": "2026-05-21",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "milestone-insights",
+      "name": "Milestone insights",
+      "area": "Customers",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "live",
+      "stage": "Done",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-07-14",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-milestone-insights.jpg",
+      "reviewUrl": "https://joy-milestone-prototype.vercel.app/customers/profile/cjN6EvspQ6y09OrUlUiO",
+      "kind": "prototype",
+      "aliases": [
+        "Milestone progress"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-milestone-prototype.vercel.app/customers/profile/cjN6EvspQ6y09OrUlUiO",
+          "label": "Customer detail · Milestone progress",
+          "updated": "2026-07-14",
+          "current": true
+        },
+        {
+          "url": "https://milestone-insight-banner.vercel.app",
+          "label": "Insight banner",
+          "updated": "2026-05-14",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "milestones-by-market",
+      "name": "Milestones by market",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "review",
+      "stage": "QA/UAT",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-16",
+      "round": 6,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-milestones-by-market.jpg",
+      "reviewUrl": "https://joy-milestone-per-market.vercel.app/",
+      "kind": "prototype",
+      "aliases": [
+        "Multi market",
+        "Markets"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-milestone-per-market.vercel.app/",
+          "label": "Prototype",
+          "updated": "2026-10-16",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "paid-membership",
+      "name": "Paid membership",
+      "area": "Membership",
+      "surfaces": [
+        "Admin",
+        "Widget",
+        "Loyalty page",
+        "Email"
+      ],
+      "status": "todo",
+      "stage": "Ready",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-19",
+      "round": 3,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-paid-membership.jpg",
+      "reviewUrl": "https://joy-paid-membership-admin.vercel.app/?option=a&state=live#/paid-membership/plans/plan-yearly",
+      "kind": "prototype",
+      "aliases": [
+        "Subscription membership",
+        "Plus membership"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-paid-membership-admin.vercel.app/?option=a&state=live#/paid-membership/plans/plan-yearly",
+          "label": "Prototype",
+          "updated": "2026-10-19",
+          "current": true
+        },
+        {
+          "url": "https://joy-paid-membership-admin-rc.vercel.app",
+          "label": "Bản RC",
+          "updated": "2026-10-14",
+          "current": false
+        },
+        {
+          "url": "https://membership-billing-lifecycle.vercel.app",
+          "label": "Widget · vòng đời thanh toán (07/2026)",
+          "updated": "2026-07-24",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "place-order-templates",
+      "name": "Place order templates",
+      "area": "Programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "paused",
+      "stage": null,
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-05-20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://place-order-templates.vercel.app",
+      "kind": "prototype",
+      "legacy": [
+        {
+          "url": "https://place-order-templates.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-05-20",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "points-giveaway",
+      "name": "Points Giveaway",
+      "area": "Membership",
+      "surfaces": [
+        "Admin",
+        "Email",
+        "Widget"
+      ],
+      "status": "review",
+      "stage": "Ready",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-19",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-points-giveaway.jpg",
+      "reviewUrl": "/loyalty/points-giveaway/#/points-giveaway/new",
+      "kind": "prototype",
+      "aliases": [
+        "Giveaway"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-points-giveaway-proto.vercel.app/#/points-giveaway/new",
+          "label": "Prototype (thiết kế lại 19/10)",
+          "updated": "2026-10-19",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "quiz-builder",
+      "name": "Quiz builder",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "review",
+      "stage": "Testing",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-quiz-builder.jpg",
+      "reviewUrl": "https://joy-quiz-uat.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Quest",
+        "Quests",
+        "Journey Builder"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-quiz-uat.vercel.app",
+          "label": "UAT 19/10",
+          "updated": "2026-10-20",
+          "current": true
+        },
+        {
+          "url": "https://joy-quest-r3.vercel.app",
+          "label": "Quests · vòng 3 (mở Home)",
+          "updated": "2026-07-31",
+          "current": false
+        },
+        {
+          "url": "https://joy-quest-r2.vercel.app",
+          "label": "Quests · vòng 2 (mở Home)",
+          "updated": "2026-07-31",
+          "current": false
+        },
+        {
+          "url": "https://joy-quest-blind.vercel.app",
+          "label": "Quests · blind (mở Home)",
+          "updated": "2026-07-31",
+          "current": false
+        },
+        {
+          "url": "https://joy-quests-v4.vercel.app/editor.html",
+          "label": "Quests · v4 (Widget Editor)",
+          "updated": "2026-07-16",
+          "current": false
+        },
+        {
+          "url": "https://quest-journey-builder.vercel.app",
+          "label": "Journey Builder",
+          "updated": "2026-06-25",
+          "current": false
+        },
+        {
+          "url": "https://welcome-quest-taxonomy.vercel.app",
+          "label": "Quest taxonomy",
+          "updated": "2026-06-12",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "redeem-by-market",
+      "name": "Redeem by market",
+      "area": "Programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "building",
+      "stage": "QA/UAT",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-02",
+      "round": 3,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-redeem-by-market.jpg",
+      "reviewUrl": "https://joy-redeem-markets-ux.vercel.app/programs?type=redeem",
+      "kind": "prototype",
+      "aliases": [
+        "Multi market",
+        "Markets"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-redeem-markets-ux.vercel.app/programs?type=redeem",
+          "label": "Prototype",
+          "updated": "2026-10-02",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "redemption-schedule",
+      "name": "Redemption schedule and eligibility",
+      "area": "Programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "paused",
+      "stage": null,
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-06-03",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://redemption-schedule-eligibility.vercel.app",
+      "kind": "prototype",
+      "legacy": [
+        {
+          "url": "https://redemption-schedule-eligibility.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-06-03",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "referral-order-value",
+      "name": "Referral points by order value",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": "Done",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-07-20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-referral-order-value.jpg",
+      "reviewUrl": "https://referral-points-order-value.vercel.app",
+      "kind": "prototype",
+      "legacy": [
+        {
+          "url": "https://referral-points-order-value.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-07-20",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "repeat-milestone",
+      "name": "Repeat milestone",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "building",
+      "stage": "QA/UAT",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-19",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-repeat-milestone.jpg",
+      "reviewUrl": "https://joy-repeat-milestone-final.vercel.app",
+      "kind": "uat-note",
+      "aliases": [
+        "Recurring milestone",
+        "Punch card"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-repeat-milestone-final.vercel.app",
+          "label": "Bản cuối (ghi chú UAT)",
+          "updated": "2026-10-19",
+          "current": true
+        },
+        {
+          "url": "https://joy-repeat-milestone-uat.vercel.app",
+          "label": "UAT (ghi chú tổng quan)",
+          "updated": "2026-10-19",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "reward-unlocks",
+      "name": "Reward unlocks",
+      "area": "On-site content",
+      "surfaces": [
+        "Widget"
+      ],
+      "status": "paused",
+      "stage": "Archived",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-07-23",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://joy-reward-unlocks.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Cart drawer"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-reward-unlocks.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-07-23",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "sea-survey",
+      "name": "SEA Survey integration",
+      "area": "Integrations",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "todo",
+      "stage": "Ready",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-07-13",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-sea-survey.jpg",
+      "reviewUrl": "https://joy-sea-survey-prototype.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "SEA"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-sea-survey-prototype.vercel.app",
+          "label": "Prototype (mở màn chọn scenario)",
+          "updated": "2026-07-13",
+          "current": true
+        }
+      ],
+      "parity": null,
+      "entryNote": "Mở màn chọn scenario trước"
+    },
+    {
+      "product": "loyalty",
+      "slug": "send-gift-to-friend",
+      "name": "Send gift to a friend",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": "Done",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-05-17",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-send-gift-to-friend.jpg",
+      "reviewUrl": "https://send-gift-to-friend.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Gift"
+      ],
+      "legacy": [
+        {
+          "url": "https://send-gift-to-friend.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-05-17",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "store-credit-only",
+      "name": "Store credit only mode",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "paused",
+      "stage": "Analyzing",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-09-04",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://joy-store-credit-only.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Store credit"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-store-credit-only.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-09-04",
+          "current": true
+        }
+      ],
+      "parity": null,
+      "quarantined": true,
+      "quarantineReason": ""
+    },
+    {
+      "product": "loyalty",
+      "slug": "sync-shopify-discounts",
+      "name": "Sync Shopify discounts (My coupons)",
+      "area": "On-site content",
+      "surfaces": [
+        "Widget",
+        "Admin"
+      ],
+      "status": "paused",
+      "stage": "Archived",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-06-08",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": null,
+      "reviewUrl": "https://sync-shopify-discounts.vercel.app",
+      "kind": "prototype",
+      "legacy": [
+        {
+          "url": "https://sync-shopify-discounts.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-06-08",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "unified-widget",
+      "name": "Widget V4",
+      "area": "On-site content",
+      "surfaces": [
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-06-24",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-unified-widget.jpg",
+      "reviewUrl": "https://joy-widget-v4-proto.vercel.app/editor.html",
+      "kind": "playground",
+      "aliases": [
+        "Widget V4",
+        "Unified widget",
+        "Joy UI"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-widget-v4-proto.vercel.app/editor.html",
+          "label": "Widget Editor (Joy UI)",
+          "updated": "2026-06-24",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "vip-sandbox-mode",
+      "name": "VIP tiers in sandbox mode",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Email"
+      ],
+      "status": "todo",
+      "stage": "Ready",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-10-17",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-vip-sandbox-mode.jpg",
+      "reviewUrl": "https://sandbox-vip-tiers.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Sandbox",
+        "Test mode",
+        "VIP"
+      ],
+      "legacy": [
+        {
+          "url": "https://sandbox-vip-tiers.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-10-17",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "whats-new",
+      "name": "What's new",
+      "area": "Home",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "live",
+      "stage": "Done",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-07-29",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-whats-new.jpg",
+      "reviewUrl": "https://joy-whats-new.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "Release announce"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-whats-new.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-07-29",
+          "current": true
+        },
+        {
+          "url": "https://dist-whatsnew.vercel.app",
+          "label": "Bản dựng (dist)",
+          "updated": "2026-07-29",
+          "current": false
+        },
+        {
+          "url": "https://whats-new-proto.vercel.app",
+          "label": "HTML · Hiện tại vs tốt nhất",
+          "updated": "2026-07-28",
+          "current": false
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "whatsapp-consent-reward",
+      "name": "WhatsApp consent & rewards",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "building",
+      "stage": "Testing",
+      "stageCheckedAt": "2026-10-20",
+      "statusEvidence": "",
+      "updated": "2026-07-24",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-whatsapp-consent-reward.jpg",
+      "reviewUrl": "https://whatsapp-consent-phone-reward.vercel.app",
+      "kind": "prototype",
+      "aliases": [
+        "SMS",
+        "Phone"
+      ],
+      "legacy": [
+        {
+          "url": "https://whatsapp-consent-phone-reward.vercel.app",
+          "label": "Prototype",
+          "updated": "2026-07-24",
+          "current": true
+        },
+        {
+          "url": "https://deploy-clean-taupe.vercel.app",
+          "label": "Widget thật (real components)",
+          "updated": "2026-07-24",
+          "current": false
+        }
+      ],
+      "parity": null
+    }
+  ]
+}

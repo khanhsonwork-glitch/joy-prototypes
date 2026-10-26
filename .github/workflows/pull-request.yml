@@ -1,0 +1,36 @@
+# Every Pull Request: full check, then its own Firebase preview URL (refreshed on each push, posted on the PR).
+name: Check + preview
+on: pull_request
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  check_and_preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence
+          path: evidence/
+          if-no-files-found: ignore
+      # Forks get no secrets, so they get the check but no preview.
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JOY_PROTOTYPES }}
+          projectId: joy-prototypes
+          entryPoint: dist
+          expires: 14d

@@ -1,0 +1,175 @@
+/* Admin-side pieces for Points Giveaway. Polaris tokens only; the email card uses the shop's own colours from tokens.css. */
+
+/* ---------- Home promo card ---------- */
+.pg-promo {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  align-items: stretch;
+}
+.pg-promo__copy {
+  padding: var(--p-space-500);
+}
+.pg-promo-art {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  padding: var(--p-space-500);
+  background: var(--p-color-bg-surface-secondary);
+  border-radius: 0 var(--p-border-radius-300) var(--p-border-radius-300) 0;
+}
+.pg-promo-art__row {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--p-color-text-secondary);
+}
+.pg-promo-art__name {
+  font-weight: 550;
+}
+.pg-promo-art__bar {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--p-color-bg-surface-tertiary);
+  overflow: hidden;
+}
+.pg-promo-art__bar i,
+.pg-promo-art__bar b {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.pg-promo-art__bar i {
+  left: 0;
+  background: var(--p-color-bg-fill-tertiary-active);
+}
+.pg-promo-art__bar b {
+  background: var(--p-color-bg-fill-success);
+}
+.pg-promo-art__gift {
+  color: var(--p-color-text-success);
+  font-weight: 650;
+  text-align: right;
+}
+.pg-promo-art__chip {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-200);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-color-text);
+}
+
+.pg-health-ring {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: conic-gradient(var(--p-color-bg-fill-inverse) 0 72%, var(--p-color-bg-surface-tertiary) 72% 100%);
+}
+.pg-health-ring span {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--p-color-bg-surface);
+  font-weight: 650;
+  font-size: 15px;
+}
+
+/* ---------- editor ---------- */
+.pg-email-frame {
+  border-radius: var(--p-border-radius-200);
+  overflow: hidden;
+  border: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+
+.pg-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pg-metric--box {
+  padding: 12px 14px;
+  border-radius: var(--p-border-radius-200);
+  background: var(--p-color-bg-surface-secondary);
+}
+.pg-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: var(--p-space-400);
+}
+.pg-card-foot {
+  display: flex;
+  justify-content: center;
+  padding: var(--p-space-200);
+  border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+
+/* ---------- view controls (not product UI) ---------- */
+.vc-wrap {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 520;
+}
+.vc-chip {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1.5px dashed var(--proto-amber-border);
+  border-radius: 50%;
+  background: var(--proto-amber-bg);
+  color: var(--proto-amber-text);
+  font-size: 18px;
+  cursor: pointer;
+}
+.vc-pop {
+  width: 280px;
+  padding: var(--p-space-400);
+}
+
+/* ---------- the giveaway email (shop branding) ---------- */
+
+/* ---------- giveaway page ---------- */
+.pg-code {
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: var(--p-border-radius-150);
+  background: var(--p-color-bg-surface-secondary);
+  font-family: var(--p-font-family-mono);
+  font-size: 12px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+.pg-rows {
+  border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+.pg-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--p-space-400);
+  padding: var(--p-space-400);
+}
+.pg-row + .pg-row {
+  border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+.pg-email-frame {
+  max-height: 70vh;
+  overflow: auto;
+  border-radius: var(--p-border-radius-200);
+  border: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
