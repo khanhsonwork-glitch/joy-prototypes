@@ -1,6 +1,6 @@
 // The Shopify admin around the app: black top bar, left navigation, app title bar.
 // Hand-written on purpose (it is not Polaris and it is not Joy), Polaris tokens where they exist.
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Icon} from '@shopify/polaris';
 import {
   ChartVerticalFilledIcon,
@@ -218,6 +218,8 @@ function SidekickButton() {
 export function AdminChrome({children}) {
   const [navOpen, setNavOpen] = useState(false);
   const route = useRoute();
+  const content = useRef(null);
+  useEffect(() => {content.current?.scrollTo(0, 0);}, [route.path]);
 
   // close the mobile drawer whenever the route changes, and on Esc
   useEffect(() => setNavOpen(false), [route.path]);
@@ -243,7 +245,7 @@ export function AdminChrome({children}) {
       <SidekickButton />
       <div className="adm-main">
         <AppTitleBar />
-        <main className="adm-content">{children}</main>
+        <main ref={content} className="adm-content">{children}</main>
       </div>
     </div>
   );

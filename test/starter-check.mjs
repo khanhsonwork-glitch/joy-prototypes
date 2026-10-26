@@ -21,6 +21,7 @@ const FONT_HOSTS = new Set(['https://fonts.googleapis.com', 'https://fonts.gstat
 const browser = await chromium.launch({headless: true});
 let failed = 0, total = 0;
 async function check(label, fn) {
+  if (process.env.CHECK_FILTER && !label.includes(process.env.CHECK_FILTER)) return;
   total++;
   try {const note = await fn(); console.log(`PASS ${total}. ${label}${note ? ` — ${note}` : ''}`);}
   catch (error) {failed++; console.log(`FAIL ${total}. ${label}\n  ${String(error.stack).split('\n').slice(0, 4).join('\n  ')}`);}
@@ -267,6 +268,121 @@ await check('Phone: the menu button opens the nav drawer, Esc closes it, closed 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => getComputedStyle(document.querySelector('.adm-nav')).visibility === 'hidden');
     assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Open navigation');
+  } finally {await context.close();}
+});
+
+await check('Regression B3: phone controls clear toasts and hide behind navigation', async () => {
+  // Review 26/10 (B3): at 375 the amber pill covered list rows, the save toast and the open nav drawer.
+  const {context, page} = await session(375, 812);
+  const box = locator => locator.boundingBox();
+  const overlap = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  try {
+    await open(page, '/demo');
+    const toggle = page.getByRole('button', {name: /^Prototype/});
+    const t = await box(toggle);
+    assert(t.width <= 44 && t.height <= 44, `toggle is ${t.width}×${t.height}`);
+    assert(t.x + t.width > 375 - 24, 'toggle sits in the right corner');
+    await page.getByRole('link', {name: 'Create reward'}).click();
+    await page.getByRole('heading', {name: 'Create reward'}).waitFor();
+    await page.getByRole('button', {name: 'Save'}).click();
+    const toast = page.locator('.Polaris-Frame-Toast');
+    await toast.waitFor();
+    await page.waitForTimeout(500); // Polaris toast slide-in
+    assert(!overlap(await box(toggle), await box(toast)), 'toggle covers the toast');
+    await shot(page, 'proto-toast-375');
+    await open(page, '/demo?state=empty');
+    assert.equal(await toggle.textContent(), 'Prototype · Empty', 'label stays for screen readers');
+    assert(await page.locator('.kit-proto__dot').isVisible(), 'a dot marks a non-default state');
+    await page.getByRole('button', {name: 'Open navigation'}).click();
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.adm-nav')).visibility === 'visible');
+    assert(!await toggle.isVisible(), 'toggle must hide when navigation is open');
+    await page.keyboard.press('Escape');
+    assert(await toggle.isVisible(), 'toggle returns after navigation closes');
+    await shot(page, 'proto-nav-375');
+  } finally {await context.close();}
+});
+
+await check('Regression B3: scrolling rows and checkbox labels stay outside the control lane', async () => {
+  const {context, page} = await session(375, 812);
+  try {
+    await open(page, '/demo?state=worst');
+    const content = page.locator('.adm-content');
+    const toggle = page.getByRole('button', {name: /^Prototype/});
+    for (const fraction of [0, 0.5, 1]) {
+      await content.evaluate((node, f) => {node.scrollTop = (node.scrollHeight - node.clientHeight) * f;}, fraction);
+      const viewport = await content.boundingBox();
+      const button = await toggle.boundingBox();
+      assert(viewport.y + viewport.height <= button.y, `scroll ${fraction}: product viewport overlaps reviewer control`);
+      if (fraction === 0.5) assert(await content.evaluate(node => node.scrollTop > 0), 'test must actually scroll');
+      await shot(page, `proto-list-scroll-${fraction}-375`);
+    }
+    await open(page, '/demo');
+    await page.getByRole('link', {name: 'Create reward'}).click();
+    const label = page.getByText('Show in the loyalty widget', {exact: true});
+    await label.scrollIntoViewIfNeeded();
+    const labelBox = await label.boundingBox();
+    const button = await toggle.boundingBox();
+    assert(labelBox.y + labelBox.height <= button.y, 'checkbox label goes underneath the control');
+    await shot(page, 'proto-checkbox-375');
+    await page.getByRole('link', {name: 'Rewards', exact: true}).first().click();
+    assert.equal(await content.evaluate(node => node.scrollTop), 0, 'real navigation resets the phone content scroll');
+  } finally {await context.close();}
+});
+
+await check('Regression B3: card screenshot mode omits reviewer controls', async () => {
+  const {context, page} = await session(1280, 720);
+  try {
+    await page.goto(`${STARTER}?shot=1#/demo`, {waitUntil: 'networkidle'});
+    await page.getByRole('heading', {name: 'Rewards', exact: true}).waitFor();
+    assert.equal(await page.locator('.kit-proto').count(), 0, 'shot=1 must omit controls, not merely crop them');
+    await shot(page, 'card-without-controls');
+  } finally {await context.close();}
+});
+
+await check('Regression B5: state responds to hash edits and Back/Forward without reloading', async () => {
+  const {context, page} = await session();
+  try {
+    await open(page, '/demo');
+    await page.evaluate(() => {window.__sameDocument = true; window.location.hash = '/demo?state=empty';});
+    await page.locator('[data-state-view="empty"]').waitFor({timeout: 3000});
+    await page.evaluate(() => {window.location.hash = '/demo?state=error';});
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
+    await page.goBack();
+    await page.locator('[data-state-view="empty"]').waitFor({timeout: 3000});
+    await page.goForward();
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
+    await page.evaluate(() => {window.location.hash = '/demo?state=unknown';});
+    await page.waitForFunction(() => document.querySelectorAll('[data-primary-link]').length === 5, null, {timeout: 3000});
+    assert(await page.evaluate(() => window.__sameDocument), 'state changes must not reload the tab');
+  } finally {await context.close();}
+});
+
+await check('Regression B5: state before hash updates on popstate in the same tab', async () => {
+  const {context, page} = await session();
+  try {
+    await page.goto(`${STARTER}?state=empty#/demo`, {waitUntil: 'networkidle'});
+    await page.evaluate(() => {
+      history.pushState(null, '', '?state=error#/demo');
+      dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
+    await page.goBack();
+    await page.locator('[data-state-view="empty"]').waitFor({timeout: 3000});
+    await page.goForward();
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
+  } finally {await context.close();}
+});
+
+await check('Regression B5: Disabled has a working Upgrade plan action on list and edit', async () => {
+  const {context, page} = await session(375);
+  try {
+    for (const route of ['/demo', '/demo/r1']) {
+      await open(page, `${route}?state=disabled`);
+      await page.getByRole('button', {name: 'Upgrade plan', exact: true}).click({timeout: 3000});
+      await page.locator('.Polaris-Frame-Toast').getByText('Prototype: Advanced plan selected. No billing changes were made.').waitFor({timeout: 3000});
+      assert(await page.getByRole('button', {name: route === '/demo' ? 'Create reward' : 'Save', exact: true}).isDisabled(), 'simulated upgrade must not imply billing or unlock editing');
+      await shot(page, route === '/demo' ? 'upgrade-list-375' : 'upgrade-edit-375');
+    }
   } finally {await context.close();}
 });
 

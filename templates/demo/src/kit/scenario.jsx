@@ -1,7 +1,6 @@
 // Screen states a reviewer can switch with the Prototype panel or ?state= in the URL (#/demo?state=empty).
 // Hover and focus are the other two of the nine states: they come from the mouse and the keyboard.
-import React, {createContext, useCallback, useContext, useMemo, useState} from 'react';
-import {useRoute} from '../shell/router.jsx';
+import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
   {value: 'default', label: 'Default', help: 'Normal data'},
@@ -13,14 +12,26 @@ export const STATES = [
   {value: 'worst', label: 'Worst case', help: 'Overflow, many rows and a failed sync'},
 ];
 const VALID = new Set(STATES.map((s) => s.value));
+function readState() {
+  const query = new URLSearchParams(window.location.hash.split('?').slice(1).join('?'));
+  const value = query.get('state') || new URLSearchParams(window.location.search).get('state');
+  return VALID.has(value) ? value : 'default';
+}
 
 const ScenarioContext = createContext({state: 'default', setState: () => {}});
 
 export function ScenarioProvider({children}) {
-  const {query} = useRoute();
   // Accept ?state= after the # (what the panel writes) and before it (what people type by hand).
-  const initial = query.get('state') || new URLSearchParams(window.location.search).get('state');
-  const [state, setStateRaw] = useState(VALID.has(initial) ? initial : 'default');
+  const [state, setStateRaw] = useState(readState);
+  useEffect(() => {
+    const sync = () => setStateRaw(readState());
+    window.addEventListener('hashchange', sync);
+    window.addEventListener('popstate', sync);
+    return () => {
+      window.removeEventListener('hashchange', sync);
+      window.removeEventListener('popstate', sync);
+    };
+  }, []);
   const setState = useCallback((next) => {
     if (!VALID.has(next)) return;
     setStateRaw(next);

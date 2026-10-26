@@ -117,7 +117,7 @@ export function RewardsList() {
           </Banner>
         ) : null}
         {locked ? (
-          <Banner tone="warning" title="Editing rewards needs the Advanced plan">
+          <Banner tone="warning" title="Editing rewards needs the Advanced plan" action={{content: 'Upgrade plan', onAction: () => notify('Prototype: Advanced plan selected. No billing changes were made.')}}>
             <p>You can still see every reward and its redemptions.</p>
           </Banner>
         ) : null}

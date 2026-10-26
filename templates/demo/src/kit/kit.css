@@ -108,11 +108,12 @@
 }
 
 /* ---------------------------------------------------------------- prototype panel (amber = not product UI) */
+/* z-index sits under the phone nav scrim (450) and drawer (500), so an open menu is never covered by it. */
 .kit-proto {
   position: fixed;
   left: 16px;
   bottom: 16px;
-  z-index: 550;
+  z-index: 440;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -120,6 +121,10 @@
   font-family: var(--p-font-family-sans);
 }
 .kit-proto__toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 12px;
   border: 1px solid var(--proto-amber-border);
   border-radius: 999px;
@@ -130,6 +135,16 @@
   box-shadow: var(--p-shadow-300);
 }
 .kit-proto__toggle:hover {filter: brightness(0.97);}
+.kit-proto__icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: var(--proto-amber-bg);
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.kit-proto__dot {display: none;}
 .kit-proto__toggle:focus-visible,
 .kit-proto__link:focus-visible,
 .kit-proto__state input:focus-visible {
@@ -177,6 +192,47 @@
   margin-top: 8px;
   color: var(--proto-amber-text);
   font: 600 13px/20px var(--p-font-family-sans);
+}
+
+/* A Polaris toast is centred at the bottom: lift the panel above it instead of covering it. */
+@media (min-width: 768px) {
+  body:has(.Polaris-Frame-Toast) .kit-proto {bottom: 88px;}
+}
+
+/* Phones: a 40px round button in the bottom-right corner instead of a pill over the start of every row. */
+@media (max-width: 767.98px) {
+  .kit-proto {
+    left: auto;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    align-items: flex-end;
+  }
+  .kit-proto__toggle {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  .kit-proto__icon {width: 20px; height: 20px;}
+  .kit-proto__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .kit-proto__dot {
+    display: block;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--p-color-bg-surface);
+    background: var(--proto-amber-border);
+  }
 }
 
 /* ---------------------------------------------------------------- search row above a table */
