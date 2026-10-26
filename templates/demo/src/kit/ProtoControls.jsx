@@ -51,13 +51,10 @@ export function ProtoControls() {
         aria-controls="kit-proto-panel"
         onClick={() => setOpen((v) => !v)}
       >
-        {/* Phones show only the icon (and a dot when the state is not Default); the label stays for screen readers. */}
-        <svg className="kit-proto__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-          <path d="M4 6h7M15 6h1M4 14h1M9 14h7" />
-          <circle cx="13" cy="6" r="2" />
-          <circle cx="7" cy="14" r="2" />
-        </svg>
-        <span className="kit-proto__label">Prototype{state !== 'default' ? ` · ${STATES.find((s) => s.value === state).label}` : ''}</span>
+        {/* Phones keep the word (Alex 20/10: an icon-only chip was unclear) and drop the state name; a dot marks a
+            non-default state there, and screen readers still hear the full label. */}
+        Prototype
+        {state !== 'default' ? <span className="kit-proto__state">{` · ${STATES.find((s) => s.value === state).label}`}</span> : null}
         {state !== 'default' ? <span className="kit-proto__dot" aria-hidden="true" /> : null}
       </button>
     </div>

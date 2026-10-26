@@ -129,7 +129,7 @@ export function RewardEdit({id}) {
       <Layout>
         {locked ? (
           <Layout.Section>
-            <Banner tone="warning" title="Editing rewards needs the Advanced plan" action={{content: 'Upgrade plan', onAction: () => notify('Prototype: Advanced plan selected. No billing changes were made.')}}>
+            <Banner tone="warning" title="Editing rewards needs the Advanced plan">
               <p>Fields are read-only on your current plan.</p>
             </Banner>
           </Layout.Section>

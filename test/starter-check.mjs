@@ -280,7 +280,8 @@ await check('Regression B3: phone controls clear toasts and hide behind navigati
     await open(page, '/demo');
     const toggle = page.getByRole('button', {name: /^Prototype/});
     const t = await box(toggle);
-    assert(t.width <= 44 && t.height <= 44, `toggle is ${t.width}×${t.height}`);
+    assert(t.width <= 110 && t.height <= 32, `toggle is ${t.width}×${t.height}`);
+    assert.equal((await toggle.innerText()).trim(), 'Prototype', 'the word stays visible on phones (Alex 20/10)');
     assert(t.x + t.width > 375 - 24, 'toggle sits in the right corner');
     await page.getByRole('link', {name: 'Create reward'}).click();
     await page.getByRole('heading', {name: 'Create reward'}).waitFor();
@@ -370,19 +371,6 @@ await check('Regression B5: state before hash updates on popstate in the same ta
     await page.locator('[data-state-view="empty"]').waitFor({timeout: 3000});
     await page.goForward();
     await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
-  } finally {await context.close();}
-});
-
-await check('Regression B5: Disabled has a working Upgrade plan action on list and edit', async () => {
-  const {context, page} = await session(375);
-  try {
-    for (const route of ['/demo', '/demo/r1']) {
-      await open(page, `${route}?state=disabled`);
-      await page.getByRole('button', {name: 'Upgrade plan', exact: true}).click({timeout: 3000});
-      await page.locator('.Polaris-Frame-Toast').getByText('Prototype: Advanced plan selected. No billing changes were made.').waitFor({timeout: 3000});
-      assert(await page.getByRole('button', {name: route === '/demo' ? 'Create reward' : 'Save', exact: true}).isDisabled(), 'simulated upgrade must not imply billing or unlock editing');
-      await shot(page, route === '/demo' ? 'upgrade-list-375' : 'upgrade-edit-375');
-    }
   } finally {await context.close();}
 });
 

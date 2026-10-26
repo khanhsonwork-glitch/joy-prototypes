@@ -135,15 +135,6 @@
   box-shadow: var(--p-shadow-300);
 }
 .kit-proto__toggle:hover {filter: brightness(0.97);}
-.kit-proto__icon {
-  width: 16px;
-  height: 16px;
-  flex: none;
-  fill: var(--proto-amber-bg);
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-}
 .kit-proto__dot {display: none;}
 .kit-proto__toggle:focus-visible,
 .kit-proto__link:focus-visible,
@@ -199,7 +190,7 @@
   body:has(.Polaris-Frame-Toast) .kit-proto {bottom: 88px;}
 }
 
-/* Phones: a 40px round button in the bottom-right corner instead of a pill over the start of every row. */
+/* Phones: a small chip that keeps the word, in the reviewer lane under the product viewport (chrome.css). */
 @media (max-width: 767.98px) {
   .kit-proto {
     left: auto;
@@ -208,13 +199,11 @@
     align-items: flex-end;
   }
   .kit-proto__toggle {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    justify-content: center;
+    padding: 4px 10px;
+    font-size: 12px;
+    line-height: 18px;
   }
-  .kit-proto__icon {width: 20px; height: 20px;}
-  .kit-proto__label {
+  .kit-proto__state {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -225,8 +214,8 @@
   .kit-proto__dot {
     display: block;
     position: absolute;
-    top: 1px;
-    right: 1px;
+    top: -3px;
+    right: -3px;
     width: 10px;
     height: 10px;
     border-radius: 50%;
