@@ -362,6 +362,27 @@ await check('Overflow and Worst case: opening a long-named row shows that reward
   } finally {await context.close();}
 });
 
+await check('Overflow and Worst case reach the create and edit form, not just the list', async () => {
+  // Independent review 26/10 (README): Create reward looked the same in Default, Overflow and Worst case.
+  const {context, page} = await session();
+  try {
+    for (const state of ['overflow', 'worst']) {
+      await open(page, `/demo/new?state=${state}`);
+      const name = page.getByRole('textbox', {name: 'Reward name'});
+      await name.waitFor();
+      assert.match(await name.inputValue(), /^\$25 off the Glow Getter Set/, `${state}: the new form starts from the longest name`);
+      assert.equal(await page.getByLabel('Points cost').inputValue(), '2500000', `${state}: the new form starts from the biggest number`);
+      const sync = page.getByText('2 rewards failed to sync');
+      if (state === 'worst') await sync.waitFor({timeout: 3000});
+      else assert.equal(await sync.count(), 0, 'overflow has no sync failure');
+    }
+    await open(page, '/demo/o1?state=worst');
+    await page.getByText('2 rewards failed to sync').waitFor({timeout: 3000});
+    await open(page, '/demo/new');
+    assert.equal(await page.getByRole('textbox', {name: 'Reward name'}).inputValue(), '', 'default new form stays blank');
+  } finally {await context.close();}
+});
+
 await check('Regression B3: card screenshot mode omits reviewer controls', async () => {
   const {context, page} = await session(1280, 720);
   try {

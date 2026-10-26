@@ -10,7 +10,7 @@ import {useScenario} from '../kit/scenario.jsx';
 import {Drawer} from '../kit/Drawer.jsx';
 import {EmptyView, ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {useRewards} from '../state/rewards.jsx';
-import {REWARD_TYPES, dateLabel, money, num, pointsLabel, typeLabel} from '../data/index.js';
+import {OVERFLOW_REWARDS, REWARD_TYPES, dateLabel, money, num, pointsLabel, typeLabel} from '../data/index.js';
 import {StatusBadge} from './RewardsList.jsx';
 
 const BLANK = {name: '', type: 'amount', value: '5', points: '500', status: 'draft', minSpend: '0', showInWidget: true};
@@ -40,7 +40,9 @@ export function RewardEdit({id}) {
   const reward = isNew ? null : find(id);
   const locked = state === 'disabled';
 
-  const initial = useMemo(() => (reward ? toForm(reward) : BLANK), [reward]);
+  // Overflow and Worst case open a new reward on the longest name and biggest numbers, so the form shows them too.
+  const long = state === 'overflow' || state === 'worst';
+  const initial = useMemo(() => (reward ? toForm(reward) : long ? {...toForm(OVERFLOW_REWARDS[0]), status: 'draft'} : BLANK), [reward, long]);
   const [form, setForm] = useState(initial);
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -127,6 +129,13 @@ export function RewardEdit({id}) {
   return (
     <Page {...page}>
       <Layout>
+        {state === 'worst' ? (
+          <Layout.Section>
+            <Banner tone="critical" title="2 rewards failed to sync to Shopify discounts">
+              <p>Members can't redeem them until the sync works. Joy retries every 15 minutes.</p>
+            </Banner>
+          </Layout.Section>
+        ) : null}
         {locked ? (
           <Layout.Section>
             <Banner tone="warning" title="Editing rewards needs the Advanced plan">
