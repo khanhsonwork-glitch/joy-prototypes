@@ -54,7 +54,7 @@ export function ProtoControls() {
         {/* Phones keep the word (Alex 20/10: an icon-only chip was unclear) and drop the state name; a dot marks a
             non-default state there, and screen readers still hear the full label. */}
         Prototype
-        {state !== 'default' ? <span className="kit-proto__state">{` · ${STATES.find((s) => s.value === state).label}`}</span> : null}
+        {state !== 'default' ? <span className="kit-proto__current">{` · ${STATES.find((s) => s.value === state).label}`}</span> : null}
         {state !== 'default' ? <span className="kit-proto__dot" aria-hidden="true" /> : null}
       </button>
     </div>

@@ -453,23 +453,21 @@
   }
 }
 
-/* Reserve a reviewer-only lane below the scrolling product viewport on phones.
-   Bottom padding alone cannot stop a floating button covering a row mid-scroll. */
-@media (max-width: 767.98px) {
-  body:has(.kit-proto) {
-    --proto-mobile-space: calc(64px + env(safe-area-inset-bottom, 0px));
-  }
-  body:has(.kit-proto) .adm-main {min-height: 0;}
-  body:has(.kit-proto) .adm-content {
-    box-sizing: border-box;
-    height: calc(100dvh - var(--chrome-topbar-height) - 56px - var(--proto-mobile-space));
-    overflow-y: auto;
-    padding-bottom: 64px;
-    scroll-padding-block: 16px;
-  }
-  body:has(.kit-proto) .Polaris-Frame-ToastManager {
-    bottom: var(--proto-mobile-space);
-  }
+/* Reserve a reviewer-only lane below the scrolling product viewport, at every width: bottom padding alone cannot stop
+   a floating button covering a row mid-scroll (review 26/10 found it at 375, 768 and 1024). */
+body:has(.kit-proto) {
+  --proto-lane: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+body:has(.kit-proto) .adm-main {min-height: 0;}
+body:has(.kit-proto) .adm-content {
+  box-sizing: border-box;
+  height: calc(100dvh - var(--chrome-topbar-height) - 56px - var(--proto-lane));
+  overflow-y: auto;
+  padding-bottom: 64px;
+  scroll-padding-block: 16px;
+}
+body:has(.kit-proto) .Polaris-Frame-ToastManager {
+  bottom: var(--proto-lane);
 }
 
 @media (max-width: 899.98px) {

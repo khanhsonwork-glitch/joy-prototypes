@@ -108,23 +108,22 @@
 }
 
 /* ---------------------------------------------------------------- prototype panel (amber = not product UI) */
-/* z-index sits under the phone nav scrim (450) and drawer (500), so an open menu is never covered by it. */
+/* Bottom-right, inside the reviewer lane (chrome.css), clear of the admin nav's Settings item. z-index sits under the
+   phone nav scrim (450) and drawer (500), so an open menu is never covered by it. */
 .kit-proto {
   position: fixed;
-  left: 16px;
-  bottom: 16px;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 440;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 8px;
   font-family: var(--p-font-family-sans);
 }
 .kit-proto__toggle {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  white-space: nowrap;
   padding: 6px 12px;
   border: 1px solid var(--proto-amber-border);
   border-radius: 999px;
@@ -185,25 +184,18 @@
   font: 600 13px/20px var(--p-font-family-sans);
 }
 
-/* A Polaris toast is centred at the bottom: lift the panel above it instead of covering it. */
-@media (min-width: 768px) {
-  body:has(.Polaris-Frame-Toast) .kit-proto {bottom: 88px;}
-}
-
 /* Phones: a small chip that keeps the word, in the reviewer lane under the product viewport (chrome.css). */
 @media (max-width: 767.98px) {
   .kit-proto {
-    left: auto;
     right: 12px;
     bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    align-items: flex-end;
   }
   .kit-proto__toggle {
     padding: 4px 10px;
     font-size: 12px;
     line-height: 18px;
   }
-  .kit-proto__state {
+  .kit-proto__current {
     position: absolute;
     width: 1px;
     height: 1px;

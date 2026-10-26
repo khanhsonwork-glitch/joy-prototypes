@@ -300,22 +300,36 @@ await check('Regression B3: phone controls clear toasts and hide behind navigati
     await page.keyboard.press('Escape');
     assert(await toggle.isVisible(), 'toggle returns after navigation closes');
     await shot(page, 'proto-nav-375');
+    // The phone chip hides the state name with its own class; the panel's state choices must stay full size.
+    await toggle.click();
+    const choice = await page.getByLabel(/^Worst case/).locator('xpath=ancestor::label').boundingBox();
+    assert(choice.width > 120 && choice.height > 20, `state choice is ${choice.width}×${choice.height}`);
+    await page.getByLabel(/^Worst case/).check();
+    await page.locator('[data-state-view="worst"], .Polaris-Banner').first().waitFor();
+    assert((await page.locator('.kit-proto__current').boundingBox()).width <= 1, 'phone chip hides the state name visually');
+    await shot(page, 'proto-panel-375');
   } finally {await context.close();}
 });
 
-await check('Regression B3: scrolling rows and checkbox labels stay outside the control lane', async () => {
-  const {context, page} = await session(375, 812);
+for (const [width, height] of [[375, 812], [768, 1024], [1024, 768], [1440, 900]]) await check(`Regression B3: at ${width}px scrolling rows and checkbox labels stay outside the control lane`, async () => {
+  // Independent review 26/10: the lane existed only on phones, so at 768 and 1024 the button covered rows and a checkbox.
+  const {context, page} = await session(width, height);
   try {
     await open(page, '/demo?state=worst');
     const content = page.locator('.adm-content');
     const toggle = page.getByRole('button', {name: /^Prototype/});
+    if (width >= 1200) {
+      // The admin nav is pinned open here; the button must leave its bottom items (Settings) clickable.
+      const nav = await page.locator('nav.adm-nav').boundingBox(), b = await toggle.boundingBox();
+      assert(b.x >= nav.x + nav.width, 'Prototype button sits over the admin nav');
+    }
     for (const fraction of [0, 0.5, 1]) {
       await content.evaluate((node, f) => {node.scrollTop = (node.scrollHeight - node.clientHeight) * f;}, fraction);
       const viewport = await content.boundingBox();
       const button = await toggle.boundingBox();
       assert(viewport.y + viewport.height <= button.y, `scroll ${fraction}: product viewport overlaps reviewer control`);
       if (fraction === 0.5) assert(await content.evaluate(node => node.scrollTop > 0), 'test must actually scroll');
-      await shot(page, `proto-list-scroll-${fraction}-375`);
+      await shot(page, `proto-list-scroll-${fraction}-${width}`);
     }
     await open(page, '/demo');
     await page.getByRole('link', {name: 'Create reward'}).click();
@@ -324,9 +338,27 @@ await check('Regression B3: scrolling rows and checkbox labels stay outside the 
     const labelBox = await label.boundingBox();
     const button = await toggle.boundingBox();
     assert(labelBox.y + labelBox.height <= button.y, 'checkbox label goes underneath the control');
-    await shot(page, 'proto-checkbox-375');
+    await shot(page, `proto-checkbox-${width}`);
     await page.getByRole('link', {name: 'Rewards', exact: true}).first().click();
     assert.equal(await content.evaluate(node => node.scrollTop), 0, 'real navigation resets the phone content scroll');
+  } finally {await context.close();}
+});
+
+await check('Overflow and Worst case: opening a long-named row shows that reward, and Back keeps the state', async () => {
+  // Independent review 26/10: row links dropped ?state=, the data fell back to Default and every row said "Reward not found".
+  const {context, page} = await session();
+  try {
+    for (const state of ['overflow', 'worst']) {
+      await open(page, `/demo?state=${state}`);
+      const link = page.locator('[data-primary-link]').first();
+      const name = (await link.innerText()).trim();
+      await link.click();
+      await page.getByRole('heading', {name}).waitFor({timeout: 3000});
+      assert.match(page.url(), new RegExp(`state=${state}`), 'state stays in the URL');
+      await page.getByRole('link', {name: 'Rewards'}).first().click();
+      await page.locator('[data-primary-link]').first().waitFor();
+      assert.equal((await page.locator('[data-primary-link]').first().innerText()).trim(), name, 'list keeps the same state');
+    }
   } finally {await context.close();}
 });
 
