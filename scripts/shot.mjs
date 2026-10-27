@@ -30,9 +30,11 @@ try {
   for (let i = 0; i < 50; i++) {
     try {await fetch(`http://127.0.0.1:${port}/`); break;} catch {await new Promise(r => setTimeout(r, 100));}
   }
-  await page.goto(`http://127.0.0.1:${port}/${feature.product}/${slug}`, {waitUntil: 'networkidle'});
+  await page.goto(`http://127.0.0.1:${port}/${feature.product}/${slug}/?shot=1`, {waitUntil: 'networkidle'});
   await page.locator('#root *').first().waitFor();
   await page.evaluate(() => document.fonts.ready);
+  // The amber Prototype panel is reviewer tooling, not product UI: keep it out of the hub card.
+  await page.addStyleTag({content: '.kit-proto{display:none !important}'});
   const name = `${feature.product}-${slug}.jpg`;
   await page.screenshot({path: path.join(ROOT, 'hub/public/shots', name), type: 'jpeg', quality: 85, animations: 'disabled'});
   feature.shot = `/shots/${name}`;

@@ -12,6 +12,14 @@ function readHash() {
   return {path, search: rest.join('?')};
 }
 
+// The reviewer's screen state (?state=… after the #) travels with in-app links, so opening a row in the
+// Worst case list shows that row instead of falling back to the Default data ("Reward not found").
+function carryState(target) {
+  if (/[?&]state=/.test(target)) return target;
+  const current = new URLSearchParams(window.location.hash.split('?').slice(1).join('?')).get('state');
+  return current ? `${target}${target.includes('?') ? '&' : '?'}state=${current}` : target;
+}
+
 const RouterContext = createContext({
   route: {path: DEFAULT_PATH, segments: ['demo'], query: new URLSearchParams()},
   navigate: () => {}
@@ -61,7 +69,7 @@ export function RouterProvider({children}) {
   }, []);
 
   const navigate = useCallback((to, {replace = false} = {}) => {
-    const target = to.startsWith('/') ? to : `/${to}`;
+    const target = carryState(to.startsWith('/') ? to : `/${to}`);
     request(target, () => {
       const url = `${window.location.search}#${target}`;
       window.history[replace ? 'replaceState' : 'pushState'](null, '', url);
@@ -92,7 +100,7 @@ export const HashLink = forwardRef(function HashLink({url, external, children, t
   const isRoute = typeof url === 'string' && url.startsWith('/') && !external;
   if (isRoute) {
     return (
-      <a ref={ref} href={`#${url}`} {...rest}>
+      <a ref={ref} href={`#${carryState(url)}`} {...rest}>
         {children}
       </a>
     );

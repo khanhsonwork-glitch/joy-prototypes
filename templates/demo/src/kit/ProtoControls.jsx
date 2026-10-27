@@ -21,6 +21,8 @@ export function ProtoControls() {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
+  if (new URLSearchParams(window.location.search).get('shot') === '1') return null;
+
   return (
     <div className="kit-proto">
       {open ? (
@@ -49,7 +51,11 @@ export function ProtoControls() {
         aria-controls="kit-proto-panel"
         onClick={() => setOpen((v) => !v)}
       >
-        Prototype{state !== 'default' ? ` · ${STATES.find((s) => s.value === state).label}` : ''}
+        {/* Phones keep the word (Alex 20/10: an icon-only chip was unclear) and drop the state name; a dot marks a
+            non-default state there, and screen readers still hear the full label. */}
+        Prototype
+        {state !== 'default' ? <span className="kit-proto__current">{` · ${STATES.find((s) => s.value === state).label}`}</span> : null}
+        {state !== 'default' ? <span className="kit-proto__dot" aria-hidden="true" /> : null}
       </button>
     </div>
   );

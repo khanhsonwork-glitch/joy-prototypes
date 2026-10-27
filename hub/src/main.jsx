@@ -1,6 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {BrowserRouter, Link, Route, Routes, useLocation, useParams, useSearchParams} from 'react-router-dom';
+import {BrowserRouter, Link, Route, Routes, useLocation, useNavigationType, useParams, useSearchParams} from 'react-router-dom';
 import registry from '../data/registry.json';
 import {normalizeFeature, statuses, bands, kindLabels, canonical, featureProducts, reviewTarget, inProduct, matches} from './registry.mjs';
 import './tokens.css';
@@ -20,8 +20,16 @@ const date = (value, full = false) => {
 const sorted = list => [...list].sort((a, b) => b.updated.localeCompare(a.updated) || (b.stage === 'Ready') - (a.stage === 'Ready') || (b.round ?? -1) - (a.round ?? -1) || a.name.localeCompare(b.name));
 function Status({status}) {return <span className={`status ${status}`}><i aria-hidden="true"/>{statuses[status]}</span>;}
 function Arrow({diagonal = false}) {return <span aria-hidden="true">{diagonal ? '↗' : '→'}</span>;}
+// Keystrokes update local state immediately; URL replacements can finish later without rolling the box back.
+// POP/PUSH are actual navigation (including Back while focused), so those restore the shared query.
 function Search({value, onChange}) {
-  return <label className="search"><span>Tìm tính năng</span><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg><input type="search" placeholder="Tìm tính năng" value={value} onChange={event => onChange(event.target.value)}/></label>;
+  const [draft, setDraft] = useState(value);
+  const location = useLocation();
+  const navigationType = useNavigationType();
+  useLayoutEffect(() => {
+    if (navigationType !== 'REPLACE') setDraft(value);
+  }, [location.key, navigationType, value]);
+  return <label className="search"><span>Tìm tính năng</span><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg><input type="search" placeholder="Tìm tính năng" value={draft} onChange={event => {setDraft(event.target.value); onChange(event.target.value);}}/></label>;
 }
 function Tabs({product, onChange}) {
   return <div role="tablist" aria-label="Sản phẩm" className="tabs">{Object.entries(products).map(([key, label]) => <button key={key} id={`tab-${key}`} role="tab" aria-selected={product === key} aria-controls="feature-panel" tabIndex={product === key ? 0 : -1} onClick={() => onChange(key)} onKeyDown={event => {

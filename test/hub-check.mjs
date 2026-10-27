@@ -40,6 +40,7 @@ async function go(route) {
 }
 let failed = 0, total = 0;
 async function check(label, fn) {
+  if (process.env.CHECK_FILTER && !label.includes(process.env.CHECK_FILTER)) return;
   total++;
   try {const note = await fn(); console.log(`PASS ${total}. ${label}${note ? ` — ${note}` : ''}`);}
   catch (error) {failed++; console.log(`FAIL ${total}. ${label}\n  ${error.stack}`);}
@@ -303,8 +304,67 @@ await check('Home search và all-builds filters/search/empty',async()=> {
     assert.equal(await rows().filter({hasText:'Tạm dừng'}).count(),0);
   }
 });
-await check('Responsive, no code-lane shortcut on home (/app/ still served), hover và whole-card focus',async()=> {
-  const runtimeExists=await fs.access(path.join(deploy,'app/index.html')).then(()=>true,()=>false);
+await check('Regression B4: search keeps every key typed fast on home and archive',async()=> {
+  // Review 26/10: typing "milestone" with no pause between keys came out as "ne" (controlled input vs router transition).
+  const active=features.filter(f=>f.status!=='paused');
+  for(const [route,count,scope] of [['/',()=>page.locator('.feature-card').count(),f=>belongs(f,'loyalty')],['/archive',()=>rows().count(),()=>true]]) {
+    for(const delay of [0,10,30]) {
+      await go(route); const box=page.getByRole('searchbox'); await box.click();
+      await box.pressSequentially('milestone',{delay});
+      await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('q'),'milestone'));
+      assert.equal(await box.inputValue(),'milestone',`${route} delay ${delay}`);
+      const expected=active.filter(f=>scope(f)&&searchMatch(f,'milestone')).length;
+      await eventually(async()=>assert.equal(await count(),expected));
+    }
+  }
+  // The URL still fills the box: a shared link with ?q= and the back button after a tab switch.
+  await go('/?q=quest'); assert.equal(await page.getByRole('searchbox').inputValue(),'quest');
+  await page.getByRole('tab',{name:'Joy Wishlist'}).click(); await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('product'),'wishlist'));
+  assert.equal(await page.getByRole('searchbox').inputValue(),'quest');
+  return 'delay 0, 10 và 30 ms';
+});
+await check('Regression B4: shared queries, paste, clear and focused Back/Forward stay in sync',async()=> {
+  for(const route of ['/', '/archive']) {
+    await go(`${route}?q=quest`);
+    const input=page.getByRole('searchbox');
+    assert.equal(await input.inputValue(),'quest');
+    // Seed an extra same-document history entry; search then replaces only that entry, just as in normal use.
+    await page.evaluate(()=>history.pushState(history.state,'',location.href));
+    await input.focus();
+    await input.fill('milestone');
+    await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('q'),'milestone'));
+    await page.goBack();
+    await eventually(async()=>assert.equal(await input.inputValue(),'quest'));
+    await page.goForward();
+    await eventually(async()=>assert.equal(await input.inputValue(),'milestone'));
+    await input.fill('');
+    await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('q'),null));
+    await input.pressSequentially('quyền lợi',{delay:0});
+    await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('q'),'quyền lợi'));
+    assert.equal(await input.inputValue(),'quyền lợi');
+    await input.fill(''); await input.focus();
+    await page.keyboard.insertText('milestone');
+    await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('q'),'milestone'));
+    assert.equal(await input.inputValue(),'milestone');
+  }
+});
+await check('Regression B5: all status chips fit at 375 without sideways scrolling',async()=> {
+  await page.setViewportSize({width:375,height:812});
+  try {
+    await go('/');
+    const chips=page.locator('.statusbar .chip');
+    assert(await chips.count()>1,'fixture needs multiple status groups');
+    for(const chip of await chips.all()) {
+      const box=await chip.boundingBox();
+      assert(box.x>=0 && box.x+box.width<=375,`${await chip.innerText()}: chip outside viewport`);
+    }
+    const dimensions=await page.locator('.statusbar .wrap').evaluate(n=>({scroll:n.scrollWidth,width:n.clientWidth}));
+    assert(dimensions.scroll<=dimensions.width,'status chips require hidden horizontal scrolling');
+    await page.getByRole('link',{name:/Đã live/}).click();
+    assert.equal(new URL(page.url()).hash,'#band-live');
+  } finally {await page.setViewportSize({width:1440,height:900});}
+});
+await check('Responsive, no /app/ link on home and /app/ not served (real Joy code stays out), hover và whole-card focus',async()=> {
   for(const width of [1440,768,375]) {
     await page.setViewportSize({width,height:900});
     for(const route of ['/','/?product=wishlist','/archive',...features.flatMap(f=>variants(f).map(p=>`${canonical(f,p)}/info`))]) {
@@ -312,9 +372,10 @@ await check('Responsive, no code-lane shortcut on home (/app/ still served), hov
       const sizes=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth}));
       assert(sizes.scroll<=sizes.width,`${route} at ${width}: ${sizes.scroll}`);
       if(route==='/') {
-        // The code-lane shortcut was removed from home on 21/10; /app/ itself must keep serving.
+        // The code-lane shortcut was removed from home on 21/10. The /app runtime runs real Joy master code, so this
+        // public hub never ships it (check-bundle blocks app/); the route must answer 404, not a page.
         assert.equal(await page.locator('a[href="/app/"]').count(),0);
-        if(runtimeExists&&width===1440){const r=await page.request.get(url('/app/'));assert.equal(r.status(),200,'/app/ route');assert((await r.text()).includes('<title>Joy Loyalty'),'/app/ content');}
+        if(width===1440){const r=await page.request.get(url('/app/'));assert.equal(r.status(),404,'/app/ must not be served');assert(!(await r.text()).includes('<title>Joy Loyalty'),'/app/ content leaked');}
       }
     }
   }
@@ -397,7 +458,7 @@ await check('Excluded names và ảnh registry ≤1600×900',async()=> {
 // Evidence goes to evidence/ (gitignored). Every capture stays ≤2000px.
 await fs.mkdir(evidence,{recursive:true});
 const captures=[];
-for(const scheme of ['light','dark']) {
+for(const scheme of process.env.CHECK_FILTER ? [] : ['light','dark']) {
   await page.emulateMedia({colorScheme:scheme});
   for(const width of [1440,768,375]) {
     await page.setViewportSize({width,height:900});

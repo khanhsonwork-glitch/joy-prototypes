@@ -21,6 +21,7 @@ const FONT_HOSTS = new Set(['https://fonts.googleapis.com', 'https://fonts.gstat
 const browser = await chromium.launch({headless: true});
 let failed = 0, total = 0;
 async function check(label, fn) {
+  if (process.env.CHECK_FILTER && !label.includes(process.env.CHECK_FILTER)) return;
   total++;
   try {const note = await fn(); console.log(`PASS ${total}. ${label}${note ? ` — ${note}` : ''}`);}
   catch (error) {failed++; console.log(`FAIL ${total}. ${label}\n  ${String(error.stack).split('\n').slice(0, 4).join('\n  ')}`);}
@@ -267,6 +268,162 @@ await check('Phone: the menu button opens the nav drawer, Esc closes it, closed 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => getComputedStyle(document.querySelector('.adm-nav')).visibility === 'hidden');
     assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Open navigation');
+  } finally {await context.close();}
+});
+
+await check('Regression B3: phone controls clear toasts and hide behind navigation', async () => {
+  // Review 26/10 (B3): at 375 the amber pill covered list rows, the save toast and the open nav drawer.
+  const {context, page} = await session(375, 812);
+  const box = locator => locator.boundingBox();
+  const overlap = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  try {
+    await open(page, '/demo');
+    const toggle = page.getByRole('button', {name: /^Prototype/});
+    const t = await box(toggle);
+    assert(t.width <= 110 && t.height <= 32, `toggle is ${t.width}×${t.height}`);
+    assert.equal((await toggle.innerText()).trim(), 'Prototype', 'the word stays visible on phones (Alex 20/10)');
+    assert(t.x + t.width > 375 - 24, 'toggle sits in the right corner');
+    await page.getByRole('link', {name: 'Create reward'}).click();
+    await page.getByRole('heading', {name: 'Create reward'}).waitFor();
+    await page.getByRole('button', {name: 'Save'}).click();
+    const toast = page.locator('.Polaris-Frame-Toast');
+    await toast.waitFor();
+    await page.waitForTimeout(500); // Polaris toast slide-in
+    assert(!overlap(await box(toggle), await box(toast)), 'toggle covers the toast');
+    await shot(page, 'proto-toast-375');
+    await open(page, '/demo?state=empty');
+    assert.equal(await toggle.textContent(), 'Prototype · Empty', 'label stays for screen readers');
+    assert(await page.locator('.kit-proto__dot').isVisible(), 'a dot marks a non-default state');
+    await page.getByRole('button', {name: 'Open navigation'}).click();
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.adm-nav')).visibility === 'visible');
+    assert(!await toggle.isVisible(), 'toggle must hide when navigation is open');
+    await page.keyboard.press('Escape');
+    assert(await toggle.isVisible(), 'toggle returns after navigation closes');
+    await shot(page, 'proto-nav-375');
+    // The phone chip hides the state name with its own class; the panel's state choices must stay full size.
+    await toggle.click();
+    const choice = await page.getByLabel(/^Worst case/).locator('xpath=ancestor::label').boundingBox();
+    assert(choice.width > 120 && choice.height > 20, `state choice is ${choice.width}×${choice.height}`);
+    await page.getByLabel(/^Worst case/).check();
+    await page.locator('[data-state-view="worst"], .Polaris-Banner').first().waitFor();
+    assert((await page.locator('.kit-proto__current').boundingBox()).width <= 1, 'phone chip hides the state name visually');
+    await shot(page, 'proto-panel-375');
+  } finally {await context.close();}
+});
+
+for (const [width, height] of [[375, 812], [768, 1024], [1024, 768], [1440, 900]]) await check(`Regression B3: at ${width}px scrolling rows and checkbox labels stay outside the control lane`, async () => {
+  // Independent review 26/10: the lane existed only on phones, so at 768 and 1024 the button covered rows and a checkbox.
+  const {context, page} = await session(width, height);
+  try {
+    await open(page, '/demo?state=worst');
+    const content = page.locator('.adm-content');
+    const toggle = page.getByRole('button', {name: /^Prototype/});
+    if (width >= 1200) {
+      // The admin nav is pinned open here; the button must leave its bottom items (Settings) clickable.
+      const nav = await page.locator('nav.adm-nav').boundingBox(), b = await toggle.boundingBox();
+      assert(b.x >= nav.x + nav.width, 'Prototype button sits over the admin nav');
+    }
+    for (const fraction of [0, 0.5, 1]) {
+      await content.evaluate((node, f) => {node.scrollTop = (node.scrollHeight - node.clientHeight) * f;}, fraction);
+      const viewport = await content.boundingBox();
+      const button = await toggle.boundingBox();
+      assert(viewport.y + viewport.height <= button.y, `scroll ${fraction}: product viewport overlaps reviewer control`);
+      if (fraction === 0.5) assert(await content.evaluate(node => node.scrollTop > 0), 'test must actually scroll');
+      await shot(page, `proto-list-scroll-${fraction}-${width}`);
+    }
+    await open(page, '/demo');
+    await page.getByRole('link', {name: 'Create reward'}).click();
+    const label = page.getByText('Show in the loyalty widget', {exact: true});
+    await label.scrollIntoViewIfNeeded();
+    const labelBox = await label.boundingBox();
+    const button = await toggle.boundingBox();
+    assert(labelBox.y + labelBox.height <= button.y, 'checkbox label goes underneath the control');
+    await shot(page, `proto-checkbox-${width}`);
+    await page.getByRole('link', {name: 'Rewards', exact: true}).first().click();
+    assert.equal(await content.evaluate(node => node.scrollTop), 0, 'real navigation resets the phone content scroll');
+  } finally {await context.close();}
+});
+
+await check('Overflow and Worst case: opening a long-named row shows that reward, and Back keeps the state', async () => {
+  // Independent review 26/10: row links dropped ?state=, the data fell back to Default and every row said "Reward not found".
+  const {context, page} = await session();
+  try {
+    for (const state of ['overflow', 'worst']) {
+      await open(page, `/demo?state=${state}`);
+      const link = page.locator('[data-primary-link]').first();
+      const name = (await link.innerText()).trim();
+      await link.click();
+      await page.getByRole('heading', {name}).waitFor({timeout: 3000});
+      assert.match(page.url(), new RegExp(`state=${state}`), 'state stays in the URL');
+      await page.getByRole('link', {name: 'Rewards'}).first().click();
+      await page.locator('[data-primary-link]').first().waitFor();
+      assert.equal((await page.locator('[data-primary-link]').first().innerText()).trim(), name, 'list keeps the same state');
+    }
+  } finally {await context.close();}
+});
+
+await check('Overflow and Worst case reach the create and edit form, not just the list', async () => {
+  // Independent review 26/10 (README): Create reward looked the same in Default, Overflow and Worst case.
+  const {context, page} = await session();
+  try {
+    for (const state of ['overflow', 'worst']) {
+      await open(page, `/demo/new?state=${state}`);
+      const name = page.getByRole('textbox', {name: 'Reward name'});
+      await name.waitFor();
+      assert.match(await name.inputValue(), /^\$25 off the Glow Getter Set/, `${state}: the new form starts from the longest name`);
+      assert.equal(await page.getByLabel('Points cost').inputValue(), '2500000', `${state}: the new form starts from the biggest number`);
+      const sync = page.getByText('2 rewards failed to sync');
+      if (state === 'worst') await sync.waitFor({timeout: 3000});
+      else assert.equal(await sync.count(), 0, 'overflow has no sync failure');
+    }
+    await open(page, '/demo/o1?state=worst');
+    await page.getByText('2 rewards failed to sync').waitFor({timeout: 3000});
+    await open(page, '/demo/new');
+    assert.equal(await page.getByRole('textbox', {name: 'Reward name'}).inputValue(), '', 'default new form stays blank');
+  } finally {await context.close();}
+});
+
+await check('Regression B3: card screenshot mode omits reviewer controls', async () => {
+  const {context, page} = await session(1280, 720);
+  try {
+    await page.goto(`${STARTER}?shot=1#/demo`, {waitUntil: 'networkidle'});
+    await page.getByRole('heading', {name: 'Rewards', exact: true}).waitFor();
+    assert.equal(await page.locator('.kit-proto').count(), 0, 'shot=1 must omit controls, not merely crop them');
+    await shot(page, 'card-without-controls');
+  } finally {await context.close();}
+});
+
+await check('Regression B5: state responds to hash edits and Back/Forward without reloading', async () => {
+  const {context, page} = await session();
+  try {
+    await open(page, '/demo');
+    await page.evaluate(() => {window.__sameDocument = true; window.location.hash = '/demo?state=empty';});
+    await page.locator('[data-state-view="empty"]').waitFor({timeout: 3000});
+    await page.evaluate(() => {window.location.hash = '/demo?state=error';});
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
+    await page.goBack();
+    await page.locator('[data-state-view="empty"]').waitFor({timeout: 3000});
+    await page.goForward();
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
+    await page.evaluate(() => {window.location.hash = '/demo?state=unknown';});
+    await page.waitForFunction(() => document.querySelectorAll('[data-primary-link]').length === 5, null, {timeout: 3000});
+    assert(await page.evaluate(() => window.__sameDocument), 'state changes must not reload the tab');
+  } finally {await context.close();}
+});
+
+await check('Regression B5: state before hash updates on popstate in the same tab', async () => {
+  const {context, page} = await session();
+  try {
+    await page.goto(`${STARTER}?state=empty#/demo`, {waitUntil: 'networkidle'});
+    await page.evaluate(() => {
+      history.pushState(null, '', '?state=error#/demo');
+      dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
+    await page.goBack();
+    await page.locator('[data-state-view="empty"]').waitFor({timeout: 3000});
+    await page.goForward();
+    await page.locator('[data-state-view="error"]').waitFor({timeout: 3000});
   } finally {await context.close();}
 });
 
