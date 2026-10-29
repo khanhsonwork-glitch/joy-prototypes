@@ -4,18 +4,19 @@ import React, {createContext, useCallback, useContext, useMemo, useState} from '
 import {ActionList, Banner, BlockStack, Button, InlineStack, List, Modal, Popover, Text} from '@shopify/polaris';
 import {XIcon} from '@shopify/polaris-icons';
 import {useShell} from '../shell/ShellContext.jsx';
-import {OLD_RULES, planLabel, useProto} from '../state/proto.jsx';
+import {planLabel, useProto} from '../state/proto.jsx';
 
 const WHAT_UNLOCKS = {
   advanced: [
     'Run several Place order programs at once, each with its own priority',
+    'Place order for VIP tiers only, with points per tier',
     'Reward by number of items, or once when spending reaches an amount',
     'Different birthday and social rewards for each VIP tier',
     'Extra points for reviews with photos or videos',
   ],
   essential: [
     'Birthday rewards: points, a discount and a free gift together',
-    'Order conditions, date ranges, exclusions and store credit',
+    'Order conditions, exclusions and tax settings',
   ],
 };
 
@@ -152,7 +153,7 @@ export function SwitchBanner({kind, renderPreview}) {
       >
         <Modal.Section>
           <List>
-            <List.Item>{`Your ${OLD_RULES.length} Place order rules become ${OLD_RULES.length} programs, in the same order.`}</List.Item>
+            <List.Item>Your Place order program moves to the new version with the same settings.</List.Item>
             <List.Item>Your Birthday program moves to the latest version. Rewards, limit and notifications stay the same.</List.Item>
             <List.Item>New orders earn points the new way from now on. Points already given don't change.</List.Item>
             <List.Item>You can't switch back.</List.Item>

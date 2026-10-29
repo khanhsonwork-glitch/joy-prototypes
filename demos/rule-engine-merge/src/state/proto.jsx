@@ -17,12 +17,8 @@ export const planLabel = (plan) => PLANS.find((p) => p.value === plan).label;
 /** true when the shop's plan includes `need` ('essential' | 'advanced'). */
 export const hasPlan = (plan, need) => RANK[plan] >= RANK[need];
 
-// Sample programs. Converted = made from the old Place order rules when the shop switched (they keep running on any plan).
-const OLD_RULES = [
-  {id: 'r1', title: 'Spend $1, earn 1 point', summary: 'Earn 1 point for every $1 spent'},
-  {id: 'r2', title: 'Skincare sets earn double', summary: 'Earn 2 points for every $1 spent on Skincare sets'},
-  {id: 'r3', title: 'Big orders bonus', summary: 'Earn 300 points on orders from $200'},
-];
+// Sample programs. An existing shop has one old Place order program (one earning method); switching keeps it as one
+// program. Old multi-rule Place order (a handful of shops) is an open question in the PRD, so it is not drawn here.
 const PROGRAMS = {
   new: [
     {id: 'po1', event: 'place_order', title: 'Place an order', summary: 'Earn 1 point for every $1 spent', on: true, priority: 1},
@@ -31,13 +27,13 @@ const PROGRAMS = {
     {id: 'wr', event: 'review', title: 'Write a review', summary: 'Earn 50 points', on: false},
   ],
   old: [
-    {id: 'po-old', event: 'place_order', title: 'One-time purchase', summary: '3 rules · Earn 1 point for every $1 spent', on: true},
+    {id: 'po-old', event: 'place_order', title: 'One-time purchase', summary: 'Earn 1 point for every $1 spent', on: true},
     {id: 'su', event: 'sign_up', title: 'Sign up', summary: 'Earn 200 points', on: true},
     {id: 'bd', event: 'birthday', title: 'Celebrate a birthday', summary: 'Earn 50 points', on: true},
     {id: 'wr', event: 'review', title: 'Write a review', summary: 'Earn 50 points', on: false},
   ],
   switched: [
-    ...OLD_RULES.map((r, i) => ({id: r.id, event: 'place_order', title: r.title, summary: r.summary, on: true, priority: i + 1, converted: true})),
+    {id: 'po-old', event: 'place_order', title: 'One-time purchase', summary: 'Earn 1 point for every $1 spent', on: true, priority: 1},
     {id: 'su', event: 'sign_up', title: 'Sign up', summary: 'Earn 200 points', on: true},
     {id: 'bd', event: 'birthday', title: 'Celebrate a birthday', summary: 'Earn 50 points', on: true},
     {id: 'wr', event: 'review', title: 'Write a review', summary: 'Earn 50 points', on: false},
@@ -51,7 +47,6 @@ const PROGRAMS = {
     {id: 'wr', event: 'review', title: 'Write a review', summary: 'Earn 50 points', on: true},
   ],
 };
-export {OLD_RULES};
 
 const VALID_SHOP = new Set(SHOPS.map((s) => s.value));
 const VALID_PLAN = new Set(PLANS.map((p) => p.value));
@@ -92,7 +87,9 @@ export function ProtoProvider({children}) {
   const value = useMemo(() => {
     const oldVersion = shop === 'old' && !switched;
     const key = shop === 'old' ? (switched ? 'switched' : 'old') : shop;
-    const programs = [...PROGRAMS[key], ...extra];
+    // Starter: Birthday and Write review need Essential, so they exist only as Off (as today after install or downgrade).
+    const starterOff = (p) => (plan === 'starter' && ['birthday', 'review'].includes(p.event) ? {...p, on: false, needs: 'essential'} : p);
+    const programs = [...PROGRAMS[key], ...extra].map(starterOff);
     return {
       shop, plan, setShop, setPlan, switched, oldVersion, programs,
       switchVersion: () => setSwitched(true),

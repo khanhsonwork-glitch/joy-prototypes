@@ -6,7 +6,7 @@ import {useRoute} from '../shell/router.jsx';
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
-import {OLD_RULES, hasPlan, useProto} from '../state/proto.jsx';
+import {hasPlan, useProto} from '../state/proto.jsx';
 import {LockTag, SwitchBanner, lockedLabel, useUpgrade} from './shared.jsx';
 import {NewBirthdayForm} from './BirthdayEdit.jsx';
 
@@ -47,7 +47,7 @@ function Summary({program}) {
 }
 
 /** The new Place order form. `program` drives title/summary; `locks` comes from the plan (or none in preview). */
-export function NewPlaceOrderForm({program, plan, converted = false}) {
+export function NewPlaceOrderForm({program, plan}) {
   const starter = !hasPlan(plan, 'essential');
   const belowAdvanced = !hasPlan(plan, 'advanced');
   const ess = starter ? 'essential' : null;
@@ -56,7 +56,7 @@ export function NewPlaceOrderForm({program, plan, converted = false}) {
   const [applyFor, setApplyFor] = useState('members');
   const [value, setValue] = useState('1');
   const [stop, setStop] = useState(false);
-  const priorityLock = belowAdvanced && !converted ? 'advanced' : null;
+  const priorityLock = belowAdvanced ? 'advanced' : null; // one rule for new and switched shops
 
   return (
     <Layout>
@@ -68,8 +68,8 @@ export function NewPlaceOrderForm({program, plan, converted = false}) {
               <TextField label="Program name" value={program.title} onChange={() => {}} autoComplete="off" />
               <TextField label="Description" value="Give {{earning_point_raw}} {{loyalty_point}} for every {{amount_spent}} spent" onChange={() => {}} autoComplete="off" />
               <InlineGrid columns={2} gap="300">
-                <TextField label={lockedLabel('Start date', ess)} type="date" value="2026-11-01" onChange={() => {}} disabled={starter} autoComplete="off" />
-                <TextField label={lockedLabel('End date', ess)} type="date" value="" onChange={() => {}} disabled={starter} autoComplete="off" />
+                <TextField label="Start date" type="date" value="2026-11-01" onChange={() => {}} autoComplete="off" />
+                <TextField label="End date" type="date" value="" onChange={() => {}} autoComplete="off" />
               </InlineGrid>
             </BlockStack>
           </Card>
@@ -90,7 +90,7 @@ export function NewPlaceOrderForm({program, plan, converted = false}) {
                 title="Reward type"
                 choices={[
                   {label: 'Loyalty Points', value: 'point'},
-                  {label: lockedLabel('Store Credit', ess), value: 'credit', disabled: starter},
+                  {label: 'Store Credit', value: 'credit'},
                 ]}
                 selected={[typeEarn]}
                 onChange={([v]) => setTypeEarn(v)}
@@ -108,6 +108,7 @@ export function NewPlaceOrderForm({program, plan, converted = false}) {
                 <div className="re-narrow"><TextField label="Rewarding value" type="number" value={value} onChange={setValue} suffix={typeEarn === 'credit' ? 'USD' : 'point(s)'} autoComplete="off" error={Number(value) > 0 ? undefined : 'Enter a number greater than 0'} /></div>
                 {method === 'price' ? <div className="re-narrow"><TextField label="for every" type="number" value="1" prefix="$" onChange={() => {}} autoComplete="off" /></div> : null}
               </InlineStack>
+              <Checkbox label={lockedLabel('Earn points from tax', ess)} checked={false} onChange={() => {}} disabled={starter} />
             </BlockStack>
           </Card>
           <Card>
@@ -171,16 +172,6 @@ function OldPlaceOrderForm({plan}) {
                 selected={[method]}
                 onChange={([v]) => setMethod(v)}
               />
-              <Text as="span" fontWeight="semibold">Rules</Text>
-              <BlockStack gap="200">
-                {OLD_RULES.map((r, i) => (
-                  <Card key={r.id} background="bg-surface-secondary">
-                    <InlineStack align="space-between" gap="200">
-                      <Text as="span">{`Rule ${i + 1}: ${r.summary}`}</Text>
-                    </InlineStack>
-                  </Card>
-                ))}
-              </BlockStack>
               <Checkbox label={lockedLabel('Earn points from tax', hasPlan(plan, 'essential') ? null : 'essential')} checked={false} onChange={() => {}} disabled={!hasPlan(plan, 'essential')} />
             </BlockStack>
           </Card>
@@ -231,7 +222,7 @@ export function PlaceOrderEdit() {
               : <NewPlaceOrderForm plan={plan} program={{title: 'Place an order', summary: 'Earn 1 point for every $1 spent', priority: 1}} />)}
           />
         ) : null}
-        {oldVersion ? <OldPlaceOrderForm plan={plan} /> : <NewPlaceOrderForm plan={plan} program={program} converted={program.converted} />}
+        {oldVersion ? <OldPlaceOrderForm plan={plan} /> : <NewPlaceOrderForm plan={plan} program={program} />}
       </BlockStack>
     </Page>
   );

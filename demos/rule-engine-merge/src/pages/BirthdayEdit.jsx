@@ -139,7 +139,8 @@ export function BirthdayEdit() {
     title: state === 'overflow' || state === 'worst' ? 'Celebrate a birthday with points, a discount and a free gift from Pomelo Park' : 'Celebrate a birthday',
     subtitle: 'Rewards for each of your customer birthday',
     primaryAction: {content: 'Save', onAction: () => notify('Saved program successfully'), disabled: starter || state === 'disabled' || state === 'loading' || state === 'error'},
-    secondaryActions: oldVersion ? [] : [{content: offNow ? 'Turn on' : 'Turn off', disabled: starter || offNow || state === 'disabled', onAction: () => notify('Program turned off')}],
+    // Starter: the whole page is locked, so there is no on/off button at all.
+    secondaryActions: oldVersion || starter ? [] : [{content: offNow ? 'Turn on' : 'Turn off', disabled: offNow || state === 'disabled', onAction: () => notify('Program turned off')}],
   };
   if (state === 'loading') return <Page {...page}><LoadingView rows={8} /></Page>;
   if (state === 'error') return <Page {...page}><ErrorView title="Couldn't load the Birthday program" onRetry={() => setState('default')}>Customers keep getting their birthday rewards.</ErrorView></Page>;

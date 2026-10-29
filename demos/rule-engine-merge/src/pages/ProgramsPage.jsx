@@ -102,13 +102,14 @@ export function ProgramsPage() {
               renderItem={(p) => {
                 const url = editUrl(p);
                 const lockedOff = p.offByPlan && belowAdvanced && p.event === 'place_order';
+                const planTag = p.needs ? p.needs : lockedOff ? 'advanced' : null;
                 return (
                   <ResourceItem id={p.id} onClick={() => (url ? navigate(url) : notYet())} accessibilityLabel={`Edit ${p.title}`}>
                     <InlineStack align="space-between" blockAlign="center" gap="300" wrap={false}>
                       <BlockStack gap="100">
                         <InlineStack gap="200" blockAlign="center">
                           <Text as="span" variant="bodyMd" fontWeight="semibold" breakWord>{p.title}</Text>
-                          {lockedOff ? <LockTag plan="advanced" /> : null}
+                          {planTag ? <LockTag plan={planTag} /> : null}
                         </InlineStack>
                         <Text as="p" tone="subdued" breakWord>{p.summary}</Text>
                       </BlockStack>
