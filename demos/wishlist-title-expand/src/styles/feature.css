@@ -1,0 +1,256 @@
+/* Frames around the widget: admin preview, storefront stage, reviewer bar (amber = not product UI). */
+
+.fx-preview {
+  display: flex;
+  justify-content: center;
+  padding: var(--p-space-400);
+  border-radius: var(--p-border-radius-300);
+  background: var(--p-color-bg-surface-secondary);
+}
+
+.fx-popup {
+  width: 380px;
+  max-width: 100%;
+}
+
+.fx-phone {
+  width: 390px;
+  max-width: 100%;
+  height: 760px;
+  max-height: calc(100vh - 140px);
+  min-height: 520px;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 8px solid #1c1c1c;
+  background: #fff;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 22%);
+  display: flex;
+}
+
+.fx-phone > .jw {
+  flex: 1;
+}
+
+.fx-preview .fx-phone {
+  height: 680px;
+}
+
+.fx-note {
+  padding: var(--p-space-300) var(--p-space-400);
+  border: 1px dashed var(--proto-amber-border);
+  border-radius: var(--p-border-radius-200);
+  background: var(--proto-amber-bg);
+  color: var(--proto-amber-text);
+  font-size: var(--p-font-size-325);
+}
+
+/* ---------------------------------------------------------------- storefront */
+
+.fx-store {
+  min-height: 100vh;
+  background: #eceef1;
+  font-family: 'Inter', sans-serif;
+}
+
+.fx-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--proto-amber-bg);
+  border-bottom: 1px solid var(--proto-amber-border);
+  color: var(--proto-amber-text);
+  padding: 10px 16px 12px;
+}
+
+.fx-bar__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  min-height: 32px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.fx-bar__head::-webkit-details-marker {
+  display: none;
+}
+
+.fx-bar__head strong::before {
+  content: '▸ ';
+}
+
+.fx-bar[open] .fx-bar__head strong::before {
+  content: '▾ ';
+}
+
+.fx-bar__now {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.fx-bar[open] .fx-bar__head {
+  margin-bottom: 8px;
+}
+
+.fx-bar__head a {
+  color: var(--proto-amber-text);
+  font-weight: 600;
+}
+
+.fx-bar__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.fx-seg {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.fx-seg legend {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+.fx-seg__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.fx-seg label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--proto-amber-border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.fx-seg label.is-on {
+  background: var(--proto-amber-text);
+  border-color: var(--proto-amber-text);
+  color: #fff;
+}
+
+.fx-seg input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fx-seg label:focus-within {
+  outline: 2px solid var(--proto-amber-text);
+  outline-offset: 2px;
+}
+
+.fx-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 96px;
+}
+
+.fx-stage--desktop {
+  min-height: 760px;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.fx-site {
+  position: absolute;
+  inset: 24px 24px 24px 24px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  opacity: 0.55;
+}
+
+.fx-site__nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.fx-site__logo {
+  font-weight: 800;
+  color: var(--fx-brand);
+}
+
+.fx-site__links {
+  color: #666;
+}
+
+.fx-site__hero {
+  height: 220px;
+  margin: 20px 24px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--fx-brand) 70%, #000), var(--fx-brand));
+}
+
+.fx-site__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 0 24px;
+}
+
+.fx-site__card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.fx-popup--float {
+  position: relative;
+  z-index: 1;
+  margin: 0 24px 0 0;
+}
+
+@media (max-width: 760px) {
+  .fx-stage {
+    padding: 12px 0 88px;
+  }
+
+  .fx-stage .fx-phone {
+    border-width: 0;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    min-height: 640px;
+  }
+
+  .fx-stage--desktop {
+    justify-content: center;
+    padding: 12px 8px 88px;
+  }
+
+  .fx-site {
+    display: none;
+  }
+
+  .fx-popup--float {
+    margin: 0;
+  }
+}
