@@ -2,7 +2,8 @@
 // The URL *search* (?option=a) is left alone so the prototype controls can own it.
 import React, {createContext, forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 
-export const DEFAULT_PATH = '/demo';
+// The review link opens straight on the screen being reviewed: Widget design › Extensions › Wishlist.
+export const DEFAULT_PATH = '/demo/widget-editor/extensions/wishlist';
 
 function readHash() {
   const raw = (window.location.hash || '').replace(/^#/, '');

@@ -2,7 +2,7 @@
 // Layout follows the live editor (29/10/2026) and packages/assets/src/pages/Branding/WidgetDesign: fullscreen modal
 // with a title bar (Save / Discard when there are changes), icon tab bar, settings menu, setting panel, live preview.
 // The Wishlist panel mirrors panels/ExtensionPanel.js; "Product names" is the new field this prototype proposes.
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Badge,
   BlockStack,
@@ -50,7 +50,7 @@ import {
   XIcon,
 } from '@shopify/polaris-icons';
 import {JoyIcon} from '../shell/icons.jsx';
-import {useNavigate} from '../shell/router.jsx';
+import {useNavigate, useRoute} from '../shell/router.jsx';
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView} from '../kit/StateView.jsx';
@@ -125,6 +125,21 @@ const ROW_STYLES = [
   {label: 'Up to two lines', value: 'two-lines', helpText: 'Names wrap to two lines, so shoppers read more without tapping. Remove moves to the corner and Add sits next to the price.'},
 ];
 
+// Deep links: #/demo/widget-editor/<tab>/<item>, e.g. /extensions/wishlist. Optional ?names=two|one opens that
+// "Product names" choice; ?state= works as everywhere else. The hash follows tab and item clicks so a copied URL
+// reopens the same place.
+const EDITOR_PATH = '/demo/widget-editor';
+const slugOf = (id) => id.replace(/^ext-/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const itemsOf = (tab) => MENU[tab].flatMap((g) => g.items);
+const NAMES = {one: 'one-line', two: 'two-lines'};
+
+function placeFromRoute(segments) {
+  const [, , tabSlug, itemSlug] = segments;
+  const tab = TABS.find((t) => t.id === tabSlug) ? tabSlug : 'settings';
+  const item = itemsOf(tab).find((i) => slugOf(i.id) === itemSlug) || itemsOf(tab)[0];
+  return {tab, active: item.id};
+}
+
 function Switch({checked, onChange, label, disabled}) {
   return (
     <button
@@ -196,7 +211,7 @@ function Sidebar({tab, setTab, active, setActive, onTab, toggles, setToggle, loc
               className={cx('ed-tabbar__tab', tab === t.id && 'is-active')}
               onClick={() => {
                 setTab(t.id);
-                onTab(MENU[t.id][0].items[0].id);
+                onTab(t.id, MENU[t.id][0].items[0].id);
               }}
             >
               <Icon source={t.icon} />
@@ -251,7 +266,7 @@ function OtherPanel({label}) {
       </Text>
       <Divider />
       <div className="fx-note" role="note">
-        Prototype note: this prototype covers Extensions › Wishlist only. Open the Extensions tab and pick Wishlist.
+        Prototype note: only Extensions › Wishlist is built in this prototype.
       </div>
     </BlockStack>
   );
@@ -483,25 +498,41 @@ function Preview({draft, enabled, state, notify}) {
 
 export function WidgetEditor() {
   const navigate = useNavigate();
+  const route = useRoute();
   const {notify, notYet} = useShell();
   const {state} = useScenario();
   const {settings, save} = useSettings();
   const notInstalled = state === 'disabled';
 
+  const linkedNames = NAMES[route.query.get('names')];
   const savedAll = useMemo(
-    () => ({provider: '', layout: settings.layout, rowStyle: settings.rowStyle, hover: 'swap', toggles: {wishlist: true, bundling: false, reviews: true, subscription: false, survey: false}}),
-    [settings],
+    () => ({provider: '', layout: settings.layout, rowStyle: linkedNames || settings.rowStyle, hover: 'swap', toggles: {wishlist: true, bundling: false, reviews: true, subscription: false, survey: false}}),
+    // Only the first render matters (draft/base are seeded once); later saves update base directly.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
   const [draft, setDraft] = useState(savedAll);
   const [base, setBase] = useState(savedAll);
-  const [tab, setTab] = useState('settings');
-  const [active, setActive] = useState('design');
+  const [place] = useState(() => placeFromRoute(route.segments));
+  const [tab, setTab] = useState(place.tab);
+  const [active, setActive] = useState(place.active);
   const [saving, setSaving] = useState(false);
   const [confirmClose, setConfirmClose] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(base);
-  const set = (patch) => setDraft((d) => ({...d, ...patch}));
+  // Keep the hash in step with what is open, keeping ?state= and writing ?names= for "Up to two lines".
+  const writeUrl = (nextTab, nextActive, rowStyle) => {
+    const query = new URLSearchParams(route.query);
+    if (rowStyle === 'two-lines') query.set('names', 'two');
+    else query.delete('names');
+    const qs = query.toString();
+    navigate(`${EDITOR_PATH}/${nextTab}/${slugOf(nextActive)}${qs ? `?${qs}` : ''}`, {replace: true});
+  };
+  const set = (patch) => {
+    setDraft((d) => ({...d, ...patch}));
+    if (patch.rowStyle) writeUrl(tab, active, patch.rowStyle);
+  };
   const setToggle = (key, v) => setDraft((d) => ({...d, toggles: {...d.toggles, [key]: v}}));
   const enabled = draft.toggles.wishlist && !notInstalled;
   const close = () => navigate('/demo');
@@ -509,10 +540,25 @@ export function WidgetEditor() {
   // Narrow screens stack menu, panel and preview (prototype adaptation), so bring the picked panel into view.
   const pick = (id) => {
     setActive(id);
+    writeUrl(tab, id, draft.rowStyle);
     if (window.matchMedia('(max-width: 899.98px)').matches) {
       window.requestAnimationFrame(() => contentRef.current?.scrollIntoView({block: 'start'}));
     }
   };
+
+  const openTab = (nextTab, firstId) => {
+    setActive(firstId);
+    writeUrl(nextTab, firstId, draft.rowStyle);
+  };
+
+  // Opened straight on Wishlist (the review link): bring Display settings, with "Product names", into view.
+  useEffect(() => {
+    if (place.active !== 'ext-wishlist') return;
+    window.requestAnimationFrame(() => {
+      const heading = [...(contentRef.current?.querySelectorAll('h3') || [])].find((h) => h.textContent.trim() === 'Display settings');
+      heading?.scrollIntoView({block: 'start'});
+    });
+  }, [place]);
 
   const onSave = () => {
     setSaving(true);
@@ -554,7 +600,7 @@ export function WidgetEditor() {
         />
         <div className={cx('ed-body', collapsed && 'is-collapsed')}>
           {collapsed ? null : (
-            <Sidebar tab={tab} setTab={setTab} active={active} setActive={pick} onTab={setActive} toggles={draft.toggles} setToggle={setToggle} lockWishlist={notInstalled} />
+            <Sidebar tab={tab} setTab={setTab} active={active} setActive={pick} onTab={openTab} toggles={draft.toggles} setToggle={setToggle} lockWishlist={notInstalled} />
           )}
           <button type="button" className="ed-collapse" aria-label={collapsed ? 'Show menu' : 'Hide menu'} onClick={() => setCollapsed((v) => !v)}>
             {collapsed ? '›' : '‹'}

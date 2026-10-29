@@ -14,7 +14,8 @@ import {Storefront} from './pages/Storefront.jsx';
 import {KitPage} from './pages/KitPage.jsx';
 import {DEMO} from './demo.config.js';
 
-// Routes: #/demo (admin: On-site content) · #/demo/widget-editor (Widget design editor, opened from Unified widget › Setup)
+// Routes: #/demo (admin: On-site content) · #/demo/widget-editor[/<tab>/<item>][?names=two] (Widget design editor,
+// opened from Unified widget › Setup; the default link opens /extensions/wishlist)
 // · #/demo/storefront (shopper view, no admin chrome) · #/kit (components).
 function NotFound() {
   return (
@@ -36,7 +37,7 @@ function Screen() {
   if (segments[0] === 'demo' && segments[1] === 'storefront' && segments.length === 2) return <Storefront />;
   let page = <NotFound />;
   if (segments[0] === 'demo' && segments.length === 1) page = <OnsiteContent />;
-  else if (segments[0] === 'demo' && segments[1] === 'widget-editor' && segments.length === 2) {
+  else if (segments[0] === 'demo' && segments[1] === 'widget-editor' && segments.length <= 4) {
     return (
       <>
         <AdminChrome>
