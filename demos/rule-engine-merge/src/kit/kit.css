@@ -1,0 +1,269 @@
+/* Starter kit pieces Polaris does not ship (drawer, empty art, prototype panel). Polaris tokens only, plus tokens.css. */
+
+/* ---------------------------------------------------------------- drawer */
+.kit-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+}
+.kit-drawer__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--p-color-backdrop-bg);
+}
+.kit-drawer__panel {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-600);
+  outline: none;
+  animation: kit-drawer-in 160ms ease-out;
+}
+@keyframes kit-drawer-in {
+  from {transform: translateX(24px); opacity: 0;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-drawer__panel {animation: none;}
+}
+.kit-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-space-200);
+  padding: var(--p-space-400);
+  border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+.kit-drawer__close {
+  display: inline-flex;
+  padding: var(--p-space-100);
+  border: 0;
+  border-radius: var(--p-border-radius-200);
+  background: transparent;
+  cursor: pointer;
+}
+.kit-drawer__close:hover {background: var(--p-color-bg-fill-transparent-hover);}
+.kit-drawer__close:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus);}
+.kit-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--p-space-400);
+  overflow-wrap: anywhere;
+}
+.kit-drawer__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--p-space-200);
+  padding: var(--p-space-400);
+  border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+
+/* ---------------------------------------------------------------- empty state */
+.kit-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--p-space-400);
+  padding: var(--p-space-1200) var(--p-space-400);
+  text-align: center;
+}
+.kit-empty__art {display: block;}
+
+/* ---------------------------------------------------------------- long text never pushes the layout sideways */
+.kit-wrap {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.Polaris-IndexTable__TableCell .kit-wrap {
+  display: block;
+  max-width: 420px;
+  white-space: normal;
+}
+
+/* ---------------------------------------------------------------- token swatches on the components page */
+.kit-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--p-space-300);
+}
+.kit-swatch {
+  display: flex;
+  align-items: center;
+  gap: var(--p-space-200);
+  min-width: 0;
+}
+.kit-swatch__chip {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--p-border-radius-200);
+  border: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+.kit-swatch code {
+  font-size: var(--p-font-size-275);
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------- prototype panel (amber = not product UI) */
+/* Bottom-right, inside the reviewer lane (chrome.css), clear of the admin nav's Settings item. z-index sits under the
+   phone nav scrim (450) and drawer (500), so an open menu is never covered by it. */
+.kit-proto {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 440;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  font-family: var(--p-font-family-sans);
+}
+.kit-proto__toggle {
+  position: relative;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border: 1px solid var(--proto-amber-border);
+  border-radius: 999px;
+  background: var(--proto-amber-bg);
+  color: var(--proto-amber-text);
+  font: 600 13px/20px var(--p-font-family-sans);
+  cursor: pointer;
+  box-shadow: var(--p-shadow-300);
+}
+.kit-proto__toggle:hover {filter: brightness(0.97);}
+.kit-proto__dot {display: none;}
+.kit-proto__toggle:focus-visible,
+.kit-proto__link:focus-visible,
+.kit-proto__state input:focus-visible {
+  outline: 2px solid var(--p-color-border-focus);
+  outline-offset: 2px;
+}
+.kit-proto__panel {
+  width: min(300px, calc(100vw - 32px));
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid var(--proto-amber-border);
+  border-radius: 12px;
+  background: var(--proto-amber-bg);
+  color: var(--proto-amber-text);
+  box-shadow: var(--p-shadow-600);
+}
+.kit-proto__title {
+  margin: 0 0 8px;
+  font: 600 12px/16px var(--p-font-family-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.kit-proto__states {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.kit-proto__states legend {
+  margin-bottom: 4px;
+  font: 600 13px/20px var(--p-font-family-sans);
+}
+.kit-proto__state {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.kit-proto__state span {display: flex; flex-direction: column;}
+.kit-proto__state strong {font: 600 13px/18px var(--p-font-family-sans);}
+.kit-proto__state small {font: 400 12px/16px var(--p-font-family-sans);}
+.kit-proto__link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--proto-amber-text);
+  font: 600 13px/20px var(--p-font-family-sans);
+}
+
+/* Phones: a small chip that keeps the word, in the reviewer lane under the product viewport (chrome.css). */
+@media (max-width: 767.98px) {
+  .kit-proto {
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .kit-proto__toggle {
+    padding: 4px 10px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .kit-proto__current {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .kit-proto__dot {
+    display: block;
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--p-color-bg-surface);
+    background: var(--proto-amber-border);
+  }
+}
+
+/* ---------------------------------------------------------------- search row above a table */
+.kit-search {
+  padding: var(--p-space-200) var(--p-space-300);
+  border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+
+/* ---------------------------------------------------------------- plain lists inside cards */
+.kit-summary,
+.kit-activity {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-200);
+}
+.kit-summary li {
+  padding-left: var(--p-space-300);
+  border-left: var(--p-border-width-050) solid var(--p-color-border-secondary);
+}
+.kit-activity li {
+  padding-bottom: var(--p-space-300);
+  border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+.kit-activity li:last-child {border-bottom: 0;}
+
+/* ---------------------------------------------------------------- stacked table row on phones */
+.kit-row-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-100);
+  padding: var(--p-space-300) var(--p-space-400);
+  min-width: 0;
+}
+
+/* rule-engine-merge: plan tag on a locked control (same look as the app's "Advanced" tag), switch banner close button */
+.re-locktag {
+  display: inline-flex; align-items: center; border: 0; cursor: pointer;
+  padding: 0 var(--p-space-200); border-radius: var(--p-border-radius-200);
+  background: var(--p-color-bg-fill-info-secondary); color: var(--p-color-text-info);
+  font: inherit; font-size: var(--p-font-size-275); font-weight: var(--p-font-weight-medium); line-height: var(--p-font-line-height-400);
+  white-space: nowrap; pointer-events: auto;
+}
+.re-locktag:hover {filter: brightness(0.96);}
+.re-locktag:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: var(--p-space-050);}
+.Polaris-Choice--disabled .re-locktag, .Polaris-Label .re-locktag {pointer-events: auto; cursor: pointer;}
+.re-switch-banner {position: relative;}
+.re-switch-banner__close {position: absolute; top: var(--p-space-150); right: var(--p-space-150);}
+.re-preview {pointer-events: none;}
+.re-narrow {width: 12rem; max-width: 100%;}
+.re-locked {opacity: 0.6; pointer-events: none;}
