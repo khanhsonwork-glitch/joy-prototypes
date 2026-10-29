@@ -78,8 +78,14 @@ export function friendDiscount(p, subtotal) {
   return Math.min(raw, subtotal);
 }
 
-/** What each side gets for a first-order subtotal (before the referral discount). */
+/**
+ * What each side gets for a cart subtotal (after other discounts, before the referral code).
+ * The referrer side counts what Joy already counts for "Points based on order value": the order subtotal after
+ * every discount, the referral code included (Alex 29/10 17:56). The friend's code can only look at the cart before itself.
+ */
 export function outcome(p, subtotal) {
+  const discount = friendDiscount(p, subtotal);
+  const counted = Math.round(Math.max(subtotal - discount, 0) * 100) / 100;
   const fTier = friendTiered(p) ? matchTier(friendTiers(p), subtotal) : null;
   const friend = friendTiered(p)
     ? (fTier ? friendValueText(p.friendMethod, fTier.value) : null)
@@ -89,12 +95,11 @@ export function outcome(p, subtotal) {
   let tier = null;
   let referrer;
   if (referrerTiered(p)) {
-    tier = matchTier(referrerTiers(p), subtotal);
+    tier = matchTier(referrerTiers(p), counted);
     referrer = tier ? pointsText(tier.value) : null; // below tier 1: the referral stays pending
   } else if (p.referrerVipRates) referrer = "their VIP tier's reward";
   else if (p.referrerMethod === 'point_order_value' || p.referrerMethod === 'store_credit_order_value') {
-    // These two methods count the subtotal after every discount, the referral discount included (as today).
-    const paid = Math.max(subtotal - friendDiscount(p, subtotal), 0);
+    const paid = counted;
     const rate = Number(p.referrerMethod === 'point_order_value' ? p.referrerRate : p.referrerValue) || 0;
     const raw = Math.floor(paid * rate);
     const cap = p.referrerMaxOn ? Number(p.referrerMax) || 0 : 0;
@@ -102,7 +107,7 @@ export function outcome(p, subtotal) {
       ? pointsText(cap && raw > cap ? cap : raw)
       : `${money(Math.round(paid * rate) / 100)} store credit`;
   } else referrer = referrerValueText(p.referrerMethod, p.referrerValue);
-  return {tier, fTier, friend, referrer, min, qualifies: !(min !== null && subtotal < min)};
+  return {tier, fTier, friend, referrer, min, discount, counted, qualifies: !(min !== null && counted < min)};
 }
 
 /**
@@ -201,4 +206,11 @@ export function examples(tiers) {
   };
   const idx = valid.length > 1 ? [0, valid.length - 1] : [0];
   return idx.map((i) => ({order: pick(i), tier: valid[i], index: tiers.indexOf(valid[i])}));
+}
+
+/** The cart amount (before the referral code) whose counted amount is `target`; iterates because a % code depends on the cart. */
+export function orderFor(p, target) {
+  let order = target;
+  for (let i = 0; i < 4; i += 1) order = Math.round((target + friendDiscount(p, order)) * 100) / 100;
+  return order;
 }

@@ -7,7 +7,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {GRANDFATHERED, referenceProblems, scanReferences} from '../scripts/check-reference.mjs';
+import {GRANDFATHERED, referenceProblems, scanReferences, touchedDemos} from '../scripts/check-reference.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let failed = 0, total = 0;
@@ -68,6 +68,28 @@ check('an old demo (before the gate) only warns', () => {
   demo('points-giveaway', null);
   const {errors, warnings} = scanReferences({features: [card('points-giveaway', 'https://old.example.com')]}, tmp);
   assert.deepEqual(errors, []); assert(warnings.length >= 2, warnings.join('; '));
+});
+
+check('an old demo that this branch changes must pass the full gate (FR86 being redone is not exempt)', () => {
+  demo('referral-order-tiers', null);
+  const cards = {features: [card('referral-order-tiers', '/loyalty/referral-order-tiers/#/demo/referrer')]};
+  assert.deepEqual(scanReferences(cards, tmp).errors, [], 'untouched → only a warning');
+  const {errors} = scanReferences(cards, tmp, new Set(['referral-order-tiers']));
+  assert(errors.some(e => /thiếu REFERENCE\.md/.test(e) && /nhánh này sửa nó/.test(e)), errors.join('; '));
+});
+
+check('a new card still on the starter landing (#/demo) fails; #/demo/<screen> passes', () => {
+  demo('birthday-reward', FILLED);
+  assert(scanReferences({features: [card('birthday-reward', '/loyalty/birthday-reward/#/demo')]}, tmp).errors.some(e => /trang đầu của starter/.test(e)));
+  assert.deepEqual(scanReferences({features: [card('birthday-reward', '/loyalty/birthday-reward/#/demo/edit')]}, tmp).errors, []);
+});
+
+check('"chưa có ảnh" is not a filled comparison image', () => {
+  assert(referenceProblems(FILLED.replace(/^Ảnh so sánh:.*$/m, 'Ảnh so sánh: chưa có ảnh staging'), tmp).some(p => /Ảnh so sánh/.test(p)));
+});
+
+check('touchedDemos reads this branch (a set; empty when git cannot tell)', () => {
+  assert(touchedDemos(tmp) instanceof Set);
 });
 
 check('the real repo passes the gate (old demos may warn, nothing new is red)', () => {
