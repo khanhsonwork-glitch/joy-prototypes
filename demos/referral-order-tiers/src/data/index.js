@@ -64,6 +64,8 @@ export const BASE_PROGRAM = {
   referrerMethod: 'point',
   referrerValue: 100,
   referrerVipRates: false,
+  referrerMaxOn: true,
+  referrerMax: 200,
   tiersOn: false,
   tierFriend: true,
   tierReferrer: true,

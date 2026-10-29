@@ -214,7 +214,7 @@ function TiersCard({program, setProgram, show, check, locked}) {
                 />
               </InlineStack>
               {show && check.general ? <Text as="p" tone="critical">{check.general}</Text> : null}
-              {!fCan && !rCan ? <Text as="p" variant="bodySm" tone="subdued">Neither reward can change by tier with the current reward methods. Tier 1 still sets the minimum first order.</Text> : null}
+              {!friendTiered(program) && !referrerTiered(program) ? <Text as="p" variant="bodySm" tone="subdued">No reward is set by tier. Tier 1 still sets the minimum first order.</Text> : null}
             </BlockStack>
             <Divider />
             {sorted.length ? (

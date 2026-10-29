@@ -68,8 +68,10 @@ export function outcome(p, subtotal) {
     // Amount still comes from the order subtotal after every discount, the referral discount included (as today).
     const paid = Math.max(subtotal - friendDiscount(p, subtotal), 0);
     const rate = Number(p.referrerValue) || 0;
+    const raw = Math.floor(paid * rate);
+    const cap = p.referrerMaxOn ? Number(p.referrerMax) || 0 : 0;
     referrer = p.referrerMethod === 'point_order_value'
-      ? `${num(Math.floor(paid * rate))} points (${num(rate)} per $1 on ${money(paid)} after the referral discount)`
+      ? `${num(cap && raw > cap ? cap : raw)} points (${num(rate)} per $1 on ${money(paid)} after the referral discount${cap && raw > cap ? `, ${num(raw)} capped at ${num(cap)}` : ''})`
       : `${money(Math.round(paid * rate) / 100)} store credit (${num(rate)}% of ${money(paid)})`;
   } else referrer = referrerValueText(p.referrerMethod, p.referrerValue);
   return {tier, friend, referrer, min, qualifies: !(p.tiersOn && min !== null && subtotal < min)};
@@ -97,8 +99,7 @@ export function checkTiers(p) {
   let general = null;
   const fCan = TIERABLE_FRIEND.includes(p.friendMethod);
   const rCan = TIERABLE_REFERRER.includes(p.referrerMethod) && !p.referrerVipRates;
-  if ((fCan || rCan) && !fT && !rT) general = 'Choose at least one reward to set by tier';
-  else if (!p.tiers.length) general = 'Add at least one tier, or turn order value tiers off';
+  if (!p.tiers.length) general = 'Add at least one tier, or turn order value tiers off';
   const seen = new Map();
   p.tiers.forEach((t) => {
     const e = {};
@@ -156,7 +157,8 @@ export function referrerSummary(p) {
     const vals = sortTiers(p.tiers).map((t) => n(t.referrer)).filter((v) => v > 0);
     return `Up to ${referrerValueText(p.referrerMethod, Math.max(...vals, 0))} · ${p.tiers.length} ${p.tiers.length === 1 ? 'tier' : 'tiers'}`;
   }
-  return referrerValueText(p.referrerMethod, p.referrerValue);
+  const capped = p.referrerMethod === 'point_order_value' && p.referrerMaxOn && Number(p.referrerMax) > 0;
+  return `${referrerValueText(p.referrerMethod, p.referrerValue)}${capped ? `, up to ${num(p.referrerMax)} points` : ''}`;
 }
 
 /** One line per tier, for the storefront: "Orders from $50 · $5 off for your friend · 100 points for you". */

@@ -200,6 +200,12 @@ export function ReferrerRewards() {
                 disabled={locked || vipBlocked}
                 helpText={vipBlocked ? <span>Order value tiers set this reward. To use VIP tier rates instead, untick "Referrer's reward" in <Button variant="plain" url="/demo">Order value tiers</Button>.</span> : undefined}
               />
+              {form.referrerMethod === 'point_order_value' && !form.referrerVipRates ? (
+                <BlockStack gap="200">
+                  <Checkbox label="Set a maximum points per referral" helpText="Cap the points a referrer can earn from a single referral, regardless of the order value." checked={form.referrerMaxOn} onChange={(v) => setForm({...form, referrerMaxOn: v})} disabled={locked} />
+                  {form.referrerMaxOn ? <TextField label="Set a maximum points per referral" labelHidden type="number" suffix="points" value={String(form.referrerMax)} onChange={(v) => setForm({...form, referrerMax: v})} disabled={locked} autoComplete="off" /> : null}
+                </BlockStack>
+              ) : null}
               {form.referrerVipRates ? (
                 <BlockStack gap="300">
                   {VIP_TIERS.map((t, i) => (
