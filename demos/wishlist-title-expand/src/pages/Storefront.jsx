@@ -1,5 +1,5 @@
 // What the shopper sees: the storefront with the Joy widget open on the Wishlist tab.
-// The amber bar is for reviewers only (shop, name setting, device, arrow look); it is not part of the product.
+// The amber bar is for reviewers only (shop, name setting, device); it is not part of the product.
 import React, {useState} from 'react';
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
@@ -7,12 +7,6 @@ import {useSettings} from '../state/settings.jsx';
 import {SHOPS} from '../data/wishlist.js';
 import {WishlistWidget} from '../widget/WishlistWidget.jsx';
 import {useWishlistItems} from '../widget/useWishlistItems.js';
-
-const LOOKS = [
-  {value: 'tint', label: 'Tinted circle (proposed)'},
-  {value: 'outline', label: 'Outline circle'},
-  {value: 'text', label: 'Word “More”'},
-];
 
 function Segmented({label, value, options, onChange}) {
   return (
@@ -32,7 +26,7 @@ function Segmented({label, value, options, onChange}) {
 
 function readQuery() {
   const q = new URLSearchParams(window.location.hash.split('?').slice(1).join('?'));
-  return {shop: q.get('shop'), rows: q.get('rows'), device: q.get('device'), look: q.get('look')};
+  return {shop: q.get('shop'), rows: q.get('rows'), device: q.get('device')};
 }
 
 export function Storefront() {
@@ -43,7 +37,6 @@ export function Storefront() {
   const [shopId, setShopId] = useState(SHOPS[q.shop] ? q.shop : 'moto');
   const [rowStyle, setRowStyle] = useState(['one-line', 'two-lines'].includes(q.rows) ? q.rows : settings.rowStyle);
   const [device, setDevice] = useState(['mobile', 'desktop'].includes(q.device) ? q.device : window.innerWidth < 760 ? 'mobile' : 'desktop');
-  const [look, setLook] = useState(LOOKS.some((l) => l.value === q.look) ? q.look : 'tint');
   const {items, status, remove, reset} = useWishlistItems(shopId, state);
   const shop = SHOPS[shopId];
 
@@ -75,7 +68,6 @@ export function Storefront() {
               {value: 'desktop', label: 'Desktop popup'},
             ]}
           />
-          {rowStyle === 'one-line' ? <Segmented label="Arrow look" value={look} onChange={setLook} options={LOOKS} /> : null}
         </div>
       </details>
 
@@ -103,7 +95,6 @@ export function Storefront() {
             items={items}
             status={status}
             rowStyle={rowStyle}
-            look={look}
             device={device}
             onNotify={(t) => notify(t)}
             onRetry={reset}

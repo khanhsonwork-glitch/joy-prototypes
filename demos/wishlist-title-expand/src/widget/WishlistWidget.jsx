@@ -38,18 +38,17 @@ function Heart() {
   );
 }
 
-/** The arrow next to a cut name. Three looks, picked from the reviewer bar; 'tint' is the proposal. */
-function ExpandButton({open, onToggle, look, controls, name}) {
+/** The arrow next to a cut name: brand-coloured chevron, no background, 18px icon in a 32×32 touch area. */
+function ExpandButton({open, onToggle, controls, name}) {
   return (
     <button
       type="button"
-      className={cx('jw-expand', `jw-expand--${look}`, open && 'is-open')}
+      className={cx('jw-expand', open && 'is-open')}
       aria-expanded={open}
       aria-controls={controls}
       aria-label={open ? `Show less of ${name}` : `Show full name: ${name}`}
       onClick={onToggle}
     >
-      {look === 'text' ? <span className="jw-expand__word">{open ? 'Less' : 'More'}</span> : null}
       <Chevron />
     </button>
   );
@@ -96,7 +95,7 @@ function AddButton({item, added, onAdd, compact}) {
   );
 }
 
-function Row({item, rowStyle, look, open, onToggle, added, onAdd, onRemove, onOpenProduct}) {
+function Row({item, rowStyle, open, onToggle, added, onAdd, onRemove, onOpenProduct}) {
   const nameRef = useRef(null);
   // Measure the name while it is closed; once open it stays "cut" so the arrow is there to close it again.
   const cut = useIsCut(nameRef, [item.title, rowStyle, open]);
@@ -153,7 +152,7 @@ function Row({item, rowStyle, look, open, onToggle, added, onAdd, onRemove, onOp
       <div className="jw-info">
         <div className="jw-nameline">
           {name}
-          {showArrow ? <ExpandButton open={open} onToggle={onToggle} look={look} controls={nameId} name={item.title} /> : null}
+          {showArrow ? <ExpandButton open={open} onToggle={onToggle} controls={nameId} name={item.title} /> : null}
         </div>
         {variant}
         <Prices item={item} />
@@ -184,10 +183,10 @@ function Skeleton() {
 }
 
 /**
- * items: wishlist rows · rowStyle: 'one-line' | 'two-lines' · look: arrow style · device: 'mobile' | 'desktop'
+ * items: wishlist rows · rowStyle: 'one-line' | 'two-lines' · device: 'mobile' | 'desktop'
  * status: 'ready' | 'loading' | 'error' · onNotify(text): toast from the host page · onClose: header × (optional)
  */
-export function WishlistWidget({shop, items, rowStyle, look = 'tint', device, status = 'ready', onNotify, onRetry, onRemove, onClose}) {
+export function WishlistWidget({shop, items, rowStyle, device, status = 'ready', onNotify, onRetry, onRemove, onClose}) {
   const [openIds, setOpenIds] = useState(() => new Set());
   const [addedIds, setAddedIds] = useState(() => new Set());
 
@@ -239,7 +238,6 @@ export function WishlistWidget({shop, items, rowStyle, look = 'tint', device, st
               key={item.id}
               item={item}
               rowStyle={rowStyle}
-              look={look}
               open={openIds.has(item.id)}
               onToggle={() => toggle(item.id)}
               added={addedIds.has(item.id)}
