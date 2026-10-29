@@ -330,7 +330,7 @@ export function ReferralProgram() {
   return (
     <Page {...page}>
       <Layout>
-        {state === 'worst' && !synced ? <Layout.Section><SyncBanner onRetry={() => {setSynced(true); onSave();}} /></Layout.Section> : null}
+        {state === 'worst' && !synced && !check.count ? <Layout.Section><SyncBanner onRetry={() => {setSynced(true); onSave();}} /></Layout.Section> : null}
         {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
         {touched && check.count ? (
           <Layout.Section>
