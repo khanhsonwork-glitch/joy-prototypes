@@ -186,7 +186,7 @@ export function Storefront() {
   return (
     <div className="sf">
       <header className="sf-store">
-        <a href="#/demo" className="sf-back">← Back to admin</a>
+        <a href="#/demo?type=referral" className="sf-back">← Back to admin</a>
         <span className="sf-store__name">{STORE.name}</span>
         <span className="sf-store__nav" aria-hidden="true">Shop · Sets · About</span>
       </header>

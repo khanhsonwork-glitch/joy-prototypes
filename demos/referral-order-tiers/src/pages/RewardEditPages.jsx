@@ -39,7 +39,7 @@ function TierValues({form, setForm, side, touched, locked}) {
             />
           </InlineStack>
         ))}
-        <Text as="p" variant="bodySm" tone="subdued">Change order thresholds and add or remove tiers in <Button url="/demo" variant="plain">Order value tiers</Button>.</Text>
+        <Text as="p" variant="bodySm" tone="subdued">Change order thresholds and add or remove tiers in <Button url="/demo?type=referral" variant="plain">Order value tiers</Button>.</Text>
       </BlockStack>
     </Box>
   );
@@ -87,7 +87,7 @@ export function RefereeRewards() {
     return notify('Saved program successfully');
   };
   const page = {
-    backAction: {content: 'Referral program', url: '/demo'},
+    backAction: {content: 'Reward programs', url: '/demo?type=referral'},
     title: 'Rewards for referees',
     primaryAction: {content: 'Save', onAction: onSave, disabled: locked || !dirty || state === 'loading' || state === 'error'},
   };
@@ -196,7 +196,7 @@ export function ReferrerRewards() {
     return notify('Saved program successfully');
   };
   const page = {
-    backAction: {content: 'Referral program', url: '/demo'},
+    backAction: {content: 'Reward programs', url: '/demo?type=referral'},
     title: 'Rewards for referrers',
     primaryAction: {content: 'Save', onAction: onSave, disabled: locked || !dirty || state === 'loading' || state === 'error'},
   };
