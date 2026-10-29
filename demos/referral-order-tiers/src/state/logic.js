@@ -64,7 +64,14 @@ export function outcome(p, subtotal) {
   let referrer;
   if (p.tiersOn && (rT || fT) && min !== null && subtotal < min) referrer = null; // below the first tier: nobody is rewarded yet
   else if (rT) referrer = tier ? referrerValueText(p.referrerMethod, tier.referrer) : null;
-  else referrer = referrerValueText(p.referrerMethod, p.referrerValue);
+  else if (p.referrerMethod === 'point_order_value' || p.referrerMethod === 'store_credit_order_value') {
+    // Amount still comes from the order subtotal after every discount, the referral discount included (as today).
+    const paid = Math.max(subtotal - friendDiscount(p, subtotal), 0);
+    const rate = Number(p.referrerValue) || 0;
+    referrer = p.referrerMethod === 'point_order_value'
+      ? `${num(Math.floor(paid * rate))} points (${num(rate)} per $1 on ${money(paid)} after the referral discount)`
+      : `${money(Math.round(paid * rate) / 100)} store credit (${num(rate)}% of ${money(paid)})`;
+  } else referrer = referrerValueText(p.referrerMethod, p.referrerValue);
   return {tier, friend, referrer, min, qualifies: !(p.tiersOn && min !== null && subtotal < min)};
 }
 
@@ -97,12 +104,14 @@ export function checkTiers(p) {
     const e = {};
     const min = n(t.min);
     if (!(min > 0)) e.min = 'Enter an amount above 0';
+    else if (Math.round(min * 100) !== min * 100) e.min = 'Use up to 2 decimals';
     else if (seen.has(min)) e.min = 'Each tier needs a different starting amount';
     else seen.set(min, t.id);
     if (fT) {
       const f = n(t.friend);
       if (!(f > 0)) e.friend = 'Enter a value above 0';
       else if (p.friendMethod === 'percentage' && f > 100) e.friend = 'A percentage can be 100 at most';
+      else if (p.friendMethod === 'amount' && Math.round(f * 100) !== f * 100) e.friend = 'Use up to 2 decimals';
     }
     if (rT) {
       const r = n(t.referrer);

@@ -139,7 +139,7 @@ function TryOrder({program}) {
             </Text>
           ) : (
             <Text as="p">
-              A {money2(subtotal)} first order is below {money(res.min)}: <b>nobody is rewarded</b> and the referral stays pending until the friend places an order from {money(res.min)}.
+              A {money2(subtotal)} first order is below {money(res.min)}: <b>no tier reward</b>, and the referral stays pending until the friend places an order from {money(res.min)}.
             </Text>
           )}
         </div>
@@ -184,6 +184,9 @@ function TiersCard({program, setProgram, show, check, locked}) {
           onChange={turnOn}
           disabled={locked}
         />
+        {!program.tiersOn && program.tiers.length ? (
+          <Text as="p" variant="bodySm" tone="subdued">Your tiers are kept. 38 unused friend codes keep their tiers until they're used or expire.</Text>
+        ) : null}
         {program.tiersOn ? (
           <>
             <BlockStack gap="200">
@@ -274,6 +277,7 @@ export function ReferralProgram() {
   const [program, setProgram] = useState(saved);
   const [touched, setTouched] = useState(state === 'worst');
   const [saving, setSaving] = useState(false);
+  const [synced, setSynced] = useState(false);
   useEffect(() => {setProgram(saved); setTouched(state === 'worst');}, [saved, state]);
   const locked = state === 'disabled';
   const check = useMemo(() => checkTiers(program), [program]);
@@ -325,7 +329,7 @@ export function ReferralProgram() {
   return (
     <Page {...page}>
       <Layout>
-        {state === 'worst' ? <Layout.Section><SyncBanner /></Layout.Section> : null}
+        {state === 'worst' && !synced ? <Layout.Section><SyncBanner onRetry={() => {setSynced(true); notify('Friend tier discounts updated at checkout');}} /></Layout.Section> : null}
         {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
         {touched && check.count ? (
           <Layout.Section>

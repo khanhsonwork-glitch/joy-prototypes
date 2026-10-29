@@ -38,10 +38,10 @@ export function PlanBanner({onViewPlans}) {
   );
 }
 
-export function SyncBanner() {
+export function SyncBanner({onRetry}) {
   return (
-    <Banner tone="critical" title="Friend tier discounts couldn't update at checkout">
-      <p>Friends still get the discounts saved before 2:14 PM. Save again to retry.</p>
+    <Banner tone="critical" title="Friend tier discounts couldn't update at checkout" action={{content: 'Try again', onAction: onRetry}}>
+      <p>Your tiers are saved. Until checkout updates, friends still get the tiers saved before 2:14 PM. Joy retries every 15 minutes.</p>
     </Banner>
   );
 }
