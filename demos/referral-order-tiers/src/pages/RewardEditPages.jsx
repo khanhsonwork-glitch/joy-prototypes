@@ -212,7 +212,7 @@ export function ReferrerRewards() {
           <Card>
             <BlockStack gap="400">
               <Text as="span" variant="headingMd">Reward settings</Text>
-              <Select label="Reward method" options={REFERRER_METHODS} value={form.referrerMethod} onChange={(v) => setForm({...form, referrerMethod: v, referrerValue: v === 'point_order_value' ? '2' : v === 'store_credit_order_value' ? '10' : ['point_order_value', 'store_credit_order_value'].includes(form.referrerMethod) ? '100' : form.referrerValue})} disabled={locked} />
+              <Select label="Reward method" options={REFERRER_METHODS} value={form.referrerMethod} onChange={(v) => setForm({...form, referrerMethod: v, referrerValue: ['point_order_value', 'store_credit_order_value'].includes(v) && form.tiersOn ? '' : v === 'point_order_value' ? '2' : v === 'store_credit_order_value' ? '10' : ['point_order_value', 'store_credit_order_value'].includes(form.referrerMethod) ? '100' : form.referrerValue})} disabled={locked} />
               {form.tiersOn && orderValueMethod && firstTier ? (
                 <Banner tone="info">
                   <p>{`This method already grows with the order, so it isn't set by tier. Referrers earn it only for first orders from ${money(firstTier.min)}, your first tier.`}</p>

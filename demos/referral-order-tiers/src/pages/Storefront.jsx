@@ -104,9 +104,8 @@ function ClaimView() {
   return (
     <div className="sf-popup" role="dialog" aria-label="Your friend sent you a gift">
       <p className="sf-popup__eyebrow">Ava sent you a gift</p>
-      <h2 className="sf-popup__title">{`Get ${friendHead.replace(/^Up to/, 'up to')}`}</h2>
+      <h2 className="sf-popup__title">{`Get ${friendHead.replace(/^Up to/, 'up to').replace(' your first order', '')}${(lines.length ? first : Number(program.friendMinOrder) > 0) ? ` an order of ${money(lines.length ? first.min : program.friendMinOrder)} or more` : ''}`}</h2>
       <TierTable lines={lines} who="friend" />
-      {!lines.length && Number(program.friendMinOrder) > 0 ? <p className="sf-note">{`On orders from ${money(program.friendMinOrder)}.`}</p> : null}
       {claimed ? (
         <div className="sf-code" aria-live="polite">
           <p>Your code</p>
