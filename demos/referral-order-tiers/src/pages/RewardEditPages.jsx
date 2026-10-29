@@ -39,7 +39,7 @@ function TierValues({form, setForm, side, touched, locked}) {
             />
           </InlineStack>
         ))}
-        <Text as="p" variant="bodySm" tone="subdued">Change amounts and add or remove tiers in <Button url="/demo" variant="plain">Order value tiers</Button>.</Text>
+        <Text as="p" variant="bodySm" tone="subdued">Change order thresholds and add or remove tiers in <Button url="/demo" variant="plain">Order value tiers</Button>.</Text>
       </BlockStack>
     </Box>
   );
