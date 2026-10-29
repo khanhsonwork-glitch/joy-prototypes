@@ -5,7 +5,10 @@ import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {useProgram} from '../state/program.jsx';
 import {MY_REFERRALS, STORE, money, money2} from '../data/index.js';
-import {friendDiscount, friendSummary, outcome, referrerSummary, sortTiers, tierLines} from '../state/logic.js';
+import {
+  friendDiscount, friendHeadline, friendLinked, friendMin, friendTiered, friendTiers, friendValueText, outcome, pointsText, referrerHeadline,
+  referrerMin, referrerTiered, referrerTiers,
+} from '../state/logic.js';
 
 const VIEWS = [
   {id: 'widget', label: "Referrer's widget"},
@@ -21,23 +24,31 @@ const CART_PRESETS = [
   {id: 'c120', label: '$120 cart', lines: [{name: 'Glow Getter Set', price: 100}, {name: 'Sunny Side SPF 40', price: 20}]},
 ];
 
-/** "Up to …" headline + the per-tier lines, or the single reward when tiers are off. */
+/** Headlines for both sides plus the tier lines each side sees. */
 function useOffer() {
   const {program} = useProgram();
-  const lines = program.tiersOn ? tierLines(program) : [];
-  const friendHead = program.tiersOn && lines.length ? friendSummary(program).split(' · ')[0].replace(' coupon', ' your first order') : `${friendSummary(program).split(' · ')[0].replace(' coupon', '')} your first order`;
-  const youHead = program.tiersOn && lines.length ? referrerSummary(program).split(' · ')[0] : referrerSummary(program);
-  return {program, lines, friendHead, youHead};
+  const linked = friendLinked(program);
+  const rLines = referrerTiered(program)
+    ? referrerTiers(program).filter((t) => Number(t.min) > 0).map((t, i) => ({
+      id: t.id,
+      from: money(t.min),
+      text: `${pointsText(t.value)} for you${linked ? ` · ${friendValueText(program.friendMethod, friendTiers(program)[i]?.value)} for your friend` : ''}`,
+    }))
+    : [];
+  const fLines = friendTiered(program)
+    ? friendTiers(program).filter((t) => Number(t.min) > 0).map((t) => ({id: t.id, from: money(t.min), text: friendValueText(program.friendMethod, t.value)}))
+    : [];
+  return {program, rLines, fLines, youHead: referrerHeadline(program), friendHead: friendHeadline(program)};
 }
 
-function TierTable({lines, who}) {
+function TierTable({lines}) {
   if (!lines.length) return null;
   return (
     <ul className="sf-tiers" aria-label="Reward by order value">
       {lines.map((l) => (
         <li key={l.id}>
           <span className="sf-tiers__from">{`Orders from ${l.from}`}</span>
-          <span className="sf-tiers__value">{who === 'friend' ? l.friend : `${l.friend} for your friend · ${l.referrer} for you`}</span>
+          <span className="sf-tiers__value">{l.text}</span>
         </li>
       ))}
     </ul>
@@ -46,8 +57,8 @@ function TierTable({lines, who}) {
 
 function WidgetView() {
   const {notify} = useShell();
-  const {program, lines, friendHead, youHead} = useOffer();
-  const first = sortTiers(program.tiers).find((t) => Number(t.min) > 0);
+  const {program, rLines, friendHead, youHead} = useOffer();
+  const min = referrerMin(program);
   return (
     <div className="sf-widget" role="dialog" aria-label="Rewards">
       <div className="sf-widget__head">
@@ -58,10 +69,10 @@ function WidgetView() {
         <h2 className="sf-card__title">Refer friends</h2>
         <div className="sf-pair">
           <div><p className="sf-pair__label">You get</p><p className="sf-pair__value">{youHead}</p></div>
-          <div><p className="sf-pair__label">Friend gets</p><p className="sf-pair__value">{friendHead.replace(' your first order', '')}</p></div>
+          <div><p className="sf-pair__label">Friend gets</p><p className="sf-pair__value">{friendHead}</p></div>
         </div>
-        <TierTable lines={lines} who="referrer" />
-        {program.tiersOn && first ? <p className="sf-note">{`You get your reward when your friend's first order from ${money(first.min)} is paid.`}</p> : null}
+        <TierTable lines={rLines} />
+        {min !== null ? <p className="sf-note">{`You get your reward when your friend's first order from ${money(min)} is paid.`}</p> : null}
         <div className="sf-link">
           <input aria-label="Your referral link" readOnly value={`${STORE.domain}/?ref=AVA2026`} />
           <button type="button" className="sf-btn" onClick={() => notify('Link copied')}>Copy</button>
@@ -73,9 +84,9 @@ function WidgetView() {
           {MY_REFERRALS.map((r) => {
             let detail = 'No order yet';
             if (r.status === 'completed') detail = `${outcome(program, r.subtotal).referrer} · order ${money2(r.subtotal)}`;
-            else if (r.subtotal !== null && program.tiersOn && first) detail = `Order ${money2(r.subtotal)} is below ${money(first.min)}`;
+            else if (r.subtotal !== null && min !== null && r.subtotal < min) detail = `Order ${money2(r.subtotal)} is below ${money(min)}`;
             else if (r.subtotal !== null) detail = `Order ${money2(r.subtotal)} placed`;
-            const done = r.status === 'completed' || (!program.tiersOn && r.subtotal !== null);
+            const done = r.status === 'completed' || (r.subtotal !== null && (min === null || r.subtotal >= min));
             return (
               <li key={r.id}>
                 <span className="sf-refs__name">{r.name}</span>
@@ -91,11 +102,11 @@ function WidgetView() {
 }
 
 function ClaimView() {
-  const {lines, friendHead, program} = useOffer();
+  const {fLines, friendHead, program} = useOffer();
   const [email, setEmail] = useState('');
   const [claimed, setClaimed] = useState(false);
   const [error, setError] = useState('');
-  const first = sortTiers(program.tiers).find((t) => Number(t.min) > 0);
+  const min = friendMin(program);
   const claim = () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setError('Enter a valid email address');
     setError('');
@@ -104,13 +115,13 @@ function ClaimView() {
   return (
     <div className="sf-popup" role="dialog" aria-label="Your friend sent you a gift">
       <p className="sf-popup__eyebrow">Ava sent you a gift</p>
-      <h2 className="sf-popup__title">{`Get ${friendHead.replace(/^Up to/, 'up to').replace(' your first order', '')}${(lines.length ? first : Number(program.friendMinOrder) > 0) ? ` an order of ${money(lines.length ? first.min : program.friendMinOrder)} or more` : ''}`}</h2>
-      <TierTable lines={lines} who="friend" />
+      <h2 className="sf-popup__title">{`Get ${friendHead.replace(/^Up to/, 'up to')}${min ? ` an order of ${money(min)} or more` : ' your first order'}`}</h2>
+      <TierTable lines={fLines} />
       {claimed ? (
         <div className="sf-code" aria-live="polite">
           <p>Your code</p>
           <p className="sf-code__value">JOY-7KQ2MD</p>
-          <p className="sf-note">{lines.length ? `One code for every tier. Checkout takes off the right amount for your cart, from ${money(first.min)}.` : 'Use it at checkout.'}</p>
+          <p className="sf-note">{fLines.length ? `One code for every tier. Checkout takes off the right amount for your cart, from ${money(min)}.` : 'Use it at checkout.'}</p>
         </div>
       ) : (
         <>
@@ -155,8 +166,8 @@ function CheckoutView() {
       </div>
       <p className="sf-proto-note">
         {res.qualifies
-          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${program.tiersOn ? ` The tier is picked from ${money2(subtotal)}, the subtotal before the referral discount.` : ''}`
-          : `Below the first tier: no discount, and Ava's referral stays pending until this friend places an order from ${money(res.min)}.`}
+          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` The tier is picked from ${money2(subtotal)}, the subtotal before the referral discount.` : ''}`
+          : `Below ${money(res.min)}, Ava's first tier: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until this friend places an order from ${money(res.min)}.`}
       </p>
     </div>
   );
@@ -172,7 +183,7 @@ function EmailView() {
         <p className="sf-email__brand">{STORE.name}</p>
         <h2 className="sf-email__title">{`You earned ${res.referrer}`}</h2>
         <p>Your friend Ben Carter placed a qualifying order, so your referral is complete. Thanks for spreading the word!</p>
-        {program.tiersOn && res.tier ? <p className="sf-muted">{`Order subtotal ${money2(120)} · tier ${sortTiers(program.tiers).indexOf(res.tier) + 1} (orders from ${money(res.tier.min)})`}</p> : null}
+        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(120)} · tier ${res.tier.index + 1} (orders from ${money(res.tier.min)})`}</p> : null}
         <span className="sf-btn">See my rewards</span>
       </div>
     </div>
@@ -195,7 +206,7 @@ export function Storefront() {
         {VIEWS.map((v) => (
           <button key={v.id} type="button" className={`sf-proto__btn ${view === v.id ? 'is-on' : ''}`} aria-pressed={view === v.id} onClick={() => setView(v.id)}>{v.label}</button>
         ))}
-        {state === 'off' ? <span className="sf-proto__hint">Tiers are off in this state: this is what shoppers see today.</span> : null}
+        {state === 'today' ? <span className="sf-proto__hint">Tiers are off in this state: this is what shoppers see today.</span> : null}
       </div>
       <main className="sf-stage">{body}</main>
     </div>

@@ -4,7 +4,7 @@
 .rt-table {display: flex; flex-direction: column; gap: var(--p-space-300);}
 .rt-row {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr) 36px;
+  grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr) 36px;
   gap: var(--p-space-300);
   align-items: start;
 }
@@ -12,11 +12,15 @@
 .rt-cell--name {padding-top: 6px;}
 .rt-row[data-tier-row='1'] .rt-cell--name, .rt-row[data-tier-row='1'] .rt-cell--action {padding-top: 30px;}
 .rt-cell--action {padding-top: 2px;}
-.rt-static {min-height: 32px; display: flex; align-items: center; overflow-wrap: anywhere;}
 .rt-warn {grid-column: 2 / -1;}
-.rt-try {width: 220px; max-width: 100%;}
-.rt-list {margin: 0; padding-left: var(--p-space-500); display: flex; flex-direction: column; gap: var(--p-space-100);}
-.rt-vip-name {min-width: 160px;}
+
+/* Release 2 marker: prototype-only, amber like the Prototype panel, never product UI. */
+.rt-release {position: relative; padding: var(--p-space-400) var(--p-space-300) var(--p-space-300); border: 1px dashed var(--proto-amber-border); border-radius: var(--p-border-radius-200);}
+.rt-release__tag {
+  position: absolute; top: -10px; left: var(--p-space-300); padding: 0 var(--p-space-200);
+  background: var(--proto-amber-bg); color: var(--proto-amber-text); border-radius: var(--p-border-radius-full);
+  font-size: var(--p-font-size-275); font-weight: var(--p-font-weight-semibold); line-height: 20px;
+}
 
 @media (max-width: 640px) {
   .rt-row {
@@ -29,7 +33,6 @@
   .rt-cell--action, .rt-row[data-tier-row='1'] .rt-cell--action {grid-column: 2 / 3; grid-row: 1; justify-self: end; padding-top: 0;}
   .rt-row > .rt-cell:not(.rt-cell--name):not(.rt-cell--action) {grid-column: 1 / -1;}
   .rt-warn {grid-column: 1 / -1;}
-  .rt-vip-name {min-width: 120px;}
 }
 
 /* ---------------------------------------------------------------- storefront */

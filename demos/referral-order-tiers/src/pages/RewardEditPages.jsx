@@ -1,59 +1,34 @@
-// Rewards for referees / Rewards for referrers. Same cards as the app today (Reward settings, Condition);
-// when order value tiers own a value, the field gives way to the tier list and a link to edit it.
-import React, {useEffect, useState} from 'react';
+// Rewards for referrers / Rewards for referees, card for card as the Joy admin draws them today
+// (ReferringCustomerReward.js, ReferredFriendReward.js). Tiers live inside each page's Reward settings card:
+// the referrer gets a new Reward method, the friend (release 2) a checkbox that swaps Reward value for tiers.
+import React, {useEffect, useMemo, useState} from 'react';
 import {
-  Banner, BlockStack, Box, Button, Card, Checkbox, ChoiceList, InlineStack, Layout, Page, Select, Text, TextField,
+  Banner, BlockStack, Button, Card, Checkbox, ChoiceList, Layout, Page, Select, Text, TextField,
 } from '@shopify/polaris';
 import {useShell} from '../shell/ShellContext.jsx';
+import {useRoute} from '../shell/router.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {useProgram} from '../state/program.jsx';
-import {FRIEND_METHODS, REFERRER_METHODS, TIERABLE_REFERRER, VIP_TIERS, money} from '../data/index.js';
-import {checkTiers, friendTiered, referrerTiered, sortTiers, unitFor} from '../state/logic.js';
+import {FRIEND_METHODS, TIERABLE_FRIEND, TIERS_METHOD, VIP_TIERS, money, referrerMethods} from '../data/index.js';
+import {
+  checkFriend, checkReferrer, examples, friendLinked, friendTiered, friendTiers, friendValueText, pointsText, referrerTiered,
+  referrerTiers, sortTiers, unitFor,
+} from '../state/logic.js';
 import {PlanBanner, useLeaveGuard} from './shared.jsx';
+import {TierTable, nextTier} from './TierTable.jsx';
 
-/** The value of each tier for one side, editable here so a reward-method change can be fixed on the same page. */
-function TierValues({form, setForm, side, touched, locked}) {
-  const method = side === 'friend' ? form.friendMethod : form.referrerMethod;
-  const unit = unitFor(method);
-  const errors = checkTiers(form).errors;
-  const rows = sortTiers(form.tiers).filter((t) => Number(t.min) > 0);
-  return (
-    <Box background="bg-surface-secondary" padding="300" borderRadius="200">
-      <BlockStack gap="300">
-        <Text as="p" fontWeight="semibold">Reward value is set by order value tiers</Text>
-        {rows.map((t) => (
-          <InlineStack key={t.id} gap="300" blockAlign="center" wrap={false}>
-            <div className="rt-vip-name"><Text as="span">{`First order from ${money(t.min)}`}</Text></div>
-            <TextField
-              label={`Reward for first orders from ${money(t.min)}`}
-              labelHidden
-              type="number"
-              prefix={unit.prefix}
-              suffix={unit.suffix}
-              value={String(t[side])}
-              onChange={(v) => setForm({...form, tiers: form.tiers.map((x) => (x.id === t.id ? {...x, [side]: v} : x))})}
-              error={touched ? errors[t.id]?.[side] : undefined}
-              disabled={locked}
-              autoComplete="off"
-            />
-          </InlineStack>
-        ))}
-        <Text as="p" variant="bodySm" tone="subdued">Change order thresholds and add or remove tiers in <Button url="/demo?type=referral" variant="plain">Order value tiers</Button>.</Text>
-      </BlockStack>
-    </Box>
-  );
-}
+let nextId = 100;
+const newId = () => `n${nextId++}`;
 
-const sideErrors = (form, side) => Object.values(checkTiers(form).errors).filter((e) => e[side]).length;
-
-function usePageState(field) {
+function usePageState() {
   const {program: saved, save} = useProgram();
-  const {state} = useScenario();
+  const {state, setState} = useScenario();
   const [form, setForm] = useState(saved);
-  useEffect(() => setForm(saved), [saved]);
+  const [touched, setTouched] = useState(state === 'worst');
+  useEffect(() => {setForm(saved); setTouched(state === 'worst');}, [saved, state]);
   const dirty = JSON.stringify(form) !== JSON.stringify(saved);
-  return {saved, save, form, setForm, dirty, state, field};
+  return {saved, save, form, setForm, dirty, state, setState, touched, setTouched};
 }
 
 function valueError(method, value) {
@@ -64,137 +39,65 @@ function valueError(method, value) {
   return undefined;
 }
 
-export function RefereeRewards() {
-  const {notify, notYet} = useShell();
-  const {setState} = useScenario();
-  const {save, form, setForm, dirty, state} = usePageState();
-  const [touched, setTouched] = useState(false);
-  const [combo, setCombo] = useState({product: true, order: true, shipping: true});
-  const guard = useLeaveGuard(dirty);
-  const locked = state === 'disabled';
-  const tiered = friendTiered(form);
-  const storeCreditWithTiers = form.tiersOn && form.friendMethod === 'store_credit_fixed';
-  const err = !tiered ? valueError(form.friendMethod, form.friendValue) : sideErrors(form, 'friend') ? 'tiers' : undefined;
-  const errCount = err === 'tiers' ? sideErrors(form, 'friend') : err ? 1 : 0;
-  const firstTier = sortTiers(form.tiers).find((t) => Number(t.min) > 0);
-  const unit = unitFor(form.friendMethod);
+const fieldsNeed = (k) => `${k} ${k === 1 ? 'field needs' : 'fields need'} attention before you save`;
 
-  const onSave = () => {
+/** Save: block on errors, otherwise write the program. */
+function useSave({form, save, setTouched, count}) {
+  const {notify} = useShell();
+  return () => {
     setTouched(true);
-    if (err) return notify(`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention`, {error: true});
+    if (count) {
+      notify(`${count} ${count === 1 ? 'field needs' : 'fields need'} attention`, {error: true});
+      window.setTimeout(() => document.querySelector('.Polaris-Page [aria-invalid="true"]')?.focus(), 0);
+      return;
+    }
     save(form);
     setTouched(false);
-    return notify('Saved program successfully');
+    notify('Saved program successfully');
   };
-  const page = {
-    backAction: {content: 'Reward programs', url: '/demo?type=referral'},
-    title: 'Rewards for referees',
-    primaryAction: {content: 'Save', onAction: onSave, disabled: locked || !dirty || state === 'loading' || state === 'error'},
-  };
-  if (state === 'loading') return <Page {...page}><LoadingView rows={8} /></Page>;
-  if (state === 'error') return <Page {...page}><ErrorView title="Couldn't load rewards for referees" onRetry={() => setState('default')}>Nothing was changed.</ErrorView></Page>;
+}
 
+// ---------------------------------------------------------------- Rewards for referrers
+
+function ReferrerTierExamples({tiers}) {
+  const ex = examples(tiers);
+  const first = tiers.find((t) => Number(t.min) > 0);
+  if (!ex.length) return null;
+  const parts = ex.map((e, i) => `${i === 0 ? '' : ', and '}${pointsText(e.tier.value)} for a ${money(e.order)} ${i === 0 ? 'referee first order' : 'one'} (tier ${e.index + 1})`);
   return (
-    <Page {...page}>
-      <Layout>
-        {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
-        {touched && errCount ? <Layout.Section><Banner tone="critical" title={`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention before you save`} /></Layout.Section> : null}
-        <Layout.Section>
-          <BlockStack gap="400">
-            <Card>
-              <BlockStack gap="400">
-                <Text as="span" variant="headingMd">Reward settings</Text>
-                <Select label="Reward method" options={FRIEND_METHODS} value={form.friendMethod} onChange={(v) => setForm({...form, friendMethod: v})} disabled={locked} />
-                {storeCreditWithTiers ? (
-                  <Banner tone="info">
-                    <p>Store credit can't change by tier: friends get it when they claim, before there is a cart. Every friend gets the value below.</p>
-                  </Banner>
-                ) : null}
-                {tiered ? (
-                  <TierValues form={form} setForm={setForm} side="friend" touched={touched} locked={locked} />
-                ) : (
-                  <TextField
-                    label="Reward value"
-                    type="number"
-                    prefix={unit.prefix}
-                    suffix={unit.suffix}
-                    value={String(form.friendValue)}
-                    onChange={(v) => setForm({...form, friendValue: v})}
-                    error={touched ? err : undefined}
-                    disabled={locked}
-                    autoComplete="off"
-                  />
-                )}
-              </BlockStack>
-            </Card>
-            {form.friendMethod !== 'store_credit_fixed' ? (
-              <Card>
-                <BlockStack gap="400">
-                  <Text as="span" variant="headingMd">Condition</Text>
-                  {form.tiersOn && firstTier ? (
-                    <BlockStack gap="100">
-                      <Text as="p" fontWeight="semibold">Minimum order requirement</Text>
-                      <Text as="p" tone="subdued">{`Set by your first tier: orders from ${money(firstTier.min)}.`}</Text>
-                    </BlockStack>
-                  ) : (
-                    <>
-                      <ChoiceList
-                        title="Minimum order requirement"
-                        choices={[{label: 'No minimum requirements', value: 'none'}, {label: 'Minimum purchase amount ($)', value: 'min'}]}
-                        selected={[Number(form.friendMinOrder) > 0 || form.friendMinOrder === '' ? 'min' : 'none']}
-                        onChange={([c]) => setForm({...form, friendMinOrder: c === 'min' ? '50' : 0})}
-                        disabled={locked}
-                      />
-                      {Number(form.friendMinOrder) > 0 || form.friendMinOrder === '' ? (
-                        <TextField label="Minimum purchase amount" labelHidden type="number" prefix="$" value={String(form.friendMinOrder)} onChange={(v) => setForm({...form, friendMinOrder: v})} disabled={locked} autoComplete="off" />
-                      ) : null}
-                    </>
-                  )}
-                  <BlockStack gap="100">
-                    <Text as="p" fontWeight="semibold">Discount combinations</Text>
-                    <Checkbox label="Product discounts" checked={combo.product} onChange={(v) => setCombo({...combo, product: v})} disabled={locked} />
-                    <Checkbox
-                      label="Order discounts"
-                      checked={combo.order && !tiered}
-                      onChange={(v) => setCombo({...combo, order: v})}
-                      disabled={locked || tiered}
-                      helpText={tiered ? "Off while the friend's discount is set by tier: another order discount would change which tier the cart reaches." : undefined}
-                    />
-                    <Checkbox label="Shipping discounts" checked={combo.shipping} onChange={(v) => setCombo({...combo, shipping: v})} disabled={locked} />
-                  </BlockStack>
-                </BlockStack>
-              </Card>
-            ) : null}
-          </BlockStack>
-        </Layout.Section>
-      </Layout>
-      {guard}
-    </Page>
+    <BlockStack gap="100">
+      <div data-tier-example><Text as="p" tone="subdued">{`Referrer will receive ${parts.join('')}.`}</Text></div>
+      {first ? <Text as="p" tone="subdued">{`A first order below ${money(first.min)} earns nothing yet: the referral stays pending until the friend orders from ${money(first.min)}.`}</Text> : null}
+    </BlockStack>
   );
 }
 
 export function ReferrerRewards() {
-  const {notify, notYet} = useShell();
-  const {setState} = useScenario();
-  const {save, form, setForm, dirty, state} = usePageState();
-  const [touched, setTouched] = useState(false);
+  const {notYet} = useShell();
+  const {query} = useRoute();
+  const methods = useMemo(() => referrerMethods(query.get('label') === 'b' ? 'b' : 'a'), [query]);
+  const {save, form, setForm, dirty, state, setState, touched, setTouched} = usePageState();
   const guard = useLeaveGuard(dirty);
   const locked = state === 'disabled';
   const tiered = referrerTiered(form);
-  const orderValueMethod = ['point_order_value', 'store_credit_order_value'].includes(form.referrerMethod);
-  const vipBlocked = form.tiersOn && form.tierReferrer && TIERABLE_REFERRER.includes(form.referrerMethod);
-  const firstTier = sortTiers(form.tiers).find((t) => Number(t.min) > 0);
-  const err = !tiered && !form.referrerVipRates ? valueError(form.referrerMethod, form.referrerValue) : tiered && sideErrors(form, 'referrer') ? 'tiers' : undefined;
-  const errCount = err === 'tiers' ? sideErrors(form, 'referrer') : err ? 1 : 0;
+  const tiers = referrerTiers(form);
+  const check = checkReferrer(form);
+  const vipShown = !tiered && form.referrerMethod !== 'point_order_value';
+  const err = !tiered && !form.referrerVipRates ? valueError(form.referrerMethod, form.referrerValue) : undefined;
+  const count = tiered ? check.count : err ? 1 : 0;
+  const onSave = useSave({form, save, setTouched, count});
   const unit = unitFor(form.referrerMethod);
+  const orderValue = form.referrerMethod === 'point_order_value';
 
-  const onSave = () => {
-    setTouched(true);
-    if (err) return notify(`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention`, {error: true});
-    save(form);
-    setTouched(false);
-    return notify('Saved program successfully');
+  const setTiers = (next) => setForm({...form, referrerTiers: next});
+  const raw = form.referrerTiers;
+  const pickMethod = (v) => {
+    if (v !== TIERS_METHOD || raw.length) return setForm({...form, referrerMethod: v});
+    // First time on tiers: tier 1 = today's minimum order and today's points, so nothing changes until tier 2 is added.
+    const points = form.referrerMethod === 'point' ? String(form.referrerValue) : '100';
+    return setForm({...form, referrerMethod: v, referrerTiers: [{id: newId(), min: String(form.friendMinOrder || 50), points}]});
   };
+
   const page = {
     backAction: {content: 'Reward programs', url: '/demo?type=referral'},
     title: 'Rewards for referrers',
@@ -207,56 +110,116 @@ export function ReferrerRewards() {
     <Page {...page}>
       <Layout>
         {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
-        {touched && errCount ? <Layout.Section><Banner tone="critical" title={`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention before you save`} /></Layout.Section> : null}
+        {touched && count ? <Layout.Section><Banner tone="critical" title={fieldsNeed(count)} /></Layout.Section> : null}
         <Layout.Section>
-          <Card>
-            <BlockStack gap="400">
-              <Text as="span" variant="headingMd">Reward settings</Text>
-              <Select label="Reward method" options={REFERRER_METHODS} value={form.referrerMethod} onChange={(v) => setForm({...form, referrerMethod: v, ...(['point_order_value', 'store_credit_order_value'].includes(v) && form.tiersOn ? {referrerMaxOn: false, referrerMax: ''} : {}), referrerValue: ['point_order_value', 'store_credit_order_value'].includes(v) && form.tiersOn ? '' : v === 'point_order_value' ? '2' : v === 'store_credit_order_value' ? '10' : ['point_order_value', 'store_credit_order_value'].includes(form.referrerMethod) ? '100' : form.referrerValue})} disabled={locked} />
-              {form.tiersOn && orderValueMethod && firstTier ? (
-                <Banner tone="info">
-                  <p>{`This method already grows with the order, so it isn't set by tier. Referrers earn it only for first orders from ${money(firstTier.min)}, your first tier.`}</p>
-                </Banner>
-              ) : null}
-              <Checkbox
-                label="Apply tier-based reward rates"
-                checked={form.referrerVipRates}
-                onChange={(v) => setForm({...form, referrerVipRates: v})}
-                disabled={locked || vipBlocked}
-                helpText={vipBlocked ? <span>Order value tiers set this reward. To use VIP tier rates instead, untick "Referrer's reward" in <Button variant="plain" url="/demo">Order value tiers</Button>.</span> : undefined}
-              />
-              {form.referrerMethod === 'point_order_value' && !form.referrerVipRates ? (
-                <BlockStack gap="200">
-                  <Checkbox label="Set a maximum points per referral" helpText="Cap the points a referrer can earn from a single referral, regardless of the order value." checked={form.referrerMaxOn} onChange={(v) => setForm({...form, referrerMaxOn: v})} disabled={locked} />
-                  {form.referrerMaxOn ? <TextField label="Set a maximum points per referral" labelHidden type="number" suffix="points" value={String(form.referrerMax)} onChange={(v) => setForm({...form, referrerMax: v})} disabled={locked} autoComplete="off" /> : null}
-                </BlockStack>
-              ) : null}
-              {form.referrerVipRates ? (
-                <BlockStack gap="300">
-                  {VIP_TIERS.map((t, i) => (
-                    <InlineStack key={t.id} gap="300" blockAlign="center" wrap={false}>
-                      <div className="rt-vip-name"><Text as="span">{`Applies to ${t.name.toLowerCase()} only`}</Text></div>
-                      <TextField label={t.name} labelHidden type="number" prefix={unit.prefix} suffix={unit.suffix} value={String((i + 1) * 100)} onChange={notYet} disabled={locked} autoComplete="off" />
-                    </InlineStack>
-                  ))}
-                </BlockStack>
-              ) : tiered ? (
-                <TierValues form={form} setForm={setForm} side="referrer" touched={touched} locked={locked} />
-              ) : (
-                <TextField
-                  label={orderValueMethod ? (form.referrerMethod === 'point_order_value' ? 'Points per $1 spent' : 'Store credit rate') : 'Reward value'}
-                  type="number"
-                  prefix={orderValueMethod ? undefined : unit.prefix}
-                  suffix={form.referrerMethod === 'point_order_value' ? 'points per $1' : orderValueMethod ? '%' : unit.suffix}
-                  value={String(form.referrerValue)}
-                  onChange={(v) => setForm({...form, referrerValue: v})}
-                  error={touched ? err : undefined}
+          <BlockStack gap="400">
+            <Card>
+              <BlockStack gap="400">
+                <Text as="span" variant="headingMd">Reward settings</Text>
+                <Select
+                  label="Reward method"
+                  options={methods}
+                  value={form.referrerMethod}
+                  onChange={pickMethod}
                   disabled={locked}
-                  autoComplete="off"
+                  helpText={tiered ? "Referrers earn points by the referred friend's first order value. Tier 1 is the minimum order." : undefined}
                 />
-              )}
-            </BlockStack>
-          </Card>
+                {tiered ? (
+                  <div id="tiers">
+                    <TierTable
+                      tiers={tiers}
+                      valueLabel="Referrer gets"
+                      unit={{suffix: 'points'}}
+                      onMin={(id, v) => setTiers(raw.map((t) => (t.id === id ? {...t, min: v} : t)))}
+                      onValue={(id, v) => setTiers(raw.map((t) => (t.id === id ? {...t, points: v} : t)))}
+                      onAdd={() => {
+                        const x = nextTier(tiers, form.friendMinOrder || 50, 100);
+                        const id = newId();
+                        // A linked friend discount gets a value for the new tier too, so the referee page never has a blank row.
+                        const lastFriend = friendLinked(form) ? Number(friendTiers(form).at(-1)?.value) || 0 : 0;
+                        setForm({
+                          ...form,
+                          referrerTiers: [...raw, {id, min: x.min, points: x.value}],
+                          ...(lastFriend ? {friendTierValues: {...form.friendTierValues, [id]: String(lastFriend * 2)}} : {}),
+                        });
+                      }}
+                      onRemove={(id) => setTiers(raw.filter((t) => t.id !== id))}
+                      onResort={() => setTiers(sortTiers(raw))}
+                      check={check}
+                      show={touched}
+                      locked={locked}
+                      examples={(
+                        <BlockStack gap="200">
+                          <ReferrerTierExamples tiers={tiers} />
+                          {friendLinked(form) ? <Text as="p" tone="subdued">Rewards for referees uses these order amounts too.</Text> : null}
+                          <Text as="p" variant="bodySm" tone="subdued">Order value is the friend's subtotal after other discounts and before the referral discount, without shipping and taxes. A tier applies from its amount up to the next tier.</Text>
+                        </BlockStack>
+                      )}
+                    />
+                  </div>
+                ) : null}
+                {vipShown ? (
+                  <Checkbox
+                    label="Apply tier-based reward rates"
+                    checked={form.referrerVipRates}
+                    onChange={(v) => setForm({...form, referrerVipRates: v})}
+                    disabled={locked}
+                  />
+                ) : null}
+                {vipShown && form.referrerVipRates ? (
+                  <BlockStack gap="300">
+                    {VIP_TIERS.map((t, i) => (
+                      <BlockStack key={t.id} gap="100">
+                        <Text as="h3" variant="headingSm">{t.name}</Text>
+                        <TextField label={`Applies to ${t.name.toLowerCase()} only`} type="number" prefix={unit.prefix} suffix={unit.suffix} value={String((i + 1) * 100)} onChange={notYet} disabled={locked} autoComplete="off" />
+                      </BlockStack>
+                    ))}
+                  </BlockStack>
+                ) : null}
+                {vipShown && !form.referrerVipRates ? (
+                  <TextField
+                    label="Reward value"
+                    type="number"
+                    prefix={form.referrerMethod === 'store_credit_order_value' ? undefined : unit.prefix}
+                    suffix={form.referrerMethod === 'store_credit_order_value' ? '%' : unit.suffix}
+                    value={String(form.referrerValue)}
+                    onChange={(v) => setForm({...form, referrerValue: v})}
+                    error={touched ? err : undefined}
+                    disabled={locked}
+                    autoComplete="off"
+                  />
+                ) : null}
+              </BlockStack>
+            </Card>
+            {['amount', 'percentage'].includes(form.referrerMethod) ? (
+              <Card>
+                <Checkbox label="Customize discount code's prefix" checked={false} onChange={notYet} disabled={locked} />
+              </Card>
+            ) : null}
+            <Card>
+              <BlockStack gap="300">
+                <Text as="h2" variant="headingSm">Bonus points when a friend claims</Text>
+                <Checkbox
+                  label="Give the referrer bonus points as soon as a referred friend claims their reward"
+                  helpText="Granted once per referred friend, before any purchase, on top of the reward above. Turn on the referral limit to cap how many bonuses one customer can earn."
+                  checked={false}
+                  onChange={notYet}
+                  disabled={locked}
+                />
+              </BlockStack>
+            </Card>
+            {orderValue ? (
+              <Card>
+                <BlockStack gap="400">
+                  <Text as="span" variant="headingMd">Points based on order value settings</Text>
+                  <Checkbox label="Apply tier-based reward rates" checked={false} onChange={notYet} disabled={locked} />
+                  <TextField label="Points per $1 spent" type="number" suffix="points per $1" value={String(form.referrerValue)} onChange={(v) => setForm({...form, referrerValue: v})} error={touched ? err : undefined} disabled={locked} autoComplete="off" />
+                  <Checkbox label="Set a maximum points per referral" helpText="Cap the points a referrer can earn from a single referral, regardless of the order value." checked={form.referrerMaxOn} onChange={(v) => setForm({...form, referrerMaxOn: v})} disabled={locked} />
+                  <Text as="p" tone="subdued">{`Referrer will receive ${num100(form)} points for a $100 referee first order (at ${form.referrerValue} points per $1)`}</Text>
+                </BlockStack>
+              </Card>
+            ) : null}
+          </BlockStack>
         </Layout.Section>
       </Layout>
       {guard}
@@ -264,3 +227,224 @@ export function ReferrerRewards() {
   );
 }
 
+function num100(form) {
+  const raw = Math.floor(100 * (Number(form.referrerValue) || 0));
+  const cap = form.referrerMaxOn ? Number(form.referrerMax) || 0 : 0;
+  return cap && raw > cap ? cap : raw;
+}
+
+// ---------------------------------------------------------------- Rewards for referees
+
+function FriendTierExamples({tiers, method}) {
+  const ex = examples(tiers);
+  const first = tiers.find((t) => Number(t.min) > 0);
+  if (!ex.length) return null;
+  const parts = ex.map((e, i) => `${i === 0 ? 'A' : '; a'} ${money(e.order)} first order gets ${friendValueText(method, e.tier.value)} (tier ${e.index + 1})`);
+  return (
+    <BlockStack gap="100">
+      <div data-tier-example><Text as="p" tone="subdued">{`${parts.join('')}.`}</Text></div>
+      {first ? <Text as="p" tone="subdued">{`Below ${money(first.min)} the code doesn't apply at checkout.`}</Text> : null}
+    </BlockStack>
+  );
+}
+
+export function RefereeRewards() {
+  const {notYet} = useShell();
+  const {save, form, setForm, dirty, state, setState, touched, setTouched} = usePageState();
+  const guard = useLeaveGuard(dirty);
+  const locked = state === 'disabled';
+  const canTier = TIERABLE_FRIEND.includes(form.friendMethod);
+  const tiered = friendTiered(form);
+  const linked = friendLinked(form);
+  const tiers = friendTiers(form);
+  const check = checkFriend(form);
+  const err = !tiered ? valueError(form.friendMethod, form.friendValue) : undefined;
+  const count = tiered ? check.count : err ? 1 : 0;
+  const onSave = useSave({form, save, setTouched, count});
+  const unit = unitFor(form.friendMethod);
+  const tierUnit = form.friendMethod === 'percentage' ? {suffix: '% off'} : {prefix: '$', suffix: 'off'};
+  const first = tiered ? tiers.find((t) => Number(t.min) > 0) : null;
+  const [combo, setCombo] = useState(['order', 'product', 'shipping']);
+  const [channel, setChannel] = useState('online');
+  const [expiry, setExpiry] = useState('never');
+
+  const turnOn = (on) => {
+    if (!on) return setForm({...form, friendTiersOn: false});
+    // First time on: tier 1 = today's discount from today's minimum order.
+    const seededLinked = referrerTiered(form) && !Object.keys(form.friendTierValues).length
+      ? Object.fromEntries(sortTiers(form.referrerTiers).map((t, i) => [t.id, i === 0 ? String(form.friendValue) : '']))
+      : form.friendTierValues;
+    const own = form.friendTiers.length ? form.friendTiers : [{id: newId(), min: String(form.friendMinOrder || 50), value: String(form.friendValue)}];
+    return setForm({...form, friendTiersOn: true, friendTierValues: seededLinked, friendTiers: own});
+  };
+  const setLink = (on) => {
+    if (on) return setForm({...form, friendSameAmounts: true});
+    // Unlinking copies the shared amounts into the friend's own list, so nothing on screen jumps.
+    return setForm({...form, friendSameAmounts: false, friendTiers: tiers.map((t) => ({id: newId(), min: String(t.min), value: String(t.value)}))});
+  };
+  const setValue = (id, v) => (linked
+    ? setForm({...form, friendTierValues: {...form.friendTierValues, [id]: v}})
+    : setForm({...form, friendTiers: form.friendTiers.map((t) => (t.id === id ? {...t, value: v} : t))}));
+
+  const page = {
+    backAction: {content: 'Reward programs', url: '/demo?type=referral'},
+    title: 'Rewards for referees',
+    primaryAction: {content: 'Save', onAction: onSave, disabled: locked || !dirty || state === 'loading' || state === 'error'},
+  };
+  if (state === 'loading') return <Page {...page}><LoadingView rows={8} /></Page>;
+  if (state === 'error') return <Page {...page}><ErrorView title="Couldn't load rewards for referees" onRetry={() => setState('default')}>Nothing was changed.</ErrorView></Page>;
+
+  return (
+    <Page {...page}>
+      <Layout>
+        {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
+        {touched && count ? <Layout.Section><Banner tone="critical" title={fieldsNeed(count)} /></Layout.Section> : null}
+        <Layout.Section>
+          <BlockStack gap="400">
+            <Card>
+              <BlockStack gap="400">
+                <Text as="span" variant="headingMd">Reward settings</Text>
+                <Select label="Reward method" options={FRIEND_METHODS} value={form.friendMethod} onChange={(v) => setForm({...form, friendMethod: v})} disabled={locked} />
+                {canTier ? (
+                  <div className="rt-release" id="tiers">
+                    <span className="rt-release__tag">Prototype · release 2</span>
+                    <BlockStack gap="300">
+                      <Checkbox
+                        label="Set the discount by the friend's order value"
+                        helpText="One code for every tier: checkout takes off the discount of the tier the cart reaches. Tier 1 is the minimum order."
+                        checked={form.friendTiersOn}
+                        onChange={turnOn}
+                        disabled={locked}
+                      />
+                      {tiered && referrerTiered(form) ? (
+                        <Checkbox
+                          label="Use the same order amounts as Rewards for referrers"
+                          checked={form.friendSameAmounts}
+                          onChange={setLink}
+                          disabled={locked}
+                        />
+                      ) : null}
+                      {tiered ? (
+                        <TierTable
+                          tiers={tiers}
+                          valueLabel="Friend gets"
+                          unit={tierUnit}
+                          minLocked={linked}
+                          minLockedHelp={<>Order amounts follow <Button variant="plain" url="/demo/referrer">Rewards for referrers</Button>. Change or add tiers there.</>}
+                          onMin={(id, v) => setForm({...form, friendTiers: form.friendTiers.map((t) => (t.id === id ? {...t, min: v} : t))})}
+                          onValue={setValue}
+                          onAdd={() => {const x = nextTier(tiers, form.friendMinOrder || 50, form.friendValue); setForm({...form, friendTiers: [...form.friendTiers, {id: newId(), ...x}]});}}
+                          onRemove={(id) => setForm({...form, friendTiers: form.friendTiers.filter((t) => t.id !== id)})}
+                          onResort={() => (linked ? null : setForm({...form, friendTiers: sortTiers(form.friendTiers)}))}
+                          check={check}
+                          show={touched}
+                          locked={locked}
+                          examples={<FriendTierExamples tiers={tiers} method={form.friendMethod} />}
+                        />
+                      ) : null}
+                    </BlockStack>
+                  </div>
+                ) : null}
+                {!tiered ? (
+                  <TextField
+                    label="Reward value"
+                    type="number"
+                    prefix={unit.prefix}
+                    suffix={unit.suffix}
+                    value={String(form.friendValue)}
+                    onChange={(v) => setForm({...form, friendValue: v})}
+                    error={touched ? err : undefined}
+                    helpText={form.friendMethod === 'store_credit_fixed' ? `Referee will receive ${money(form.friendValue)} store credit for each successful referral` : undefined}
+                    disabled={locked}
+                    autoComplete="off"
+                  />
+                ) : null}
+              </BlockStack>
+            </Card>
+            {form.friendMethod !== 'store_credit_fixed' ? (
+              <>
+                <Card>
+                  <Checkbox label="Customize discount code's prefix" checked={false} onChange={notYet} disabled={locked} />
+                </Card>
+                <Card>
+                  <BlockStack gap="300">
+                    <Text as="span" variant="headingMd">Reward conditions</Text>
+                    <Select label="Discount applies to" options={[{label: 'All orders', value: 'all'}, {label: 'Specific collections', value: 'collections'}]} value="all" onChange={notYet} disabled={locked} />
+                    <ChoiceList
+                      title="Order value requirement"
+                      disabled={locked}
+                      choices={[
+                        {label: 'No minimum requirements', value: 'none', disabled: tiered},
+                        {
+                          label: 'Minimum purchase amount',
+                          value: 'min',
+                          renderChildren: (on) => on && (
+                            <TextField
+                              label="Minimum purchase amount"
+                              labelHidden
+                              type="number"
+                              suffix="$"
+                              value={String(tiered && first ? first.min : form.friendMinOrder)}
+                              onChange={(v) => setForm({...form, friendMinOrder: v})}
+                              disabled={locked || tiered}
+                              helpText={tiered ? 'Set by tier 1 in Reward settings.' : undefined}
+                              autoComplete="off"
+                            />
+                          ),
+                        },
+                        {label: 'Minimum quantity of items', value: 'qty', disabled: tiered},
+                      ]}
+                      selected={[tiered || Number(form.friendMinOrder) > 0 || form.friendMinOrder === '' ? 'min' : 'none']}
+                      onChange={([c]) => setForm({...form, friendMinOrder: c === 'min' ? '50' : 0})}
+                    />
+                    <ChoiceList
+                      allowMultiple
+                      title="Combinations"
+                      choices={[
+                        {label: 'Order discounts', value: 'order', disabled: tiered, helpText: tiered ? 'Off while the discount is set by tier: another order discount would change which tier the cart reaches.' : undefined},
+                        {label: 'Product discounts', value: 'product'},
+                        {label: 'Shipping discounts', value: 'shipping'},
+                      ]}
+                      selected={tiered ? combo.filter((c) => c !== 'order') : combo}
+                      onChange={setCombo}
+                      disabled={locked}
+                    />
+                    <ChoiceList
+                      title="Apply discount to sale channel"
+                      choices={[
+                        {label: 'Online store only', value: 'online'},
+                        {label: 'Online store & Point of Sale', value: 'both'},
+                        {label: 'Point of Sale only', value: 'pos'},
+                      ]}
+                      selected={[channel]}
+                      onChange={([c]) => setChannel(c)}
+                      disabled={locked}
+                    />
+                  </BlockStack>
+                </Card>
+                <Card>
+                  <BlockStack gap="300">
+                    <Text as="span" variant="headingMd">Coupon validity</Text>
+                    <ChoiceList
+                      title="Coupon validity"
+                      titleHidden
+                      choices={[
+                        {label: 'Never expire', value: 'never'},
+                        {label: 'Expire after a set duration', value: 'duration'},
+                        {label: 'Set a specific date and time', value: 'date'},
+                      ]}
+                      selected={[expiry]}
+                      onChange={([c]) => setExpiry(c)}
+                      disabled={locked}
+                    />
+                  </BlockStack>
+                </Card>
+              </>
+            ) : null}
+          </BlockStack>
+        </Layout.Section>
+      </Layout>
+      {guard}
+    </Page>
+  );
+}

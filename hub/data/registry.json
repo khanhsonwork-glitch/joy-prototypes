@@ -826,7 +826,7 @@
       "prd": null,
       "migrated": true,
       "shot": "/shots/loyalty-referral-order-tiers.jpg",
-      "reviewUrl": "/loyalty/referral-order-tiers/#/demo?type=referral",
+      "reviewUrl": "/loyalty/referral-order-tiers/#/demo/referrer",
       "kind": "prototype",
       "aliases": [],
       "legacy": [],

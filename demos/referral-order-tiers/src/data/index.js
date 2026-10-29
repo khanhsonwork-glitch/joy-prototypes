@@ -22,24 +22,29 @@ export const VIP_TIERS = [
   {id: 'platinum', name: 'Platinum'},
 ];
 
-// Reward methods as the Joy admin names them today.
+// Reward methods as the Joy admin names them today (ProgramOptionConfig.customerReferralRewardType / discountReferralType),
+// plus the new referrer method this feature adds. Its label is a taste call for Alex: ?label=b shows the second wording.
+export const TIERS_METHOD = 'point_order_tiers';
+export const TIERS_METHOD_LABELS = {
+  a: "Points by friend's first order value (tiers)",
+  b: 'Points by order value tiers',
+};
 export const FRIEND_METHODS = [
-  {label: 'Discount fixed amount', value: 'amount'},
   {label: 'Discount percentage', value: 'percentage'},
+  {label: 'Discount fixed amount', value: 'amount'},
   {label: 'Store credit', value: 'store_credit_fixed'},
 ];
-export const REFERRER_METHODS = [
+export const referrerMethods = (labelKey = 'a') => [
   {label: 'Store credit based on order value (Recommend)', value: 'store_credit_order_value'},
   {label: 'Points based on order value', value: 'point_order_value'},
+  {label: TIERS_METHOD_LABELS[labelKey] || TIERS_METHOD_LABELS.a, value: TIERS_METHOD},
   {label: 'Store credit', value: 'store_credit_fixed'},
   {label: 'Discount percentage', value: 'percentage'},
   {label: 'Discount fixed amount', value: 'amount'},
   {label: 'Points reward', value: 'point'},
 ];
-
-// Methods whose value can change per tier. The two "based on order value" methods already grow with the order,
-// and the friend's store credit is given when the friend claims, before any cart exists.
-export const TIERABLE_REFERRER = ['point', 'amount', 'percentage', 'store_credit_fixed'];
+export const REFERRER_METHODS = referrerMethods();
+// The friend's discount can follow tiers only when it is a code applied at checkout; store credit is given at claim.
 export const TIERABLE_FRIEND = ['amount', 'percentage'];
 export const MAX_TIERS = 5;
 
@@ -56,42 +61,37 @@ export const money = (n) => {
 /** Always two decimals, the way checkout prints amounts. */
 export const money2 = (n) => `$${two.format(Number(n) || 0)}`;
 
-/** The program as saved before this feature: one friend reward with a minimum order, one referrer reward. */
+/** The program as merchants have it today: one friend discount with a minimum order, a flat 100 points for the referrer. */
 export const BASE_PROGRAM = {
   friendMethod: 'amount',
   friendValue: 5,
   friendMinOrder: 50,
+  friendTiersOn: false,
+  friendSameAmounts: true,
+  friendTierValues: {},
+  friendTiers: [],
   referrerMethod: 'point',
   referrerValue: 100,
   referrerVipRates: false,
   referrerMaxOn: true,
   referrerMax: 200,
-  tiersOn: false,
-  tierFriend: true,
-  tierReferrer: true,
-  tiers: [],
+  referrerTiers: [],
 };
 
-export const CONFIGURED_TIERS = [
-  {id: 't1', min: '50', friend: '5', referrer: '100'},
-  {id: 't2', min: '100.01', friend: '10', referrer: '200'},
+// Release 1: the referrer earns by the friend's first order value. Tier 1 = the old minimum and the old 100 points.
+export const REFERRER_TIERS = [
+  {id: 't1', min: '50', points: '100'},
+  {id: 't2', min: '100.01', points: '200'},
 ];
-
-export const OVERFLOW_TIERS = [
-  {id: 'o1', min: '50', friend: '5', referrer: '100'},
-  {id: 'o2', min: '250', friend: '25', referrer: '2500'},
-  {id: 'o3', min: '1000', friend: '100', referrer: '25000'},
-  {id: 'o4', min: '5000', friend: '500', referrer: '250000'},
-  {id: 'o5', min: '12500.50', friend: '1250', referrer: '1000000'},
-];
-
-// Worst case: a duplicate start amount, a tier that pays less than the one below, a discount bigger than its order, a blank value.
+// Release 2: the friend's discount by the same amounts.
+export const FRIEND_TIER_VALUES = {t1: '5', t2: '10'};
+// Worst case: a duplicate start amount, a tier that pays less than the one below, a blank value, 5 tiers.
 export const WORST_TIERS = [
-  {id: 'w1', min: '50', friend: '5', referrer: '100'},
-  {id: 'w2', min: '250', friend: '25', referrer: '80'},
-  {id: 'w3', min: '250', friend: '300', referrer: '25000'},
-  {id: 'w4', min: '5000', friend: '', referrer: '250000'},
-  {id: 'w5', min: '12500.50', friend: '1250', referrer: '1000000'},
+  {id: 'w1', min: '50', points: '100'},
+  {id: 'w2', min: '250', points: '80'},
+  {id: 'w3', min: '250', points: '2500'},
+  {id: 'w4', min: '5000', points: ''},
+  {id: 'w5', min: '12500.50', points: '100000'},
 ];
 
 /** Referrals of the signed-in member, as the storefront lists them. */

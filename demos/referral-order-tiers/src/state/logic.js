@@ -1,5 +1,6 @@
 // The tier rules the prototype shows. Pure functions so every screen (admin, widget, checkout, email) agrees.
-import {MAX_TIERS, TIERABLE_FRIEND, TIERABLE_REFERRER, money, num} from '../data/index.js';
+// Referrer tiers belong to the new referrer reward method; friend tiers (release 2) belong to the friend's discount.
+import {MAX_TIERS, TIERABLE_FRIEND, TIERS_METHOD, money, num} from '../data/index.js';
 
 const n = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));
 
@@ -14,14 +15,31 @@ export function sortTiers(tiers) {
   });
 }
 
-export const friendTiered = (p) => p.tiersOn && p.tierFriend && TIERABLE_FRIEND.includes(p.friendMethod);
-export const referrerTiered = (p) => p.tiersOn && p.tierReferrer && TIERABLE_REFERRER.includes(p.referrerMethod) && !p.referrerVipRates;
+export const referrerTiered = (p) => p.referrerMethod === TIERS_METHOD;
+export const friendTiered = (p) => p.friendTiersOn && TIERABLE_FRIEND.includes(p.friendMethod);
+/** The friend's tiers reuse the referrer's amounts while that link is on and the referrer is on tiers. */
+export const friendLinked = (p) => friendTiered(p) && p.friendSameAmounts && referrerTiered(p);
+
+/** [{id, min, value}] for each side, sorted. */
+export const referrerTiers = (p) => sortTiers(p.referrerTiers).map((t) => ({id: t.id, min: t.min, value: t.points}));
+export function friendTiers(p) {
+  if (friendLinked(p)) return sortTiers(p.referrerTiers).map((t) => ({id: t.id, min: t.min, value: p.friendTierValues[t.id] ?? ''}));
+  return sortTiers(p.friendTiers).map((t) => ({id: t.id, min: t.min, value: t.value}));
+}
+
+const firstMin = (tiers) => {
+  const t = tiers.find((x) => n(x.min) > 0);
+  return t ? n(t.min) : null;
+};
+export const referrerMin = (p) => (referrerTiered(p) ? firstMin(referrerTiers(p)) : null);
+export const friendMin = (p) => (friendTiered(p) ? firstMin(friendTiers(p)) : Number(p.friendMinOrder) || 0);
 
 /** The tier an order falls in: the highest "from" amount the subtotal reaches. Null = below the first tier. */
 export function matchTier(tiers, subtotal) {
-  const valid = sortTiers(tiers).filter((t) => n(t.min) > 0);
   let hit = null;
-  for (const t of valid) if (subtotal >= n(t.min)) hit = t;
+  tiers.filter((t) => n(t.min) > 0).forEach((t, i) => {
+    if (subtotal >= n(t.min)) hit = {...t, index: i};
+  });
   return hit;
 }
 
@@ -32,9 +50,11 @@ export function friendValueText(method, value) {
   return `${money(value)} off`;
 }
 
+export const pointsText = (value) => `${num(value)} ${Number(value) === 1 ? 'point' : 'points'}`;
+
 export function referrerValueText(method, value) {
   if (value === '' || value === undefined) return '—';
-  if (method === 'point') return `${num(value)} ${Number(value) === 1 ? 'point' : 'points'}`;
+  if (method === 'point' || method === TIERS_METHOD) return pointsText(value);
   if (method === 'percentage') return `${num(value)}% off coupon`;
   if (method === 'amount') return `${money(value)} off coupon`;
   if (method === 'store_credit_fixed') return `${money(value)} store credit`;
@@ -43,133 +63,141 @@ export function referrerValueText(method, value) {
 }
 
 export function unitFor(method) {
-  if (method === 'point') return {suffix: 'points'};
+  if (method === 'point' || method === TIERS_METHOD) return {suffix: 'points'};
   if (method === 'percentage') return {suffix: '%'};
   return {prefix: '$'};
 }
 
-/** What each side gets for a first-order subtotal, under the program as it is now (tiers on or off). */
-export function outcome(p, subtotal) {
-  const fT = friendTiered(p);
-  const rT = referrerTiered(p);
-  const tier = p.tiersOn ? matchTier(p.tiers, subtotal) : null;
-  const first = sortTiers(p.tiers).find((t) => n(t.min) > 0);
-  const min = p.tiersOn && first ? n(first.min) : null;
-  const friendMin = p.tiersOn && min !== null ? min : Number(p.friendMinOrder) || 0;
-
-  let friend;
-  if (fT) friend = tier ? friendValueText(p.friendMethod, tier.friend) : null;
-  else friend = subtotal >= friendMin ? friendValueText(p.friendMethod, p.friendValue) : null;
-
-  let referrer;
-  if (p.tiersOn && (rT || fT) && min !== null && subtotal < min) referrer = null; // below the first tier: nobody is rewarded yet
-  else if (rT) referrer = tier ? referrerValueText(p.referrerMethod, tier.referrer) : null;
-  else if (p.referrerVipRates) referrer = "their VIP tier's reward";
-  else if (p.referrerMethod === 'point_order_value' || p.referrerMethod === 'store_credit_order_value') {
-    // Amount still comes from the order subtotal after every discount, the referral discount included (as today).
-    const paid = Math.max(subtotal - friendDiscount(p, subtotal), 0);
-    const rate = Number(p.referrerValue) || 0;
-    const raw = Math.floor(paid * rate);
-    const cap = p.referrerMaxOn ? Number(p.referrerMax) || 0 : 0;
-    referrer = p.referrerMethod === 'point_order_value'
-      ? `${num(cap && raw > cap ? cap : raw)} points (${num(rate)} per $1 on ${money(paid)} after the referral discount${cap && raw > cap ? `, ${num(raw)} capped at ${num(cap)}` : ''})`
-      : `${money(Math.round(paid * rate) / 100)} store credit (${num(rate)}% of ${money(paid)})`;
-  } else referrer = referrerValueText(p.referrerMethod, p.referrerValue);
-  return {tier, friend, referrer, min, qualifies: !(p.tiersOn && min !== null && subtotal < min)};
-}
-
 /** Discount the friend's code takes off a cart, in dollars. */
 export function friendDiscount(p, subtotal) {
-  const fT = friendTiered(p);
-  const tier = fT ? matchTier(p.tiers, subtotal) : null;
-  const first = sortTiers(p.tiers).find((t) => n(t.min) > 0);
-  const min = p.tiersOn && first ? n(first.min) : Number(p.friendMinOrder) || 0;
-  const value = fT ? (tier ? n(tier.friend) : 0) : subtotal >= min ? n(p.friendValue) : 0;
+  let value;
+  if (friendTiered(p)) value = n(matchTier(friendTiers(p), subtotal)?.value) || 0;
+  else value = subtotal >= friendMin(p) ? n(p.friendValue) : 0;
   if (!value) return 0;
   const raw = p.friendMethod === 'percentage' ? (subtotal * value) / 100 : value;
   return Math.min(raw, subtotal);
 }
 
-/** Row errors (block saving) and warnings (shown, never block). */
-export function checkTiers(p) {
+/** What each side gets for a first-order subtotal (before the referral discount). */
+export function outcome(p, subtotal) {
+  const fTier = friendTiered(p) ? matchTier(friendTiers(p), subtotal) : null;
+  const friend = friendTiered(p)
+    ? (fTier ? friendValueText(p.friendMethod, fTier.value) : null)
+    : (subtotal >= friendMin(p) ? friendValueText(p.friendMethod, p.friendValue) : null);
+
+  const min = referrerMin(p);
+  let tier = null;
+  let referrer;
+  if (referrerTiered(p)) {
+    tier = matchTier(referrerTiers(p), subtotal);
+    referrer = tier ? pointsText(tier.value) : null; // below tier 1: the referral stays pending
+  } else if (p.referrerVipRates) referrer = "their VIP tier's reward";
+  else if (p.referrerMethod === 'point_order_value' || p.referrerMethod === 'store_credit_order_value') {
+    // These two methods count the subtotal after every discount, the referral discount included (as today).
+    const paid = Math.max(subtotal - friendDiscount(p, subtotal), 0);
+    const rate = Number(p.referrerValue) || 0;
+    const raw = Math.floor(paid * rate);
+    const cap = p.referrerMaxOn ? Number(p.referrerMax) || 0 : 0;
+    referrer = p.referrerMethod === 'point_order_value'
+      ? pointsText(cap && raw > cap ? cap : raw)
+      : `${money(Math.round(paid * rate) / 100)} store credit`;
+  } else referrer = referrerValueText(p.referrerMethod, p.referrerValue);
+  return {tier, fTier, friend, referrer, min, qualifies: !(min !== null && subtotal < min)};
+}
+
+/**
+ * Row errors (block saving) and warnings (shown, never block) for one side's tier list.
+ * kind: 'points' | 'amount' | 'percentage'. checkMin = false when the amounts are copied from the other side.
+ */
+export function checkTierList(tiers, kind, {checkMin = true} = {}) {
   const errors = {};
   const warnings = {};
-  if (!p.tiersOn) return {errors, warnings, count: 0, general: null};
-  const fT = friendTiered(p);
-  const rT = referrerTiered(p);
-  let general = null;
-  const fCan = TIERABLE_FRIEND.includes(p.friendMethod);
-  const rCan = TIERABLE_REFERRER.includes(p.referrerMethod) && !p.referrerVipRates;
-  if (!p.tiers.length) general = 'Add at least one tier, or turn order value tiers off';
-  const seen = new Map();
-  p.tiers.forEach((t) => {
+  const seen = new Set();
+  tiers.forEach((t) => {
     const e = {};
     const min = n(t.min);
-    if (!(min > 0)) e.min = 'Enter an amount above 0';
-    else if (Math.round(min * 100) !== min * 100) e.min = 'Use up to 2 decimals';
-    else if (seen.has(min)) e.min = 'Each tier needs a different starting amount';
-    else seen.set(min, t.id);
-    if (fT) {
-      const f = n(t.friend);
-      if (!(f > 0)) e.friend = 'Enter a value above 0';
-      else if (p.friendMethod === 'percentage' && f > 100) e.friend = 'A percentage can be 100 at most';
-      else if (p.friendMethod === 'amount' && Math.round(f * 100) !== f * 100) e.friend = 'Use up to 2 decimals';
+    if (checkMin) {
+      if (!(min > 0)) e.min = 'Enter an amount above 0';
+      else if (Math.round(min * 100) !== min * 100) e.min = 'Use up to 2 decimals';
+      else if (seen.has(min)) e.min = 'Each tier needs a different starting amount';
+      else seen.add(min);
     }
-    if (rT) {
-      const r = n(t.referrer);
-      if (!(r > 0)) e.referrer = 'Enter a value above 0';
-      else if (p.referrerMethod === 'point' && !Number.isInteger(r)) e.referrer = 'Points must be a whole number';
-      else if (p.referrerMethod === 'percentage' && r > 100) e.referrer = 'A percentage can be 100 at most';
-    }
+    const v = n(t.value);
+    if (!(v > 0)) e.value = 'Number needs to be greater than 0';
+    else if (kind === 'points' && !Number.isInteger(v)) e.value = 'Points must be a whole number';
+    else if (kind === 'percentage' && v > 100) e.value = 'A percentage can be 100 at most';
+    else if (kind === 'amount' && Math.round(v * 100) !== v * 100) e.value = 'Use up to 2 decimals';
     if (Object.keys(e).length) errors[t.id] = e;
   });
-  // Warnings compare each tier with the one below it, after sorting.
-  const sorted = sortTiers(p.tiers);
-  sorted.forEach((t, i) => {
+  tiers.forEach((t, i) => {
     const w = [];
-    const below = sorted[i - 1];
-    if (fT && p.friendMethod === 'amount' && n(t.friend) >= n(t.min) && n(t.min) > 0) {
-      w.push(`A ${money(t.friend)} discount is as big as this tier's starting amount (${money(t.min)})`);
-    }
-    if (below && fT && n(t.friend) > 0 && n(t.friend) < n(below.friend)) w.push(`Friend gets less than in the tier below (${friendValueText(p.friendMethod, below.friend)})`);
-    if (below && rT && n(t.referrer) > 0 && n(t.referrer) < n(below.referrer)) w.push(`Referrer gets less than in the tier below (${referrerValueText(p.referrerMethod, below.referrer)})`);
+    const below = tiers[i - 1];
+    if (kind === 'amount' && n(t.value) >= n(t.min) && n(t.min) > 0) w.push(`A ${money(t.value)} discount is as big as this tier's starting amount (${money(t.min)})`);
+    if (below && n(t.value) > 0 && n(t.value) < n(below.value)) w.push(`Less than the tier below (${kind === 'points' ? pointsText(below.value) : friendValueText(kind, below.value)})`);
     if (w.length) warnings[t.id] = w;
   });
-  const count = Object.values(errors).reduce((s, e) => s + Object.keys(e).length, 0) + (general ? 1 : 0);
-  return {errors, warnings, count, general};
+  const count = Object.values(errors).reduce((s, e) => s + Object.keys(e).length, 0);
+  return {errors, warnings, count};
 }
 
-export const canAddTier = (p) => p.tiers.length < MAX_TIERS;
+export const checkReferrer = (p) => (referrerTiered(p) ? checkTierList(referrerTiers(p), 'points') : {errors: {}, warnings: {}, count: 0});
+export const checkFriend = (p) => (friendTiered(p) ? checkTierList(friendTiers(p), p.friendMethod, {checkMin: !friendLinked(p)}) : {errors: {}, warnings: {}, count: 0});
 
-/** Short lines for summaries: "Up to $10 off · orders from $50". */
-export function friendSummary(p) {
-  if (friendTiered(p) && p.tiers.length) {
-    const vals = sortTiers(p.tiers).map((t) => n(t.friend)).filter((v) => v > 0);
-    const top = Math.max(...vals, 0);
-    const first = sortTiers(p.tiers).find((t) => n(t.min) > 0);
-    return `Up to ${friendValueText(p.friendMethod, top)} coupon · orders from ${first ? money(first.min) : '—'}`;
-  }
-  const min = p.tiersOn ? sortTiers(p.tiers).find((t) => n(t.min) > 0)?.min : p.friendMinOrder;
-  return `${friendValueText(p.friendMethod, p.friendValue)} coupon${Number(min) > 0 ? ` · orders from ${money(min)}` : ''}`;
-}
+export const canAddTier = (tiers) => tiers.length < MAX_TIERS;
 
+const range = (vals, fmt) => {
+  const ok = vals.map(n).filter((v) => v > 0);
+  if (!ok.length) return fmt('');
+  const lo = Math.min(...ok);
+  const hi = Math.max(...ok);
+  return lo === hi ? fmt(lo) : `${fmt(lo).replace(/ .*/, '')}–${fmt(hi)}`;
+};
+const tiersCount = (k) => `${k} ${k === 1 ? 'tier' : 'tiers'}`;
+
+/** Referrals page lines, in the app's words: "100 points reward", "$5 off coupon"; tiers add a range and a count. */
 export function referrerSummary(p) {
-  if (referrerTiered(p) && p.tiers.length) {
-    const vals = sortTiers(p.tiers).map((t) => n(t.referrer)).filter((v) => v > 0);
-    return `Up to ${referrerValueText(p.referrerMethod, Math.max(...vals, 0))} · ${p.tiers.length} ${p.tiers.length === 1 ? 'tier' : 'tiers'}`;
+  if (referrerTiered(p)) {
+    const t = referrerTiers(p);
+    return `${range(t.map((x) => x.value), pointsText)} reward · ${tiersCount(t.length)}`;
   }
-  const capped = p.referrerMethod === 'point_order_value' && p.referrerMaxOn && Number(p.referrerMax) > 0;
-  return `${referrerValueText(p.referrerMethod, p.referrerValue)}${capped ? `, up to ${num(p.referrerMax)} points` : ''}`;
+  if (p.referrerMethod === 'point') return `${pointsText(p.referrerValue)} reward`;
+  return referrerValueText(p.referrerMethod, p.referrerValue);
 }
 
-/** One line per tier, for the storefront: "Orders from $50 · $5 off for your friend · 100 points for you". */
-export function tierLines(p) {
-  return sortTiers(p.tiers)
-    .filter((t) => n(t.min) > 0)
-    .map((t) => ({
-      id: t.id,
-      from: money(t.min),
-      friend: friendTiered(p) ? friendValueText(p.friendMethod, t.friend) : friendValueText(p.friendMethod, p.friendValue),
-      referrer: referrerTiered(p) ? referrerValueText(p.referrerMethod, t.referrer) : referrerValueText(p.referrerMethod, p.referrerValue),
-    }));
+export function friendSummary(p) {
+  if (friendTiered(p)) {
+    const t = friendTiers(p);
+    return `${range(t.map((x) => x.value), (v) => friendValueText(p.friendMethod, v))} coupon · ${tiersCount(t.length)}`;
+  }
+  if (p.friendMethod === 'store_credit_fixed') return friendValueText(p.friendMethod, p.friendValue);
+  return `${friendValueText(p.friendMethod, p.friendValue)} coupon`;
+}
+
+/** "Up to 200 points" / "100 points": the storefront headline for one side. */
+export function referrerHeadline(p) {
+  if (referrerTiered(p)) {
+    const vals = referrerTiers(p).map((t) => n(t.value)).filter((v) => v > 0);
+    return vals.length > 1 ? `Up to ${pointsText(Math.max(...vals))}` : pointsText(vals[0] || 0);
+  }
+  return referrerValueText(p.referrerMethod, p.referrerValue);
+}
+export function friendHeadline(p) {
+  if (friendTiered(p)) {
+    const vals = friendTiers(p).map((t) => n(t.value)).filter((v) => v > 0);
+    return vals.length > 1 ? `Up to ${friendValueText(p.friendMethod, Math.max(...vals))}` : friendValueText(p.friendMethod, vals[0] || 0);
+  }
+  return friendValueText(p.friendMethod, p.friendValue);
+}
+
+/** Two worked examples for the tier table's help text: a mid order in tier 1 and one in the top tier. */
+export function examples(tiers) {
+  const valid = tiers.filter((t) => n(t.min) > 0 && n(t.value) > 0);
+  if (!valid.length) return [];
+  const pick = (i) => {
+    const lo = n(valid[i].min);
+    const hi = valid[i + 1] ? n(valid[i + 1].min) : lo * 1.2;
+    return Math.max(Math.round((lo + hi) / 2 / 5) * 5, Math.ceil(lo));
+  };
+  const idx = valid.length > 1 ? [0, valid.length - 1] : [0];
+  return idx.map((i) => ({order: pick(i), tier: valid[i], index: tiers.indexOf(valid[i])}));
 }

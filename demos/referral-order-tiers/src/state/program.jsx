@@ -1,15 +1,15 @@
 // In-memory referral program: seeded from the screen state, edited by the admin screens, read by the storefront.
 // No backend, no storage: a reload starts over.
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {BASE_PROGRAM, CONFIGURED_TIERS, OVERFLOW_TIERS, WORST_TIERS} from '../data/index.js';
+import {BASE_PROGRAM, FRIEND_TIER_VALUES, REFERRER_TIERS, TIERS_METHOD, WORST_TIERS} from '../data/index.js';
 import {useScenario} from '../kit/scenario.jsx';
 
 export function seedFor(state) {
-  if (state === 'default' || state === 'loading' || state === 'error') return {...BASE_PROGRAM, tiersOn: true, tiers: CONFIGURED_TIERS};
-  if (state === 'empty') return {...BASE_PROGRAM, tiersOn: true, tiers: []};
-  if (state === 'overflow') return {...BASE_PROGRAM, tiersOn: true, tiers: OVERFLOW_TIERS};
-  if (state === 'worst') return {...BASE_PROGRAM, tiersOn: true, tiers: WORST_TIERS};
-  return {...BASE_PROGRAM};
+  const release1 = {...BASE_PROGRAM, referrerMethod: TIERS_METHOD, referrerTiers: REFERRER_TIERS};
+  if (state === 'today') return {...BASE_PROGRAM};
+  if (state === 'release2') return {...release1, friendTiersOn: true, friendTierValues: FRIEND_TIER_VALUES};
+  if (state === 'worst') return {...release1, referrerTiers: WORST_TIERS};
+  return release1;
 }
 
 const ProgramContext = createContext(null);
