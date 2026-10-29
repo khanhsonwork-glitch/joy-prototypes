@@ -9,22 +9,43 @@ import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {useProgram} from '../state/program.jsx';
 import {FRIEND_METHODS, REFERRER_METHODS, TIERABLE_REFERRER, VIP_TIERS, money} from '../data/index.js';
-import {friendTiered, friendValueText, referrerTiered, referrerValueText, sortTiers, unitFor} from '../state/logic.js';
+import {checkTiers, friendTiered, referrerTiered, sortTiers, unitFor} from '../state/logic.js';
 import {PlanBanner, useLeaveGuard} from './shared.jsx';
 
-function TierList({rows}) {
+/** The value of each tier for one side, editable here so a reward-method change can be fixed on the same page. */
+function TierValues({form, setForm, side, touched, locked}) {
+  const method = side === 'friend' ? form.friendMethod : form.referrerMethod;
+  const unit = unitFor(method);
+  const errors = checkTiers(form).errors;
+  const rows = sortTiers(form.tiers).filter((t) => Number(t.min) > 0);
   return (
     <Box background="bg-surface-secondary" padding="300" borderRadius="200">
-      <BlockStack gap="200">
+      <BlockStack gap="300">
         <Text as="p" fontWeight="semibold">Reward value is set by order value tiers</Text>
-        <ul className="rt-list">
-          {rows.map((r) => <li key={r.id}><Text as="span">{`First order from ${r.from}: `}<b>{r.value}</b></Text></li>)}
-        </ul>
-        <span><Button url="/demo" variant="plain">Edit tiers</Button></span>
+        {rows.map((t) => (
+          <InlineStack key={t.id} gap="300" blockAlign="center" wrap={false}>
+            <div className="rt-vip-name"><Text as="span">{`First order from ${money(t.min)}`}</Text></div>
+            <TextField
+              label={`Reward for first orders from ${money(t.min)}`}
+              labelHidden
+              type="number"
+              prefix={unit.prefix}
+              suffix={unit.suffix}
+              value={String(t[side])}
+              onChange={(v) => setForm({...form, tiers: form.tiers.map((x) => (x.id === t.id ? {...x, [side]: v} : x))})}
+              error={touched ? errors[t.id]?.[side] : undefined}
+              disabled={locked}
+              autoComplete="off"
+            />
+          </InlineStack>
+        ))}
+        <Text as="p" variant="bodySm" tone="subdued">Change amounts and add or remove tiers in <Button url="/demo" variant="plain">Order value tiers</Button>.</Text>
       </BlockStack>
     </Box>
   );
 }
+
+const sideErrors = (form, side) => Object.values(checkTiers(form).errors).filter((e) => e[side]).length;
 
 function usePageState(field) {
   const {program: saved, save} = useProgram();
@@ -53,13 +74,13 @@ export function RefereeRewards() {
   const locked = state === 'disabled';
   const tiered = friendTiered(form);
   const storeCreditWithTiers = form.tiersOn && form.friendMethod === 'store_credit_fixed';
-  const err = !tiered ? valueError(form.friendMethod, form.friendValue) : undefined;
+  const err = !tiered ? valueError(form.friendMethod, form.friendValue) : sideErrors(form, 'friend') ? 'tiers' : undefined;
   const firstTier = sortTiers(form.tiers).find((t) => Number(t.min) > 0);
   const unit = unitFor(form.friendMethod);
 
   const onSave = () => {
     setTouched(true);
-    if (err) return notify('1 field needs attention', {error: true});
+    if (err) return notify(err === 'tiers' ? 'Some tier values need attention' : '1 field needs attention', {error: true});
     save(form);
     setTouched(false);
     return notify('Saved program successfully');
@@ -88,7 +109,7 @@ export function RefereeRewards() {
                   </Banner>
                 ) : null}
                 {tiered ? (
-                  <TierList rows={sortTiers(form.tiers).filter((t) => Number(t.min) > 0).map((t) => ({id: t.id, from: money(t.min), value: friendValueText(form.friendMethod, t.friend)}))} />
+                  <TierValues form={form} setForm={setForm} side="friend" touched={touched} locked={locked} />
                 ) : (
                   <TextField
                     label="Reward value"
@@ -161,12 +182,12 @@ export function ReferrerRewards() {
   const orderValueMethod = ['point_order_value', 'store_credit_order_value'].includes(form.referrerMethod);
   const vipBlocked = form.tiersOn && form.tierReferrer && TIERABLE_REFERRER.includes(form.referrerMethod);
   const firstTier = sortTiers(form.tiers).find((t) => Number(t.min) > 0);
-  const err = !tiered && !form.referrerVipRates ? valueError(form.referrerMethod, form.referrerValue) : undefined;
+  const err = !tiered && !form.referrerVipRates ? valueError(form.referrerMethod, form.referrerValue) : tiered && sideErrors(form, 'referrer') ? 'tiers' : undefined;
   const unit = unitFor(form.referrerMethod);
 
   const onSave = () => {
     setTouched(true);
-    if (err) return notify('1 field needs attention', {error: true});
+    if (err) return notify(err === 'tiers' ? 'Some tier values need attention' : '1 field needs attention', {error: true});
     save(form);
     setTouched(false);
     return notify('Saved program successfully');
@@ -216,7 +237,7 @@ export function ReferrerRewards() {
                   ))}
                 </BlockStack>
               ) : tiered ? (
-                <TierList rows={sortTiers(form.tiers).filter((t) => Number(t.min) > 0).map((t) => ({id: t.id, from: money(t.min), value: referrerValueText(form.referrerMethod, t.referrer)}))} />
+                <TierValues form={form} setForm={setForm} side="referrer" touched={touched} locked={locked} />
               ) : (
                 <TextField
                   label={orderValueMethod ? (form.referrerMethod === 'point_order_value' ? 'Points per $1 spent' : 'Store credit rate') : 'Reward value'}
