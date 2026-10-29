@@ -44,7 +44,11 @@ Thêm trạng thái riêng của tính năng vào `STATES` trong `src/kit/scenar
 
 ## 4. Giống app thật
 
+- **Đúng chỗ thật, bản mới nhất.** Trước khi vẽ, tra code Joy nhánh `avada/master` (không phải bản cũ, không phải prototype cũ) để biết thay đổi nằm ở đâu: menu → trang → panel/field. Đặt thay đổi đúng vào chỗ đó, cùng loại control. Đã có trang hay panel thật cho việc này thì sửa ở đó, không đẻ khối cài đặt mới ở trang khác. Ví dụ sai (29/10/2026): khối "Order value tiers" riêng ở trang Referrals, trong khi phần thưởng của từng bên nằm ở trang Edit của bên đó.
+- Ghi bản đồ đó vào `demos/<slug>/REFERENCE.md` (`npm run new` tạo sẵn): `Menu:` đường menu nối bằng ›, `Màn thật:` tên màn và đã xem ở đâu, `Ảnh so sánh:` ảnh màn thật (staging hoặc ảnh chụp) để reviewer đặt cạnh ảnh prototype. Ảnh màn thật để trong repo phải qua cổng §5 như mọi ảnh khác; không qua được thì ghi "ngoài repo" + ai giữ.
+- **Link mở thẳng màn có thay đổi.** `reviewUrl` của thẻ là `#/<màn>` của đúng màn đó (kèm `?state=` nếu cần), hash đổi theo khi bấm, và màn vẫn tới được bằng menu. `npm run check` đỏ nếu demo mới thiếu `REFERENCE.md` hay link không mở thẳng một màn.
 - Mở màn tham chiếu của Joy (staging hoặc ảnh chụp) **trước** khi vẽ. Giữ khung admin, chữ tiếng Anh như app, cùng loại control app đang dùng.
+- Reviewer so ảnh prototype (`npm run shot`) với ảnh màn thật trong `REFERENCE.md`. "Không giống app thật" hay "sai chỗ" là lỗi chặn, không phải góp ý.
 - Một nút chính mỗi màn. Thao tác xoá/không hoàn tác được thì hỏi lại bằng Modal.
 - Lỗi form: hiện dưới field, nói cách sửa; bấm Save khi có lỗi thì focus nhảy tới field sai.
 - Điện thoại (375px), tablet (768px), desktop (1440px): không cuộn ngang; bảng nhiều cột thành khối xếp dọc trên điện thoại.
@@ -62,6 +66,6 @@ Thêm trạng thái riêng của tính năng vào `STATES` trong `src/kit/scenar
 
 ## 6. Xong là khi
 
-1. `npm run check` xanh (đúng bộ kiểm CI chạy).
+1. `npm run check` xanh (đúng bộ kiểm CI chạy), kể cả cổng màn thật (`REFERENCE.md` + link mở thẳng màn).
 2. Đã tự bấm mọi nút trên link xem thử của PR, ở cả điện thoại và desktop, qua đủ 9 trạng thái.
 3. Ảnh thẻ chụp lại sau lần sửa cuối: `npm run shot -- <slug> --replace`.

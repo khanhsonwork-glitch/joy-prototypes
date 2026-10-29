@@ -66,6 +66,7 @@ check('creates a demo from the starter and registers it on the hub', () => {
   const dir = path.join(tmp, 'demos/birthday-reward');
   for (const file of ['index.html', 'package.json', 'package-lock.json', 'vite.config.js', 'src/App.jsx', 'src/kit/Drawer.jsx', 'src/pages/RewardsList.jsx', 'src/fonts/inter-var.woff2', 'public/img/icon.png']) assert(fs.existsSync(path.join(dir, file)), `missing ${file}`);
   assert(!fs.existsSync(path.join(dir, 'README.md')), 'template README must not be copied');
+  assert.match(fs.readFileSync(path.join(dir, 'REFERENCE.md'), 'utf8'), /^Menu: </m, 'REFERENCE.md written, still to fill in');
   assert(!fs.existsSync(path.join(dir, 'node_modules')), 'node_modules must not be copied');
   assert.match(fs.readFileSync(path.join(dir, 'src/demo.config.js'), 'utf8'), /name: "Birthday reward",\n  product: "loyalty"/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).name, 'joy-demo-birthday-reward');

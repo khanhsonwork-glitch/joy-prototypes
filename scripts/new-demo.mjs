@@ -75,6 +75,16 @@ export const DEMO = {
       if (json.packages?.['']) json.packages[''].name = `joy-demo-${slug}`;
       fs.writeFileSync(full, JSON.stringify(json, null, 2) + '\n');
     }
+    // Which real admin screen this demo changes: filled in BEFORE drawing; `npm run check` stays red until it is.
+    fs.writeFileSync(path.join(staging, 'REFERENCE.md'), `# Màn thật mà demo này sửa
+
+Điền trước khi vẽ (GUIDELINE §4): tra đường menu thật theo admin Joy bản mới nhất, mở màn đó (staging hoặc ảnh chụp),
+rồi đặt thay đổi đúng chỗ đó, cùng loại control. \`npm run check\` đỏ tới khi đủ ba dòng dưới.
+
+Menu: <đường menu → trang → panel/field, nối bằng ›>
+Màn thật: <tên màn thật, đã xem ở đâu (staging hay ảnh chụp), ngày>
+Ảnh so sánh: <reference/real.png trong thư mục này, hoặc "ngoài repo" + ai giữ>
+`);
     fs.renameSync(staging, target);
   } catch (error) {
     fs.rmSync(staging, {recursive: true, force: true});
@@ -97,6 +107,8 @@ export const DEMO = {
   if (options.shot) run(process.execPath, [path.join(root, 'scripts/shot.mjs'), slug], {cwd: root});
   console.log(`
 Tiếp theo:
+  điền demos/${slug}/REFERENCE.md   màn thật: đường menu, màn, ảnh so sánh (trước khi vẽ)
+  sửa reviewUrl của thẻ thành #/<màn có thay đổi> để link mở thẳng màn đó
   npm run dev -- ${slug}      sửa màn trong demos/${slug}/src/pages (trình duyệt tự tải lại)
   npm run check               kiểm trước khi mở Pull Request
 ${options.shot ? `Sửa xong màn thì chụp lại ảnh thẻ: npm run shot -- ${slug} --replace` : `Chưa có ảnh thẻ: npm run shot -- ${slug}`}`);
