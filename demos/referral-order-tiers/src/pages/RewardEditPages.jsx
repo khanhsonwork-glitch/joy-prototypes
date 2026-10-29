@@ -75,12 +75,13 @@ export function RefereeRewards() {
   const tiered = friendTiered(form);
   const storeCreditWithTiers = form.tiersOn && form.friendMethod === 'store_credit_fixed';
   const err = !tiered ? valueError(form.friendMethod, form.friendValue) : sideErrors(form, 'friend') ? 'tiers' : undefined;
+  const errCount = err === 'tiers' ? sideErrors(form, 'friend') : err ? 1 : 0;
   const firstTier = sortTiers(form.tiers).find((t) => Number(t.min) > 0);
   const unit = unitFor(form.friendMethod);
 
   const onSave = () => {
     setTouched(true);
-    if (err) return notify(err === 'tiers' ? 'Some tier values need attention' : '1 field needs attention', {error: true});
+    if (err) return notify(`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention`, {error: true});
     save(form);
     setTouched(false);
     return notify('Saved program successfully');
@@ -97,6 +98,7 @@ export function RefereeRewards() {
     <Page {...page}>
       <Layout>
         {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
+        {touched && errCount ? <Layout.Section><Banner tone="critical" title={`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention before you save`} /></Layout.Section> : null}
         <Layout.Section>
           <BlockStack gap="400">
             <Card>
@@ -183,11 +185,12 @@ export function ReferrerRewards() {
   const vipBlocked = form.tiersOn && form.tierReferrer && TIERABLE_REFERRER.includes(form.referrerMethod);
   const firstTier = sortTiers(form.tiers).find((t) => Number(t.min) > 0);
   const err = !tiered && !form.referrerVipRates ? valueError(form.referrerMethod, form.referrerValue) : tiered && sideErrors(form, 'referrer') ? 'tiers' : undefined;
+  const errCount = err === 'tiers' ? sideErrors(form, 'referrer') : err ? 1 : 0;
   const unit = unitFor(form.referrerMethod);
 
   const onSave = () => {
     setTouched(true);
-    if (err) return notify(err === 'tiers' ? 'Some tier values need attention' : '1 field needs attention', {error: true});
+    if (err) return notify(`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention`, {error: true});
     save(form);
     setTouched(false);
     return notify('Saved program successfully');
@@ -204,6 +207,7 @@ export function ReferrerRewards() {
     <Page {...page}>
       <Layout>
         {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
+        {touched && errCount ? <Layout.Section><Banner tone="critical" title={`${errCount} ${errCount === 1 ? 'field needs' : 'fields need'} attention before you save`} /></Layout.Section> : null}
         <Layout.Section>
           <Card>
             <BlockStack gap="400">

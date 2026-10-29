@@ -128,7 +128,7 @@ export function checkTiers(p) {
     const w = [];
     const below = sorted[i - 1];
     if (fT && p.friendMethod === 'amount' && n(t.friend) >= n(t.min) && n(t.min) > 0) {
-      w.push(`A ${money(t.friend)} discount takes a ${money(t.min)} order's items to $0`);
+      w.push(`A ${money(t.friend)} discount is as big as this tier's starting amount (${money(t.min)})`);
     }
     if (below && fT && n(t.friend) > 0 && n(t.friend) < n(below.friend)) w.push(`Friend gets less than in the tier below (${friendValueText(p.friendMethod, below.friend)})`);
     if (below && rT && n(t.referrer) > 0 && n(t.referrer) < n(below.referrer)) w.push(`Referrer gets less than in the tier below (${referrerValueText(p.referrerMethod, below.referrer)})`);
