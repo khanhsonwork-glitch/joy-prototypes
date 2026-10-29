@@ -121,7 +121,7 @@ function ClaimView() {
         <div className="sf-code" aria-live="polite">
           <p>Your code</p>
           <p className="sf-code__value">JOY-7KQ2MD</p>
-          <p className="sf-note">{fLines.length ? `One code for every tier. Checkout takes off the right amount for your cart, from ${money(min)}.` : 'Use it at checkout.'}</p>
+          <p className="sf-note">{fLines.length ? `One code for every order amount. Checkout takes off the right amount for your cart, from ${money(min)}.` : 'Use it at checkout.'}</p>
         </div>
       ) : (
         <>
@@ -166,8 +166,8 @@ function CheckoutView() {
       </div>
       <p className="sf-proto-note">
         {res.qualifies
-          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` The tier is picked from ${money2(subtotal)}, the subtotal before the referral discount.` : ''}`
-          : `Below ${money(res.min)}, Ava's first tier: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until this friend places an order from ${money(res.min)}.`}
+          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` The order amount is ${money2(subtotal)}, the subtotal before the referral discount.` : ''}`
+          : `Below ${money(res.min)}, Ava's lowest order amount: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until this friend places an order from ${money(res.min)}.`}
       </p>
     </div>
   );
@@ -183,7 +183,7 @@ function EmailView() {
         <p className="sf-email__brand">{STORE.name}</p>
         <h2 className="sf-email__title">{`You earned ${res.referrer}`}</h2>
         <p>Your friend Ben Carter placed a qualifying order, so your referral is complete. Thanks for spreading the word!</p>
-        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(120)} · tier ${res.tier.index + 1} (orders from ${money(res.tier.min)})`}</p> : null}
+        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(120)} · orders from ${money(res.tier.min)} earn ${pointsText(res.tier.value)}`}</p> : null}
         <span className="sf-btn">See my rewards</span>
       </div>
     </div>
@@ -206,7 +206,7 @@ export function Storefront() {
         {VIEWS.map((v) => (
           <button key={v.id} type="button" className={`sf-proto__btn ${view === v.id ? 'is-on' : ''}`} aria-pressed={view === v.id} onClick={() => setView(v.id)}>{v.label}</button>
         ))}
-        {state === 'today' ? <span className="sf-proto__hint">Tiers are off in this state: this is what shoppers see today.</span> : null}
+        {state === 'today' ? <span className="sf-proto__hint">Order amounts are off in this state: this is what shoppers see today.</span> : null}
       </div>
       <main className="sf-stage">{body}</main>
     </div>

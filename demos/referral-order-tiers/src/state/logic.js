@@ -1,6 +1,6 @@
 // The tier rules the prototype shows. Pure functions so every screen (admin, widget, checkout, email) agrees.
 // Referrer tiers belong to the new referrer reward method; friend tiers (release 2) belong to the friend's discount.
-import {MAX_TIERS, TIERABLE_FRIEND, TIERS_METHOD, money, num} from '../data/index.js';
+import {CALC_AMOUNT, MAX_TIERS, TIERABLE_FRIEND, money, num} from '../data/index.js';
 
 const n = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));
 
@@ -15,7 +15,7 @@ export function sortTiers(tiers) {
   });
 }
 
-export const referrerTiered = (p) => p.referrerMethod === TIERS_METHOD;
+export const referrerTiered = (p) => p.referrerMethod === 'point_order_value' && p.referrerCalc === CALC_AMOUNT;
 export const friendTiered = (p) => p.friendTiersOn && TIERABLE_FRIEND.includes(p.friendMethod);
 /** The friend's tiers reuse the referrer's amounts while that link is on and the referrer is on tiers. */
 export const friendLinked = (p) => friendTiered(p) && p.friendSameAmounts && referrerTiered(p);
@@ -54,7 +54,7 @@ export const pointsText = (value) => `${num(value)} ${Number(value) === 1 ? 'poi
 
 export function referrerValueText(method, value) {
   if (value === '' || value === undefined) return '—';
-  if (method === 'point' || method === TIERS_METHOD) return pointsText(value);
+  if (method === 'point') return pointsText(value);
   if (method === 'percentage') return `${num(value)}% off coupon`;
   if (method === 'amount') return `${money(value)} off coupon`;
   if (method === 'store_credit_fixed') return `${money(value)} store credit`;
@@ -63,7 +63,7 @@ export function referrerValueText(method, value) {
 }
 
 export function unitFor(method) {
-  if (method === 'point' || method === TIERS_METHOD) return {suffix: 'points'};
+  if (method === 'point') return {suffix: 'points'};
   if (method === 'percentage') return {suffix: '%'};
   return {prefix: '$'};
 }
@@ -95,7 +95,7 @@ export function outcome(p, subtotal) {
   else if (p.referrerMethod === 'point_order_value' || p.referrerMethod === 'store_credit_order_value') {
     // These two methods count the subtotal after every discount, the referral discount included (as today).
     const paid = Math.max(subtotal - friendDiscount(p, subtotal), 0);
-    const rate = Number(p.referrerValue) || 0;
+    const rate = Number(p.referrerMethod === 'point_order_value' ? p.referrerRate : p.referrerValue) || 0;
     const raw = Math.floor(paid * rate);
     const cap = p.referrerMaxOn ? Number(p.referrerMax) || 0 : 0;
     referrer = p.referrerMethod === 'point_order_value'
@@ -119,7 +119,7 @@ export function checkTierList(tiers, kind, {checkMin = true} = {}) {
     if (checkMin) {
       if (!(min > 0)) e.min = 'Enter an amount above 0';
       else if (Math.round(min * 100) !== min * 100) e.min = 'Use up to 2 decimals';
-      else if (seen.has(min)) e.min = 'Each tier needs a different starting amount';
+      else if (seen.has(min)) e.min = 'Each row needs a different order amount';
       else seen.add(min);
     }
     const v = n(t.value);
@@ -133,7 +133,7 @@ export function checkTierList(tiers, kind, {checkMin = true} = {}) {
     const w = [];
     const below = tiers[i - 1];
     if (kind === 'amount' && n(t.value) >= n(t.min) && n(t.min) > 0) w.push(`A ${money(t.value)} discount is as big as this tier's starting amount (${money(t.min)})`);
-    if (below && n(t.value) > 0 && n(t.value) < n(below.value)) w.push(`Less than tier ${i} (${kind === 'points' ? pointsText(below.value) : friendValueText(kind, below.value)})`);
+    if (below && n(t.value) > 0 && n(t.value) < n(below.value)) w.push(`Less than the row above (${kind === 'points' ? pointsText(below.value) : friendValueText(kind, below.value)})`);
     if (w.length) warnings[t.id] = w;
   });
   const count = Object.values(errors).reduce((s, e) => s + Object.keys(e).length, 0);
@@ -152,22 +152,22 @@ const range = (vals, fmt) => {
   const hi = Math.max(...ok);
   return lo === hi ? fmt(lo) : `${fmt(lo).replace(/ .*/, '')}–${fmt(hi)}`;
 };
-const tiersCount = (k) => `${k} ${k === 1 ? 'tier' : 'tiers'}`;
 
 /** Referrals page lines, in the app's words: "100 points reward", "$5 off coupon"; tiers add a range and a count. */
 export function referrerSummary(p) {
   if (referrerTiered(p)) {
     const t = referrerTiers(p);
-    return `${range(t.map((x) => x.value), pointsText)} reward · ${tiersCount(t.length)}`;
+    return `${range(t.map((x) => x.value), pointsText)} · by order amount`;
   }
   if (p.referrerMethod === 'point') return `${pointsText(p.referrerValue)} reward`;
+  if (p.referrerMethod === 'point_order_value') return `${num(p.referrerRate)} points per $1 spent`;
   return referrerValueText(p.referrerMethod, p.referrerValue);
 }
 
 export function friendSummary(p) {
   if (friendTiered(p)) {
     const t = friendTiers(p);
-    return `${range(t.map((x) => x.value), (v) => friendValueText(p.friendMethod, v))} coupon · ${tiersCount(t.length)}`;
+    return `${range(t.map((x) => x.value), (v) => friendValueText(p.friendMethod, v))} coupon · by order amount`;
   }
   if (p.friendMethod === 'store_credit_fixed') return friendValueText(p.friendMethod, p.friendValue);
   return `${friendValueText(p.friendMethod, p.friendValue)} coupon`;
@@ -179,6 +179,7 @@ export function referrerHeadline(p) {
     const vals = referrerTiers(p).map((t) => n(t.value)).filter((v) => v > 0);
     return vals.length > 1 ? `Up to ${pointsText(Math.max(...vals))}` : pointsText(vals[0] || 0);
   }
+  if (p.referrerMethod === 'point_order_value') return `${num(p.referrerRate)} points per $1 spent`;
   return referrerValueText(p.referrerMethod, p.referrerValue);
 }
 export function friendHeadline(p) {

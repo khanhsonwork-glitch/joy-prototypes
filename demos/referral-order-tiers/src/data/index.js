@@ -22,28 +22,23 @@ export const VIP_TIERS = [
   {id: 'platinum', name: 'Platinum'},
 ];
 
-// Reward methods as the Joy admin names them today (ProgramOptionConfig.customerReferralRewardType / discountReferralType),
-// plus the new referrer method this feature adds. Its label is a taste call for Alex: ?label=b shows the second wording.
-export const TIERS_METHOD = 'point_order_tiers';
-export const TIERS_METHOD_LABELS = {
-  a: "Points by friend's first order value (tiers)",
-  b: 'Points by order value tiers',
-};
+// Reward methods as the Joy admin names them today (ProgramOptionConfig.customerReferralRewardType / discountReferralType).
+// FR86 adds no new method: "Points based on order value" gets a second way to calculate points (Alex 29/10 17:53).
+export const CALC_RATE = 'rate';
+export const CALC_AMOUNT = 'amount';
 export const FRIEND_METHODS = [
   {label: 'Discount percentage', value: 'percentage'},
   {label: 'Discount fixed amount', value: 'amount'},
   {label: 'Store credit', value: 'store_credit_fixed'},
 ];
-export const referrerMethods = (labelKey = 'a') => [
+export const REFERRER_METHODS = [
   {label: 'Store credit based on order value (Recommend)', value: 'store_credit_order_value'},
   {label: 'Points based on order value', value: 'point_order_value'},
-  {label: TIERS_METHOD_LABELS[labelKey] || TIERS_METHOD_LABELS.a, value: TIERS_METHOD},
   {label: 'Store credit', value: 'store_credit_fixed'},
   {label: 'Discount percentage', value: 'percentage'},
   {label: 'Discount fixed amount', value: 'amount'},
   {label: 'Points reward', value: 'point'},
 ];
-export const REFERRER_METHODS = referrerMethods();
 // The friend's discount can follow tiers only when it is a code applied at checkout; store credit is given at claim.
 export const TIERABLE_FRIEND = ['amount', 'percentage'];
 export const MAX_TIERS = 5;
@@ -73,19 +68,21 @@ export const BASE_PROGRAM = {
   referrerMethod: 'point',
   referrerValue: 100,
   referrerVipRates: false,
+  referrerCalc: 'rate',
+  referrerRate: '1',
   referrerMaxOn: true,
   referrerMax: 200,
   referrerTiers: [],
 };
 
-// Release 1: the referrer earns by the friend's first order value. Tier 1 = the old minimum and the old 100 points.
+// Release 1: fixed points by the friend's first order amount. The lowest amount = the old minimum, its points = the old 100.
 export const REFERRER_TIERS = [
   {id: 't1', min: '50', points: '100'},
   {id: 't2', min: '100.01', points: '200'},
 ];
 // Release 2: the friend's discount by the same amounts.
 export const FRIEND_TIER_VALUES = {t1: '5', t2: '10'};
-// Worst case: a duplicate start amount, a tier that pays less than the one below, a blank value, 5 tiers.
+// Worst case: a duplicate amount, a row that pays less than the one above, a blank value, 5 rows.
 export const WORST_TIERS = [
   {id: 'w1', min: '50', points: '100'},
   {id: 'w2', min: '250', points: '80'},

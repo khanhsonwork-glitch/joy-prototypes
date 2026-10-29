@@ -32,7 +32,7 @@ export function useLeaveGuard(dirty) {
 
 export function PlanBanner({onViewPlans}) {
   return (
-    <Banner tone="warning" title="Order value tiers are available on the Advanced plan" action={{content: 'View plans', onAction: onViewPlans}}>
+    <Banner tone="warning" title="Points by order amount are available on the Advanced plan" action={{content: 'View plans', onAction: onViewPlans}}>
       <p>Your current plan is Essential. Your referral rewards keep working as they are.</p>
     </Banner>
   );
@@ -40,8 +40,8 @@ export function PlanBanner({onViewPlans}) {
 
 export function SyncBanner({onRetry}) {
   return (
-    <Banner tone="critical" title="Couldn't save: checkout didn't accept the new tiers" action={{content: 'Try again', onAction: onRetry}}>
-      <p>Nothing changed. Friends and referrers keep the tiers saved on Oct 28. Your edits are still on this page.</p>
+    <Banner tone="critical" title="Couldn't save: checkout didn't accept the new order amounts" action={{content: 'Try again', onAction: onRetry}}>
+      <p>Nothing changed. Friends and referrers keep the order amounts saved on Oct 28. Your edits are still on this page.</p>
     </Banner>
   );
 }
