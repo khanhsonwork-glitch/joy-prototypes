@@ -3,14 +3,13 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
-  {value: 'default', label: 'Default', help: 'Two tiers: from $50 and from $100.01'},
-  {value: 'off', label: 'Tiers off', help: 'The program as merchants have it today'},
-  {value: 'empty', label: 'Empty', help: 'Tiers on, no tier added yet'},
+  {value: 'default', label: 'Release 1', help: 'Referrer earns by tier: from $50 → 100 points, from $100.01 → 200 points'},
+  {value: 'release2', label: 'Release 2', help: "Friend's discount by tier too: $5 off, $10 off"},
+  {value: 'today', label: 'Today', help: 'Before this feature: 100 points, $5 off from $50'},
+  {value: 'worst', label: 'Worst case', help: '5 tiers, a duplicate amount, a blank value, a tier paying less'},
+  {value: 'disabled', label: 'Disabled', help: 'Essential plan: tiers need Advanced'},
   {value: 'loading', label: 'Loading', help: 'Data on its way'},
   {value: 'error', label: 'Error', help: 'Loading failed'},
-  {value: 'disabled', label: 'Disabled', help: 'Plan or permission blocks editing'},
-  {value: 'overflow', label: 'Overflow', help: 'Longest names, biggest numbers'},
-  {value: 'worst', label: 'Worst case', help: 'Overflow, many rows and a failed sync'},
 ];
 const VALID = new Set(STATES.map((s) => s.value));
 function readState() {
