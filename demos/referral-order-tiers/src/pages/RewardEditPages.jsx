@@ -12,7 +12,7 @@ import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {useProgram} from '../state/program.jsx';
 import {CALC_AMOUNT, CALC_RATE, FRIEND_METHODS, REFERRER_METHODS, TIERABLE_FRIEND, VIP_TIERS, money, num} from '../data/index.js';
 import {
-  checkFriend, checkReferrer, examples, friendLinked, friendTiered, friendTiers, friendValueText, pointsText, referrerTiered,
+  checkFriend, checkReferrer, examples, friendDiscount, orderFor, outcome, friendLinked, friendTiered, friendTiers, friendValueText, pointsText, referrerTiered,
   referrerTiers, sortTiers, unitFor,
 } from '../state/logic.js';
 import {PlanBanner, useLeaveGuard} from './shared.jsx';
@@ -59,17 +59,34 @@ function useSave({form, save, setTouched, count}) {
 
 // ---------------------------------------------------------------- Rewards for referrers
 
-/** "With these settings: …" under the order-amount table, built from the numbers being typed. */
-function ReferrerAmountHelp({tiers}) {
+/** "With these settings: …" under the order-amount table, built from the numbers being typed and the friend's code. */
+function ReferrerAmountHelp({form, tiers}) {
   const ex = examples(tiers);
   const first = tiers.find((t) => Number(t.min) > 0);
   if (!ex.length) return null;
-  const parts = ex.map((e, i) => (i === 0
-    ? `a friend's first order of ${money(e.order)} gives the referrer ${pointsText(e.tier.value)}`
-    : `, and ${money(e.order)} gives ${pointsText(e.tier.value)}`));
+  const line = (target) => {
+    const order = orderFor(form, target);
+    const res = outcome(form, order);
+    const code = res.discount ? ` with the ${money(res.discount)} referral code` : '';
+    return {order, res, code};
+  };
+  const parts = ex.map((e, i) => {
+    const {order, res, code} = line(e.order);
+    return `${i === 0 ? 'order' : ' Order'} ${money(order)}${i === 0 ? code : ''} → ${money(res.counted)} counted → ${res.referrer || 'no points yet'}.`;
+  });
+  // The near-miss: an order just over the lowest amount that the code pulls under it.
+  let nearMiss = '';
+  if (first) {
+    const d = friendDiscount(form, Number(first.min) + 1);
+    if (d > 0) {
+      const order = Math.round((Number(first.min) + d / 2) * 100) / 100;
+      const res = outcome(form, order);
+      if (!res.qualifies) nearMiss = ` Order ${money(order)} → ${money(res.counted)} counted → under ${money(first.min)}, so the referral doesn't complete yet.`;
+    }
+  }
   return (
     <div data-tier-example>
-      <Text as="p" tone="subdued">{`With these settings: ${parts.join('')}.${first ? ` Orders under ${money(first.min)} don't complete the referral.` : ''}`}</Text>
+      <Text as="p" tone="subdued">{`With these settings: ${parts.join('')}${nearMiss}`}</Text>
     </div>
   );
 }
@@ -148,7 +165,11 @@ export function ReferrerRewards() {
                         {
                           label: 'Per $1 spent',
                           value: CALC_RATE,
-                          helpText: `Points grow with the order. A $80 order earns ${num(Math.floor(80 * rate))} points at ${rateText(rate)}.`,
+                          helpText: (() => {
+                            const d = friendDiscount(form, 80);
+                            const counted = 80 - d;
+                            return `Points grow with the order. Order $80${d ? ` with the ${money(d)} referral code → ${money(counted)} counted` : ''} → ${num(Math.floor(counted * rate))} points at ${rateText(rate)}.`;
+                          })(),
                         },
                         {
                           label: 'Fixed points by order amount',
@@ -187,12 +208,12 @@ export function ReferrerRewards() {
                       locked={locked}
                       examples={(
                         <BlockStack gap="200">
-                          <ReferrerAmountHelp tiers={tiers} />
+                          <ReferrerAmountHelp form={form} tiers={tiers} />
                           {friendLinked(form) ? <Text as="p" tone="subdued">Rewards for referees uses these order amounts too.</Text> : null}
                           {!friendTiered(form) && tiers[0] && Number(form.friendMinOrder) !== Number(tiers[0].min) ? (
                             <Text as="p" tone="caution">{`Friends can use their coupon from ${Number(form.friendMinOrder) > 0 ? money(form.friendMinOrder) : 'any amount'} (Rewards for referees), but the referral completes only from ${money(tiers[0].min)}.`}</Text>
                           ) : null}
-                          <Text as="p" variant="bodySm" tone="subdued">Order amount is the friend's subtotal after other discounts and before the referral discount, without shipping and taxes. Each amount applies up to the next one.</Text>
+                          <Text as="p" variant="bodySm" tone="subdued">Counted amount is the friend's order subtotal after all discounts, including the referral code, before shipping and taxes. Each amount applies up to the next one.</Text>
                         </BlockStack>
                       )}
                     />
