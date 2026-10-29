@@ -810,6 +810,30 @@
     },
     {
       "product": "loyalty",
+      "slug": "referral-order-tiers",
+      "name": "Referral rewards by order value tiers",
+      "area": "Referral",
+      "surfaces": [
+        "Admin",
+        "Widget",
+        "Email"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-10-29",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-referral-order-tiers.jpg",
+      "reviewUrl": "/loyalty/referral-order-tiers/#/demo",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "referral-order-value",
       "name": "Referral points by order value",
       "area": "Programs",
