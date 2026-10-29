@@ -1,7 +1,7 @@
 // Rewards for referrers / Rewards for referees, card for card as the Joy admin draws them today
 // (ReferringCustomerReward.js, ReferredFriendReward.js). Tiers live inside each page's Reward settings card:
 // the referrer gets a new Reward method, the friend (release 2) a checkbox that swaps Reward value for tiers.
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Banner, BlockStack, Button, Card, Checkbox, ChoiceList, Layout, Page, Select, Text, TextField,
 } from '@shopify/polaris';
@@ -10,7 +10,7 @@ import {useRoute} from '../shell/router.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {useProgram} from '../state/program.jsx';
-import {FRIEND_METHODS, TIERABLE_FRIEND, TIERS_METHOD, VIP_TIERS, money, referrerMethods} from '../data/index.js';
+import {CALC_AMOUNT, CALC_RATE, FRIEND_METHODS, REFERRER_METHODS, TIERABLE_FRIEND, VIP_TIERS, money, num} from '../data/index.js';
 import {
   checkFriend, checkReferrer, examples, friendLinked, friendTiered, friendTiers, friendValueText, pointsText, referrerTiered,
   referrerTiers, sortTiers, unitFor,
@@ -59,48 +59,66 @@ function useSave({form, save, setTouched, count}) {
 
 // ---------------------------------------------------------------- Rewards for referrers
 
-function ReferrerTierExamples({tiers}) {
+/** "With these settings: …" under the order-amount table, built from the numbers being typed. */
+function ReferrerAmountHelp({tiers}) {
   const ex = examples(tiers);
   const first = tiers.find((t) => Number(t.min) > 0);
   if (!ex.length) return null;
-  const parts = ex.map((e, i) => `${i === 0 ? '' : ', and '}${pointsText(e.tier.value)} for a ${money(e.order)} ${i === 0 ? 'referee first order' : 'one'} (tier ${e.index + 1})`);
+  const parts = ex.map((e, i) => (i === 0
+    ? `a friend's first order of ${money(e.order)} gives the referrer ${pointsText(e.tier.value)}`
+    : `, and ${money(e.order)} gives ${pointsText(e.tier.value)}`));
   return (
-    <BlockStack gap="100">
-      <div data-tier-example><Text as="p" tone="subdued">{`Referrer will receive ${parts.join('')}.`}</Text></div>
-      {first ? <Text as="p" tone="subdued">{`An order below ${money(first.min)} earns nothing: the referral stays pending until one of the friend's orders reaches ${money(first.min)}.`}</Text> : null}
-    </BlockStack>
+    <div data-tier-example>
+      <Text as="p" tone="subdued">{`With these settings: ${parts.join('')}.${first ? ` Orders under ${money(first.min)} don't complete the referral.` : ''}`}</Text>
+    </div>
   );
 }
 
+const rateText = (rate) => `${num(rate)} ${Number(rate) === 1 ? 'point' : 'points'} per $1`;
+
 export function ReferrerRewards() {
   const {notYet} = useShell();
-  const {query} = useRoute();
-  const methods = useMemo(() => referrerMethods(query.get('label') === 'b' ? 'b' : 'a'), [query]);
   const {save, form, setForm, dirty, state, setState, touched, setTouched} = usePageState();
   const guard = useLeaveGuard(dirty);
   const locked = state === 'disabled';
-  const tiered = referrerTiered(form);
+  const orderValue = form.referrerMethod === 'point_order_value';
+  const byAmount = referrerTiered(form);
   const tiers = referrerTiers(form);
   const check = checkReferrer(form);
-  const vipShown = !tiered && form.referrerMethod !== 'point_order_value';
-  const err = !tiered && !form.referrerVipRates ? valueError(form.referrerMethod, form.referrerValue) : undefined;
-  const count = tiered ? check.count : err ? 1 : 0;
+  const vipShown = !orderValue;
+  const rateErr = orderValue && !byAmount ? valueError('point_order_value', form.referrerRate) : undefined;
+  const err = !orderValue && !form.referrerVipRates ? valueError(form.referrerMethod, form.referrerValue) : rateErr;
+  const count = byAmount ? check.count : err ? 1 : 0;
   const onSave = useSave({form, save, setTouched, count});
   const unit = unitFor(form.referrerMethod);
-  const orderValue = form.referrerMethod === 'point_order_value';
 
   const setTiers = (next) => setForm({...form, referrerTiers: next});
   const raw = form.referrerTiers;
-  const pickMethod = (v) => {
-    // Leaving tiers while the friend's discount reuses these amounts: the friend keeps them as its own list.
-    if (v !== TIERS_METHOD && friendLinked(form)) {
-      return setForm({...form, referrerMethod: v, friendSameAmounts: false, friendTiers: friendTiers(form).map((t) => ({id: newId(), min: String(t.min), value: String(t.value)}))});
+  /** Apply a method/calc change; leaving "by order amount" while the friend reuses its amounts hands them to the friend. */
+  const change = (patch) => {
+    const next = {...form, ...patch};
+    if (friendLinked(form) && !referrerTiered(next)) {
+      Object.assign(next, {friendSameAmounts: false, friendTiers: friendTiers(form).map((t) => ({id: newId(), min: String(t.min), value: String(t.value)}))});
     }
-    if (v !== TIERS_METHOD || raw.length) return setForm({...form, referrerMethod: v});
-    // First time on tiers: tier 1 = today's minimum order and today's points, so nothing changes until tier 2 is added.
-    const points = form.referrerMethod === 'point' ? String(form.referrerValue) : '100';
-    return setForm({...form, referrerMethod: v, referrerTiers: [{id: newId(), min: String(form.friendMinOrder || 50), points}]});
+    // First time by order amount: the lowest amount = today's friend minimum, its points = today's points, so nothing changes until a second row is added.
+    if (referrerTiered(next) && !next.referrerTiers.length) {
+      next.referrerTiers = [{id: newId(), min: String(form.friendMinOrder || 50), points: form.referrerMethod === 'point' ? String(form.referrerValue) : '100'}];
+    }
+    setForm(next);
   };
+  const pickCalc = (v) => {
+    change({referrerCalc: v});
+    // Keep the address in sync so the link a reviewer copies opens the same choice.
+    const [path, q = ''] = window.location.hash.replace(/^#/, '').split('?');
+    const params = new URLSearchParams(q);
+    params.set('calc', v);
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${path}?${params}`);
+  };
+  const shown = tiers.filter((t) => Number(t.min) > 0 && Number(t.value) > 0).slice(0, 2);
+  const amountExample = shown.length
+    ? `Orders from ${money(shown[0].min)} earn ${pointsText(shown[0].value)}${shown[1] ? `, from ${money(shown[1].min)} earn ${pointsText(shown[1].value)}` : ''}.`
+    : 'Orders from $50 earn 100 points, from $100 earn 200 points.';
+  const rate = Number(form.referrerRate) || 1;
 
   const page = {
     backAction: {content: 'Reward programs', url: '/demo?type=referral'},
@@ -120,15 +138,30 @@ export function ReferrerRewards() {
             <Card>
               <BlockStack gap="400">
                 <Text as="span" variant="headingMd">Reward settings</Text>
-                <Select
-                  label="Reward method"
-                  options={methods}
-                  value={form.referrerMethod}
-                  onChange={pickMethod}
-                  disabled={locked}
-                  helpText={tiered ? "Referrers earn points by the referred friend's first order value. Tier 1 is the minimum order." : undefined}
-                />
-                {tiered ? (
+                <Select label="Reward method" options={REFERRER_METHODS} value={form.referrerMethod} onChange={(v) => change({referrerMethod: v})} disabled={locked} />
+                {orderValue ? (
+                  <div id="calc">
+                    <ChoiceList
+                      title="Calculate points"
+                      disabled={locked}
+                      choices={[
+                        {
+                          label: 'Per $1 spent',
+                          value: CALC_RATE,
+                          helpText: `Points grow with the order. A $80 order earns ${num(Math.floor(80 * rate))} points at ${rateText(rate)}.`,
+                        },
+                        {
+                          label: 'Fixed points by order amount',
+                          value: CALC_AMOUNT,
+                          helpText: `A set number of points for each order range. ${amountExample}`,
+                        },
+                      ]}
+                      selected={[form.referrerCalc]}
+                      onChange={([v]) => pickCalc(v)}
+                    />
+                  </div>
+                ) : null}
+                {byAmount ? (
                   <div id="tiers">
                     <TierTable
                       tiers={tiers}
@@ -139,7 +172,7 @@ export function ReferrerRewards() {
                       onAdd={() => {
                         const x = nextTier(tiers, form.friendMinOrder || 50, 100);
                         const id = newId();
-                        // A linked friend discount gets a value for the new tier too, so the referee page never has a blank row.
+                        // A linked friend discount gets a value for the new row too, so the referee page never has a blank row.
                         const lastFriend = friendLinked(form) ? Number(friendTiers(form).at(-1)?.value) || 0 : 0;
                         setForm({
                           ...form,
@@ -154,12 +187,12 @@ export function ReferrerRewards() {
                       locked={locked}
                       examples={(
                         <BlockStack gap="200">
-                          <ReferrerTierExamples tiers={tiers} />
+                          <ReferrerAmountHelp tiers={tiers} />
                           {friendLinked(form) ? <Text as="p" tone="subdued">Rewards for referees uses these order amounts too.</Text> : null}
                           {!friendTiered(form) && tiers[0] && Number(form.friendMinOrder) !== Number(tiers[0].min) ? (
                             <Text as="p" tone="caution">{`Friends can use their coupon from ${Number(form.friendMinOrder) > 0 ? money(form.friendMinOrder) : 'any amount'} (Rewards for referees), but the referral completes only from ${money(tiers[0].min)}.`}</Text>
                           ) : null}
-                          <Text as="p" variant="bodySm" tone="subdued">Order value is the friend's subtotal after other discounts and before the referral discount, without shipping and taxes. A tier applies from its amount up to the next tier.</Text>
+                          <Text as="p" variant="bodySm" tone="subdued">Order amount is the friend's subtotal after other discounts and before the referral discount, without shipping and taxes. Each amount applies up to the next one.</Text>
                         </BlockStack>
                       )}
                     />
@@ -215,14 +248,15 @@ export function ReferrerRewards() {
                 />
               </BlockStack>
             </Card>
-            {orderValue ? (
+            {orderValue && !byAmount ? (
               <Card>
                 <BlockStack gap="400">
                   <Text as="span" variant="headingMd">Points based on order value settings</Text>
                   <Checkbox label="Apply tier-based reward rates" checked={false} onChange={notYet} disabled={locked} />
-                  <TextField label="Points per $1 spent" type="number" suffix="points per $1" value={String(form.referrerValue)} onChange={(v) => setForm({...form, referrerValue: v})} error={touched ? err : undefined} disabled={locked} autoComplete="off" />
+                  <TextField label="Points per $1 spent" type="number" suffix="points per $1" value={String(form.referrerRate)} onChange={(v) => setForm({...form, referrerRate: v})} error={touched ? rateErr : undefined} disabled={locked} autoComplete="off" />
                   <Checkbox label="Set a maximum points per referral" helpText="Cap the points a referrer can earn from a single referral, regardless of the order value." checked={form.referrerMaxOn} onChange={(v) => setForm({...form, referrerMaxOn: v})} disabled={locked} />
-                  <Text as="p" tone="subdued">{`Referrer will receive ${num100(form)} points for a $100 referee first order (at ${form.referrerValue} points per $1)`}</Text>
+                  {form.referrerMaxOn ? <TextField label="Set a maximum points per referral" labelHidden type="number" suffix="points" value={String(form.referrerMax)} onChange={(v) => setForm({...form, referrerMax: v})} disabled={locked} autoComplete="off" /> : null}
+                  <div data-rate-example><Text as="p" tone="subdued">{`Referrer will receive ${num(num100(form))} points for a $100 referee first order (at ${form.referrerRate} points per $1)`}</Text></div>
                 </BlockStack>
               </Card>
             ) : null}
@@ -235,7 +269,7 @@ export function ReferrerRewards() {
 }
 
 function num100(form) {
-  const raw = Math.floor(100 * (Number(form.referrerValue) || 0));
+  const raw = Math.floor(100 * (Number(form.referrerRate) || 0));
   const cap = form.referrerMaxOn ? Number(form.referrerMax) || 0 : 0;
   return cap && raw > cap ? cap : raw;
 }
@@ -246,7 +280,7 @@ function FriendTierExamples({tiers, method}) {
   const ex = examples(tiers);
   const first = tiers.find((t) => Number(t.min) > 0);
   if (!ex.length) return null;
-  const parts = ex.map((e, i) => `${i === 0 ? 'A' : '; a'} ${money(e.order)} first order gets ${friendValueText(method, e.tier.value)} (tier ${e.index + 1})`);
+  const parts = ex.map((e, i) => `${i === 0 ? 'With these settings: a' : '; a'} ${money(e.order)} first order gets ${friendValueText(method, e.tier.value)}`);
   return (
     <BlockStack gap="100">
       <div data-tier-example><Text as="p" tone="subdued">{`${parts.join('')}.`}</Text></div>
@@ -318,7 +352,7 @@ export function RefereeRewards() {
                     <BlockStack gap="300">
                       <Checkbox
                         label="Set the discount by the friend's order value"
-                        helpText="One code for every tier: checkout takes off the discount of the tier the cart reaches. Tier 1 is the minimum order."
+                        helpText="One code for every order amount: checkout takes off the discount for the amount the cart reaches. The lowest amount is the minimum order."
                         checked={form.friendTiersOn}
                         onChange={turnOn}
                         disabled={locked}
@@ -337,7 +371,7 @@ export function RefereeRewards() {
                           valueLabel="Friend gets"
                           unit={tierUnit}
                           minLocked={linked}
-                          minLockedHelp={<>Order amounts follow <Button variant="plain" url="/demo/referrer">Rewards for referrers</Button>. Change or add tiers there.</>}
+                          minLockedHelp={<>Order amounts follow <Button variant="plain" url="/demo/referrer">Rewards for referrers</Button>. Change or add them there.</>}
                           onMin={(id, v) => setForm({...form, friendTiers: form.friendTiers.map((t) => (t.id === id ? {...t, min: v} : t))})}
                           onValue={setValue}
                           onAdd={() => {const x = nextTier(tiers, form.friendMinOrder || 50, form.friendValue); setForm({...form, friendTiers: [...form.friendTiers, {id: newId(), ...x}]});}}
@@ -402,7 +436,7 @@ export function RefereeRewards() {
                               value={String(tiered && first ? first.min : form.friendMinOrder)}
                               onChange={(v) => setForm({...form, friendMinOrder: v})}
                               disabled={locked || tiered}
-                              helpText={tiered ? 'Set by tier 1 in Reward settings.' : undefined}
+                              helpText={tiered ? 'Set by the lowest order amount in Reward settings.' : undefined}
                               autoComplete="off"
                             />
                           ),
@@ -416,7 +450,7 @@ export function RefereeRewards() {
                       allowMultiple
                       title="Combinations"
                       choices={[
-                        {label: 'Order discounts', value: 'order', disabled: tiered, helpText: tiered ? 'Off while the discount is set by tier: another order discount would change which tier the cart reaches.' : undefined},
+                        {label: 'Order discounts', value: 'order', disabled: tiered, helpText: tiered ? 'Off while the discount is set by order amount: another order discount would change which amount the cart reaches.' : undefined},
                         {label: 'Product discounts', value: 'product'},
                         {label: 'Shipping discounts', value: 'shipping'},
                       ]}
