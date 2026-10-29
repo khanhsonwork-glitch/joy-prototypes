@@ -939,6 +939,28 @@
     },
     {
       "product": "loyalty",
+      "slug": "rule-engine-merge",
+      "name": "Place order & Birthday without rule engine",
+      "area": "Prototype",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-10-29",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-rule-engine-merge.jpg",
+      "reviewUrl": "/loyalty/rule-engine-merge/#/demo/place-order?shop=old&plan=essential",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "sea-survey",
       "name": "SEA Survey integration",
       "area": "Integrations",
