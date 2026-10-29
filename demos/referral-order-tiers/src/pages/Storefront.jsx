@@ -72,15 +72,15 @@ function WidgetView() {
         <ul className="sf-refs">
           {MY_REFERRALS.map((r) => {
             let detail = 'No order yet';
-            if (r.status === 'completed') detail = `${outcome(program, r.subtotal).referrer} · first order ${money2(r.subtotal)}`;
-            else if (r.subtotal !== null && program.tiersOn && first) detail = `First order ${money2(r.subtotal)} is below ${money(first.min)}`;
+            if (r.status === 'completed') detail = `${outcome(program, r.subtotal).referrer} · order ${money2(r.subtotal)}`;
+            else if (r.subtotal !== null && program.tiersOn && first) detail = `Order ${money2(r.subtotal)} is below ${money(first.min)}`;
             else if (r.subtotal !== null) detail = `Order ${money2(r.subtotal)} placed`;
             const done = r.status === 'completed' || (!program.tiersOn && r.subtotal !== null);
             return (
               <li key={r.id}>
                 <span className="sf-refs__name">{r.name}</span>
                 <span className={`sf-pill ${done ? 'sf-pill--done' : ''}`}>{done ? 'Completed' : 'Pending'}</span>
-                <span className="sf-refs__detail">{done && r.status !== 'completed' ? `${outcome(program, r.subtotal).referrer} · first order ${money2(r.subtotal)}` : detail}</span>
+                <span className="sf-refs__detail">{done && r.status !== 'completed' ? `${outcome(program, r.subtotal).referrer} · order ${money2(r.subtotal)}` : detail}</span>
               </li>
             );
           })}
@@ -172,8 +172,8 @@ function EmailView() {
       <div className="sf-email__body">
         <p className="sf-email__brand">{STORE.name}</p>
         <h2 className="sf-email__title">{`You earned ${res.referrer}`}</h2>
-        <p>Your friend Ben Carter placed their first order. Thanks for spreading the word!</p>
-        {program.tiersOn && res.tier ? <p className="sf-muted">{`Ben's first order of ${money2(120)} qualified for tier ${sortTiers(program.tiers).indexOf(res.tier) + 1} (orders from ${money(res.tier.min)}).`}</p> : null}
+        <p>Your friend Ben Carter placed a qualifying order, so your referral is complete. Thanks for spreading the word!</p>
+        {program.tiersOn && res.tier ? <p className="sf-muted">{`Order subtotal ${money2(120)} · tier ${sortTiers(program.tiers).indexOf(res.tier) + 1} (orders from ${money(res.tier.min)})`}</p> : null}
         <span className="sf-btn">See my rewards</span>
       </div>
     </div>

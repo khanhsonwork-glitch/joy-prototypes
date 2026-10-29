@@ -48,6 +48,7 @@ export function RefereeRewards() {
   const {setState} = useScenario();
   const {save, form, setForm, dirty, state} = usePageState();
   const [touched, setTouched] = useState(false);
+  const [combo, setCombo] = useState({product: true, order: true, shipping: true});
   const guard = useLeaveGuard(dirty);
   const locked = state === 'disabled';
   const tiered = friendTiered(form);
@@ -126,6 +127,18 @@ export function RefereeRewards() {
                       ) : null}
                     </>
                   )}
+                  <BlockStack gap="100">
+                    <Text as="p" fontWeight="semibold">Discount combinations</Text>
+                    <Checkbox label="Product discounts" checked={combo.product} onChange={(v) => setCombo({...combo, product: v})} disabled={locked} />
+                    <Checkbox
+                      label="Order discounts"
+                      checked={combo.order && !tiered}
+                      onChange={(v) => setCombo({...combo, order: v})}
+                      disabled={locked || tiered}
+                      helpText={tiered ? "Off while the friend's discount is set by tier: another order discount would change which tier the cart reaches." : undefined}
+                    />
+                    <Checkbox label="Shipping discounts" checked={combo.shipping} onChange={(v) => setCombo({...combo, shipping: v})} disabled={locked} />
+                  </BlockStack>
                 </BlockStack>
               </Card>
             ) : null}

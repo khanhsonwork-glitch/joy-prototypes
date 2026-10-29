@@ -55,7 +55,7 @@ export function outcome(p, subtotal) {
   const tier = p.tiersOn ? matchTier(p.tiers, subtotal) : null;
   const first = sortTiers(p.tiers).find((t) => n(t.min) > 0);
   const min = p.tiersOn && first ? n(first.min) : null;
-  const friendMin = fT ? min : Number(p.friendMinOrder) || 0;
+  const friendMin = p.tiersOn && min !== null ? min : Number(p.friendMinOrder) || 0;
 
   let friend;
   if (fT) friend = tier ? friendValueText(p.friendMethod, tier.friend) : null;
@@ -72,7 +72,9 @@ export function outcome(p, subtotal) {
 export function friendDiscount(p, subtotal) {
   const fT = friendTiered(p);
   const tier = fT ? matchTier(p.tiers, subtotal) : null;
-  const value = fT ? (tier ? n(tier.friend) : 0) : subtotal >= (Number(p.friendMinOrder) || 0) ? n(p.friendValue) : 0;
+  const first = sortTiers(p.tiers).find((t) => n(t.min) > 0);
+  const min = p.tiersOn && first ? n(first.min) : Number(p.friendMinOrder) || 0;
+  const value = fT ? (tier ? n(tier.friend) : 0) : subtotal >= min ? n(p.friendValue) : 0;
   if (!value) return 0;
   const raw = p.friendMethod === 'percentage' ? (subtotal * value) / 100 : value;
   return Math.min(raw, subtotal);
@@ -86,7 +88,9 @@ export function checkTiers(p) {
   const fT = friendTiered(p);
   const rT = referrerTiered(p);
   let general = null;
-  if (!p.tierFriend && !p.tierReferrer) general = 'Choose at least one reward to set by tier';
+  const fCan = TIERABLE_FRIEND.includes(p.friendMethod);
+  const rCan = TIERABLE_REFERRER.includes(p.referrerMethod) && !p.referrerVipRates;
+  if ((fCan || rCan) && !fT && !rT) general = 'Choose at least one reward to set by tier';
   else if (!p.tiers.length) general = 'Add at least one tier, or turn order value tiers off';
   const seen = new Map();
   p.tiers.forEach((t) => {
@@ -114,7 +118,7 @@ export function checkTiers(p) {
     const w = [];
     const below = sorted[i - 1];
     if (fT && p.friendMethod === 'amount' && n(t.friend) >= n(t.min) && n(t.min) > 0) {
-      w.push(`A ${money(t.friend)} discount makes a ${money(t.min)} order free`);
+      w.push(`A ${money(t.friend)} discount takes a ${money(t.min)} order's items to $0`);
     }
     if (below && fT && n(t.friend) > 0 && n(t.friend) < n(below.friend)) w.push(`Friend gets less than in the tier below (${friendValueText(p.friendMethod, below.friend)})`);
     if (below && rT && n(t.referrer) > 0 && n(t.referrer) < n(below.referrer)) w.push(`Referrer gets less than in the tier below (${referrerValueText(p.referrerMethod, below.referrer)})`);
