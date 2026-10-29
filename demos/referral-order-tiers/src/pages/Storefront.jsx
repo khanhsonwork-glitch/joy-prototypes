@@ -83,15 +83,16 @@ function WidgetView() {
         <ul className="sf-refs">
           {MY_REFERRALS.map((r) => {
             let detail = 'No order yet';
-            if (r.status === 'completed') detail = `${outcome(program, r.subtotal).referrer} · order ${money2(r.subtotal)}`;
-            else if (r.subtotal !== null && min !== null && r.subtotal < min) detail = `Order ${money2(r.subtotal)} is below ${money(min)}`;
-            else if (r.subtotal !== null) detail = `Order ${money2(r.subtotal)} placed`;
-            const done = r.status === 'completed' || (r.subtotal !== null && (min === null || r.subtotal >= min));
+            const res = r.subtotal !== null ? outcome(program, r.subtotal) : null;
+            if (r.status === 'completed') detail = `${res.referrer} · order ${money2(res.counted)}`;
+            else if (res && !res.qualifies) detail = `Order ${money2(res.counted)} is below ${money(min)}`;
+            else if (res) detail = `Order ${money2(res.counted)} placed`;
+            const done = r.status === 'completed' || (res !== null && res.qualifies);
             return (
               <li key={r.id}>
                 <span className="sf-refs__name">{r.name}</span>
                 <span className={`sf-pill ${done ? 'sf-pill--done' : ''}`}>{done ? 'Completed' : 'Pending'}</span>
-                <span className="sf-refs__detail">{done && r.status !== 'completed' ? `${outcome(program, r.subtotal).referrer} · order ${money2(r.subtotal)}` : detail}</span>
+                <span className="sf-refs__detail">{done && r.status !== 'completed' ? `${res.referrer} · order ${money2(res.counted)}` : detail}</span>
               </li>
             );
           })}
@@ -166,8 +167,8 @@ function CheckoutView() {
       </div>
       <p className="sf-proto-note">
         {res.qualifies
-          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` The order amount is ${money2(subtotal)}, the subtotal before the referral discount.` : ''}`
-          : `Below ${money(res.min)}, Ava's lowest order amount: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until this friend places an order from ${money(res.min)}.`}
+          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` Counted amount: ${money2(res.counted)}, the subtotal after the referral code.` : ''}`
+          : `Counted amount ${money2(res.counted)}${discount ? ' (after the referral code)' : ''} is below ${money(res.min)}, Ava's lowest order amount: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until an order from this friend counts ${money(res.min)} or more.`}
       </p>
     </div>
   );
@@ -183,7 +184,7 @@ function EmailView() {
         <p className="sf-email__brand">{STORE.name}</p>
         <h2 className="sf-email__title">{`You earned ${res.referrer}`}</h2>
         <p>Your friend Ben Carter placed a qualifying order, so your referral is complete. Thanks for spreading the word!</p>
-        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(120)} · orders from ${money(res.tier.min)} earn ${pointsText(res.tier.value)}`}</p> : null}
+        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(res.counted)} after the referral code · orders from ${money(res.tier.min)} earn ${pointsText(res.tier.value)}`}</p> : null}
         <span className="sf-btn">See my rewards</span>
       </div>
     </div>
