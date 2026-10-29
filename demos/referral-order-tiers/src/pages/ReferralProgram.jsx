@@ -166,7 +166,8 @@ function TiersCard({program, setProgram, show, check, locked}) {
   const turnOn = (on) => {
     if (!on) return setProgram({...program, tiersOn: false});
     // First time on: tier 1 starts from today's reward and minimum order, so nothing changes until the merchant adds tier 2.
-    const tiers = program.tiers.length ? program.tiers : [{id: newId(), min: String(program.friendMinOrder || 50), friend: String(program.friendValue), referrer: String(program.referrerValue)}];
+    // A side whose method can't be tiered starts blank: a rate or a cap is never copied in as a tier value.
+    const tiers = program.tiers.length ? program.tiers : [{id: newId(), min: String(program.friendMinOrder || 50), friend: fCan ? String(program.friendValue) : '', referrer: rCan ? String(program.referrerValue) : ''}];
     return setProgram({...program, tiersOn: true, tierFriend: fCan, tierReferrer: rCan, tiers});
   };
 
