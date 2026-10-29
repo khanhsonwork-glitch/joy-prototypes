@@ -130,7 +130,7 @@ function TryOrder({program}) {
             ))}
           </InlineStack>
         </InlineStack>
-        <Text as="p" variant="bodySm" tone="subdued">Subtotal before the referral discount.</Text>
+        <Text as="p" variant="bodySm" tone="subdued">Subtotal before the referral discount. Assumes every item gets the code; anti-fraud checks aren't applied here.</Text>
         <div aria-live="polite" data-try-result>
           {res.qualifies ? (
             <Text as="p">
