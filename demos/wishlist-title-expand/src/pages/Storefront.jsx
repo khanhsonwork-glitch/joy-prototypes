@@ -39,6 +39,9 @@ export function Storefront() {
   const [device, setDevice] = useState(['mobile', 'desktop'].includes(q.device) ? q.device : window.innerWidth < 760 ? 'mobile' : 'desktop');
   const {items, status, remove, reset} = useWishlistItems(shopId, state);
   const shop = SHOPS[shopId];
+  // Closing really closes: reopening starts a fresh widget, so every opened name is back on one line.
+  const [widgetOpen, setWidgetOpen] = useState(true);
+  const [session, setSession] = useState(0);
 
   return (
     <div className="fx-store">
@@ -88,9 +91,10 @@ export function Storefront() {
             </div>
           </div>
         ) : null}
+        {widgetOpen ? (
         <div className={device === 'mobile' ? 'fx-phone' : 'fx-popup fx-popup--float'}>
           <WishlistWidget
-            key={`${shopId}-${rowStyle}-${device}`}
+            key={`${shopId}-${rowStyle}-${device}-${session}`}
             shop={shop}
             items={items}
             status={status}
@@ -99,8 +103,22 @@ export function Storefront() {
             onNotify={(t) => notify(t)}
             onRetry={reset}
             onRemove={remove}
+            onClose={() => setWidgetOpen(false)}
           />
         </div>
+        ) : (
+          <button
+            type="button"
+            className="fx-launcher"
+            style={{background: shop.brand, color: shop.brandText}}
+            onClick={() => {
+              setSession((n) => n + 1);
+              setWidgetOpen(true);
+            }}
+          >
+            {shop.widgetTitle}
+          </button>
+        )}
       </div>
     </div>
   );

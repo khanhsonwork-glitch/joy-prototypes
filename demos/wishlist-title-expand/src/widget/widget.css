@@ -214,8 +214,9 @@
 
 .jw-prices {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px;
+  column-gap: 6px;
   margin-top: 2px;
   font-size: 13px;
   line-height: 1.5;
@@ -244,6 +245,7 @@
 
 .jw-priceline .jw-prices {
   margin-top: 0;
+  min-width: 0;
 }
 
 /* ---------------------------------------------------------------- buttons */
@@ -279,8 +281,14 @@
 }
 
 .jw-btn.is-added {
+  gap: 4px;
+  padding: 0 10px;
   color: var(--jw-brand);
   border-color: var(--jw-brand-soft);
+}
+
+.jw-btn--compact.is-added {
+  padding: 0 12px;
 }
 
 .jw-btn svg {

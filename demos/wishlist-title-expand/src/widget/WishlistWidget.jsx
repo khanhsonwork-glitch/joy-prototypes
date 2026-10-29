@@ -88,9 +88,16 @@ function AddButton({item, added, onAdd, compact}) {
     );
   }
   return (
-    <button type="button" className={cx('jw-btn', compact && 'jw-btn--compact', added && 'is-added')} onClick={() => onAdd(item)}>
+    <button
+      type="button"
+      className={cx('jw-btn', compact && 'jw-btn--compact', added && 'is-added')}
+      aria-label={added ? 'Added to cart' : undefined}
+      onClick={() => onAdd(item)}
+    >
       {added ? <Check /> : null}
-      {added ? 'Added to cart' : 'Add'}
+      {/* One-line row: "Added" keeps the name column wide enough to read an opened name (review 29/10: "Added to
+          cart" left 33px for the name at 375px). The two-line row has room on the price line for the full label. */}
+      {added ? (compact ? 'Added to cart' : 'Added') : 'Add'}
     </button>
   );
 }

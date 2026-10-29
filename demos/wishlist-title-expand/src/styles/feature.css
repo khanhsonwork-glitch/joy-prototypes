@@ -254,3 +254,25 @@
     margin: 0;
   }
 }
+
+.fx-launcher {
+  position: relative;
+  z-index: 1;
+  align-self: flex-end;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  font: 650 15px/1 'Inter', sans-serif;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+  cursor: pointer;
+}
+
+.fx-launcher:focus-visible {
+  outline: 2px solid var(--proto-amber-text);
+  outline-offset: 3px;
+}
+
+.fx-stage--mobile .fx-launcher {
+  margin-top: 420px;
+}
