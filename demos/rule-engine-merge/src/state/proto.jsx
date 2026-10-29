@@ -1,6 +1,7 @@
 // Which shop the reviewer is looking at (new install, existing shop on the old version, after a downgrade) and its plan.
 // Both travel in the hash query (?shop=old&plan=essential) so a copied link opens the same case.
-import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
+import {useRoute} from '../shell/router.jsx';
 
 export const SHOPS = [
   {value: 'new', label: 'New shop', help: 'Installed after this change: latest Place order and Birthday from day one'},
@@ -67,6 +68,8 @@ export function ProtoProvider({children}) {
   const first = readUrl();
   const [shop, setShopRaw] = useState(first.shop || 'new');
   const [plan, setPlanRaw] = useState(first.plan || 'essential');
+  const planRef = useRef(plan);
+  planRef.current = plan;
   const [switched, setSwitched] = useState(false);
   const [banner, setBanner] = useState('shown'); // shown | remind | never
   const [extra, setExtra] = useState([]); // programs added during the review
@@ -76,6 +79,8 @@ export function ProtoProvider({children}) {
       const u = readUrl();
       if (u.shop && u.shop !== shop) {setShopRaw(u.shop); setSwitched(false); setBanner('shown'); setExtra([]);}
       if (u.plan) setPlanRaw(u.plan);
+      // In-app links drop the query: put the case back so a reload or a copied link opens the same shop and plan.
+      if (!u.shop || !u.plan) writeUrl({shop: u.shop || shop, plan: u.plan || planRef.current});
     };
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
@@ -83,6 +88,13 @@ export function ProtoProvider({children}) {
 
   const setShop = useCallback((v) => {setShopRaw(v); setSwitched(false); setBanner('shown'); setExtra([]); writeUrl({shop: v});}, []);
   const setPlan = useCallback((v) => {setPlanRaw(v); writeUrl({plan: v});}, []);
+
+  // In-app navigation (pushState) drops the query too: after every route change put the case back in the URL.
+  const {path} = useRoute();
+  useEffect(() => {
+    const u = readUrl();
+    if (!u.shop || !u.plan) writeUrl({shop: u.shop || shop, plan: u.plan || plan});
+  }, [path, shop, plan]);
 
   const value = useMemo(() => {
     const oldVersion = shop === 'old' && !switched;

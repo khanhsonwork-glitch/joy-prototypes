@@ -131,11 +131,10 @@ export function NewPlaceOrderForm({program, plan}) {
             <BlockStack gap="300">
               <InlineStack align="space-between" blockAlign="center">
                 <Text as="span" variant="headingMd">Rounding & priority</Text>
-                {priorityLock ? <LockTag plan={priorityLock} /> : null}
               </InlineStack>
               <InlineGrid columns={2} gap="300">
                 <Select label="Rounding" options={['Round down', 'Round up', 'Round to nearest']} value="Round down" onChange={() => {}} />
-                <Select label="Priority" options={['1', '2', '3']} value={String(program.priority || 1)} onChange={() => {}} disabled={Boolean(priorityLock)} helpText={priorityLock ? 'Matters when more than one Place order program runs' : undefined} />
+                <Select label={lockedLabel('Priority', priorityLock)} options={['1', '2', '3']} value={String(program.priority || 1)} onChange={() => {}} disabled={Boolean(priorityLock)} helpText={priorityLock ? 'Matters when more than one Place order program runs' : undefined} />
               </InlineGrid>
               <Checkbox label="Stop processing lower-priority programs when this one rewards" checked={stop} onChange={setStop} disabled={Boolean(priorityLock)} />
             </BlockStack>
@@ -168,7 +167,7 @@ function OldPlaceOrderForm({plan}) {
               <ChoiceList
                 title="Earning type"
                 titleHidden
-                choices={METHODS.map((m) => ({label: lockedLabel(m.label, m.advanced ? 'advanced' : null), value: m.value, disabled: m.advanced}))}
+                choices={METHODS.map((m) => ({label: lockedLabel(m.label, m.advanced ? (hasPlan(plan, 'advanced') ? 'new' : 'advanced') : null), value: m.value, disabled: m.advanced}))}
                 selected={[method]}
                 onChange={([v]) => setMethod(v)}
               />

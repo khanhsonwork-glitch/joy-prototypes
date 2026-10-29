@@ -21,16 +21,36 @@ const WHAT_UNLOCKS = {
 };
 
 const UpgradeContext = createContext(() => {});
+const SwitchContext = createContext(() => {});
 
 /** Wrap the app once; any screen calls `useUpgrade()(plan)` to open the upgrade modal for that plan. */
 export function UpgradeProvider({children}) {
-  const {setPlan} = useProto();
+  const {setPlan, switchVersion} = useProto();
   const {notify} = useShell();
   const [need, setNeed] = useState(null);
+  const [confirm, setConfirm] = useState(false);
   const open = useCallback((plan) => setNeed(plan), []);
+  const openSwitch = useCallback(() => setConfirm(true), []);
   return (
     <UpgradeContext.Provider value={open}>
+    <SwitchContext.Provider value={openSwitch}>
       {children}
+      <Modal
+        open={confirm}
+        onClose={() => setConfirm(false)}
+        title="Switch to the new version?"
+        primaryAction={{content: 'Switch', onAction: () => {switchVersion(); setConfirm(false); notify('Switched to the new version');}}}
+        secondaryActions={[{content: 'Cancel', onAction: () => setConfirm(false)}]}
+      >
+        <Modal.Section>
+          <List>
+            <List.Item>Your Place order program moves to the new version with the same settings.</List.Item>
+            <List.Item>Your Birthday program moves to the latest version. Rewards, limit and notifications stay the same.</List.Item>
+            <List.Item>New orders earn points the new way from now on. Points already given don't change.</List.Item>
+            <List.Item>You can't switch back.</List.Item>
+          </List>
+        </Modal.Section>
+      </Modal>
       <Modal
         open={Boolean(need)}
         onClose={() => setNeed(null)}
@@ -48,14 +68,26 @@ export function UpgradeProvider({children}) {
           </BlockStack>
         </Modal.Section>
       </Modal>
+    </SwitchContext.Provider>
     </UpgradeContext.Provider>
   );
 }
 export const useUpgrade = () => useContext(UpgradeContext);
+export const useSwitchConfirm = () => useContext(SwitchContext);
 
 /** Plan tag beside a locked control, like the "Advanced" tag on the old Place order form. Click = upgrade modal. */
 export function LockTag({plan}) {
   const upgrade = useUpgrade();
+  const openSwitch = useSwitchConfirm();
+  // plan === 'new': the option exists only in the new version and the shop's plan already includes it (old form,
+  // Advanced and up). Clicking it asks to switch, never to upgrade a plan the shop already pays for.
+  if (plan === 'new') {
+    return (
+      <button type="button" className="re-locktag" onClick={(e) => {e.preventDefault(); e.stopPropagation(); openSwitch();}} aria-label="Available in the new version. Switch">
+        New version
+      </button>
+    );
+  }
   return (
     <button type="button" className="re-locktag" onClick={(e) => {e.preventDefault(); e.stopPropagation(); upgrade(plan);}} aria-label={`Available on the ${planLabel(plan)} plan. Upgrade`}>
       {planLabel(plan)}
@@ -84,12 +116,12 @@ const BANNER_COPY = {
 
 /** Banner on the old Place order / Birthday page of an existing shop: switch, preview, hide. */
 export function SwitchBanner({kind, renderPreview}) {
-  const {banner, setBanner, switchVersion} = useProto();
+  const {banner, setBanner} = useProto();
   const {notify} = useShell();
+  const setConfirm = useSwitchConfirm();
   const [previewMenu, setPreviewMenu] = useState(false);
   const [preview, setPreview] = useState(null);
   const [hideMenu, setHideMenu] = useState(false);
-  const [confirm, setConfirm] = useState(false);
   const copy = BANNER_COPY[kind];
   if (banner !== 'shown') return null;
 
@@ -99,7 +131,7 @@ export function SwitchBanner({kind, renderPreview}) {
         <BlockStack gap="300">
           <Text as="p">{copy.body}</Text>
           <InlineStack gap="200">
-            <Button variant="primary" onClick={() => setConfirm(true)}>Switch to the new version</Button>
+            <Button variant="primary" onClick={() => setConfirm()}>Switch to the new version</Button>
             <Popover
               active={previewMenu}
               activator={<Button disclosure onClick={() => setPreviewMenu((v) => !v)}>Preview</Button>}
@@ -136,7 +168,7 @@ export function SwitchBanner({kind, renderPreview}) {
         onClose={() => setPreview(null)}
         size="large"
         title={preview === 'birthday' ? 'Preview: new Birthday program' : 'Preview: new Place order program'}
-        primaryAction={{content: 'Switch to the new version', onAction: () => {setPreview(null); setConfirm(true);}}}
+        primaryAction={{content: 'Switch to the new version', onAction: () => {setPreview(null); setConfirm();}}}
         secondaryActions={[{content: 'Close', onAction: () => setPreview(null)}]}
       >
         <Modal.Section>
@@ -144,22 +176,6 @@ export function SwitchBanner({kind, renderPreview}) {
         </Modal.Section>
       </Modal>
 
-      <Modal
-        open={confirm}
-        onClose={() => setConfirm(false)}
-        title="Switch to the new version?"
-        primaryAction={{content: 'Switch', onAction: () => {switchVersion(); setConfirm(false); notify('Switched to the new version');}}}
-        secondaryActions={[{content: 'Cancel', onAction: () => setConfirm(false)}]}
-      >
-        <Modal.Section>
-          <List>
-            <List.Item>Your Place order program moves to the new version with the same settings.</List.Item>
-            <List.Item>Your Birthday program moves to the latest version. Rewards, limit and notifications stay the same.</List.Item>
-            <List.Item>New orders earn points the new way from now on. Points already given don't change.</List.Item>
-            <List.Item>You can't switch back.</List.Item>
-          </List>
-        </Modal.Section>
-      </Modal>
     </div>
   );
 }
