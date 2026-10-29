@@ -4,10 +4,13 @@
 // Usage: node scripts/check-reference.mjs
 import fs from 'node:fs';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {ROOT, fail} from './lib.mjs';
 
-// Present when the gate landed; they get a warning until someone fills them in. Never add a new slug here.
+// Present when the gate landed; they get a warning until someone fills them in — but only while nobody touches them:
+// a change to demos/<slug>/ in the branch makes that demo pass the full gate (review 29/10: FR86's demo, the reason for
+// this gate, would otherwise stay exempt while it is being redone). Never add a new slug here.
 export const GRANDFATHERED = new Set([
   'analytics-revamp', 'app-migration', 'cross-app-menu', 'custom-plan', 'earning-by-market', 'email-builder',
   'home-dashboard', 'instagram-dm-automation', 'joy-pulse', 'max-discount-uses', 'member-exclusive-deal',
@@ -26,6 +29,24 @@ export const FIELDS = [
 // "#/" followed by a route (hub demos route by hash), or an old external build whose path names a screen: the link
 // opens on a screen, not on the demo's landing.
 export const deepLink = url => /#\/[A-Za-z0-9]/.test(url || '') || /^https?:\/\/[^/]+\/[A-Za-z0-9]/.test(url || '');
+// `npm run new` writes "#/demo", the starter's own list page: a demo still linking there was never pointed at its screen.
+export const starterLanding = url => /#\/demo\/?$/.test(url || '');
+// Words that mean the field is still to be done, whatever is written around them.
+const NOT_YET = /chưa có|chưa chụp|chưa điền|\btodo\b|\btbd\b/i;
+
+// demos/<slug> folders this branch changes: the PR's own diff in CI (merge commit vs its first parent), else the diff
+// from the merge-base with origin/main, working tree included. Unknown (no git, shallow clone) → none.
+export function touchedDemos(root = ROOT) {
+  const git = args => spawnSync('git', args, {cwd: root, encoding: 'utf8'});
+  let out = null;
+  if (process.env.GITHUB_EVENT_NAME === 'pull_request') out = git(['diff', '--name-only', 'HEAD^1', 'HEAD']);
+  else {
+    const base = git(['merge-base', 'HEAD', 'origin/main']);
+    if (base.status === 0) out = git(['diff', '--name-only', base.stdout.trim()]);
+  }
+  if (!out || out.status !== 0) return new Set();
+  return new Set(out.stdout.split('\n').map(f => f.match(/^demos\/([^/]+)\//)?.[1]).filter(Boolean));
+}
 
 export function referenceProblems(text, demoPath) {
   if (text == null) return ['thiếu REFERENCE.md'];
@@ -33,7 +54,7 @@ export function referenceProblems(text, demoPath) {
   for (const [field, hint] of FIELDS) {
     const line = text.split('\n').find(l => l.trim().toLowerCase().startsWith(field.toLowerCase() + ':'));
     const value = line ? line.slice(line.indexOf(':') + 1).trim() : '';
-    if (!value || value.startsWith('<')) {problems.push(`REFERENCE.md chưa điền "${field}:" (${hint})`); continue;}
+    if (!value || value.startsWith('<') || NOT_YET.test(value)) {problems.push(`REFERENCE.md chưa điền "${field}:" (${hint})`); continue;}
     if (field === 'Menu' && !/[›>]/.test(value)) problems.push(`REFERENCE.md "Menu:" phải là cả đường menu → trang → panel, nối bằng › (đang là "${value}")`);
     if (field === 'Ảnh so sánh' && demoPath) {
       const file = value.match(/^[\w./-]+\.(png|jpe?g|webp)\b/i)?.[0];
@@ -43,16 +64,18 @@ export function referenceProblems(text, demoPath) {
   return problems;
 }
 
-export function scanReferences(registry, root = ROOT) {
+export function scanReferences(registry, root = ROOT, touched = new Set()) {
   const errors = [], warnings = [];
   const demosDir = path.join(root, 'demos');
   const demos = fs.existsSync(demosDir)
     ? fs.readdirSync(demosDir, {withFileTypes: true}).filter(e => e.isDirectory() && !e.name.startsWith('.')).map(e => e.name)
     : [];
-  const report = (slug, problem) => (GRANDFATHERED.has(slug) ? warnings : errors).push(`${slug}: ${problem}`);
+  const exempt = slug => GRANDFATHERED.has(slug) && !touched.has(slug);
+  const report = (slug, problem) => (exempt(slug) ? warnings : errors).push(`${slug}: ${problem}${GRANDFATHERED.has(slug) && touched.has(slug) ? ' (demo cũ nhưng nhánh này sửa nó: phải qua cổng)' : ''}`);
   for (const card of registry.features || []) {
     if (card.quarantined) continue;
     if (!deepLink(card.reviewUrl)) report(card.slug, `link thẻ không mở thẳng một màn (cần #/<màn>…): ${card.reviewUrl || '(trống)'}`);
+    else if (starterLanding(card.reviewUrl)) report(card.slug, `link thẻ vẫn là trang đầu của starter (#/demo): trỏ nó tới màn có thay đổi`);
   }
   for (const slug of demos) {
     if (!(registry.features || []).some(card => card.slug === slug)) continue;   // a folder without a card is the hub test's job
@@ -65,7 +88,7 @@ export function scanReferences(registry, root = ROOT) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const registry = JSON.parse(fs.readFileSync(path.join(ROOT, 'hub/data/registry.json'), 'utf8'));
-  const {errors, warnings, demos} = scanReferences(registry);
+  const {errors, warnings, demos} = scanReferences(registry, ROOT, touchedDemos());
   if (warnings.length) console.log(`CẢNH BÁO reference (demo có trước 29/10, chưa đánh đỏ — sửa khi đụng tới demo đó):\n  ${warnings.join('\n  ')}`);
   if (errors.length) {
     console.log(`FAIL reference\n  ${errors.join('\n  ')}`);
