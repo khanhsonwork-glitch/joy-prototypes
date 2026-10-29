@@ -107,12 +107,14 @@ function NavSection({label, onClick}) {
 // rows without `href` show a toast instead (they exist only for the look of the real app).
 const JOY_SUB = [
   {id: 'customers', label: 'Customers'},
-  {id: 'rewards', label: 'Reward programs', href: '#/demo', routes: ['demo']},
+  {id: 'rewards', label: 'Reward programs', href: '#/demo?type=earning', routes: ['demo']},
   {id: 'membership', label: 'Membership'},
   {id: 'onsite', label: 'On-site content'},
   {id: 'analytics', label: 'Analytics'},
   {id: 'integrations', label: 'Integrations'},
   {id: 'settings', label: 'Settings'},
+  {id: 'wishlist', label: 'Wishlist'},
+  {id: 'subscription', label: 'Subscription'},
 ];
 const APP_NAME = DEMO.product === 'wishlist' ? 'Joy: Wishlist' : 'Joy: Loyalty Program';
 

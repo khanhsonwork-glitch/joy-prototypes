@@ -125,3 +125,10 @@
   .sf-stage {padding: var(--p-space-500) var(--p-space-300);}
   .sf-store__nav {display: none;}
 }
+
+.rt-proto-note {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--p-space-300);
+  padding: var(--p-space-400); border-radius: var(--p-border-radius-300);
+  background: var(--proto-amber-bg); border: 1px solid var(--proto-amber-border); color: var(--proto-amber-text);
+}
+.rt-proto-note p {margin: 0;}

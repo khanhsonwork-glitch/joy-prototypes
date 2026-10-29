@@ -2,8 +2,9 @@
 // "Order value tiers" card: one table, one row per tier, a friend column and a referrer column.
 import React, {useEffect, useMemo, useState} from 'react';
 import {
-  Badge, Banner, BlockStack, Box, Button, Card, Checkbox, Divider, InlineStack, Layout, Link, Page, Text, TextField,
+  Badge, Banner, BlockStack, Box, Button, Card, Checkbox, Divider, InlineStack, Layout, Link, Page, Tabs, Text, TextField,
 } from '@shopify/polaris';
+import {useNavigate, useRoute} from '../shell/router.jsx';
 import {DeleteIcon, PlusIcon} from '@shopify/polaris-icons';
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
@@ -16,6 +17,16 @@ import {
   canAddTier, checkTiers, friendSummary, friendTiered, outcome, referrerSummary, referrerTiered, sortTiers, unitFor,
 } from '../state/logic.js';
 import {PlanBanner, SyncBanner, useLeaveGuard} from './shared.jsx';
+
+// Reward programs tabs, as the Joy admin shows them.
+const PROGRAM_TABS = [
+  {id: 'earning', label: 'Earning programs'},
+  {id: 'redeem', label: 'Redeeming programs'},
+  {id: 'referral', label: 'Referrals'},
+  {id: 'milestone', label: 'Milestones'},
+  {id: 'point_expiration', label: 'Point expiration'},
+  {id: 'joySubscription', label: 'Subscription and Membership'},
+];
 
 let nextId = 100;
 // Phones stack each tier into a block, so every field needs its own label there.
@@ -274,6 +285,17 @@ function RewardRow({title, summary, redeemed, url, locked}) {
 export function ReferralProgram() {
   const {notify, notYet} = useShell();
   const {state, setState} = useScenario();
+  const navigate = useNavigate();
+  const {query} = useRoute();
+  const tab = PROGRAM_TABS.some((t) => t.id === query.get('type')) ? query.get('type') : 'referral';
+  const [programOn, setProgramOn] = useState(true);
+  const tabs = (
+    <Tabs
+      tabs={PROGRAM_TABS.map((t) => ({id: t.id, content: t.label}))}
+      selected={PROGRAM_TABS.findIndex((t) => t.id === tab)}
+      onSelect={(i) => navigate(`/demo?type=${PROGRAM_TABS[i].id}`)}
+    />
+  );
   const {program: saved, save} = useProgram();
   const [program, setProgram] = useState(saved);
   const [touched, setTouched] = useState(state === 'worst');
@@ -306,9 +328,7 @@ export function ReferralProgram() {
   };
 
   const page = {
-    backAction: {content: 'Reward programs', onAction: notYet},
-    title: 'Referral program',
-    titleMetadata: <Badge tone="success">Active</Badge>,
+    title: 'Reward programs',
     primaryAction: {content: 'Save', onAction: onSave, loading: saving, disabled: locked || !dirty || state === 'loading' || state === 'error'},
     secondaryActions: [
       {content: 'Discard', onAction: () => {setProgram(saved); setTouched(false);}, disabled: !dirty},
@@ -316,11 +336,25 @@ export function ReferralProgram() {
     ],
   };
 
-  if (state === 'loading') return <Page {...page}><LoadingView rows={12} /></Page>;
+  if (tab !== 'referral') {
+    return (
+      <Page {...page}>
+        <BlockStack gap="400">
+          {tabs}
+          <div className="rt-proto-note" role="note">
+            <p>Prototype · this prototype covers the Referrals tab only.</p>
+            <Button onClick={() => navigate('/demo?type=referral')}>Open Referrals</Button>
+          </div>
+        </BlockStack>
+      </Page>
+    );
+  }
+  if (state === 'loading') return <Page {...page}>{tabs}<LoadingView rows={12} /></Page>;
   if (state === 'error') {
     return (
       <Page {...page}>
-        <ErrorView title="Couldn't load your referral program" onRetry={() => setState('default')}>
+        {tabs}
+        <ErrorView title="Couldn't load your reward programs" onRetry={() => setState('default')}>
           Nothing was changed. Your referral program keeps running while this page reloads.
         </ErrorView>
       </Page>
@@ -329,6 +363,8 @@ export function ReferralProgram() {
 
   return (
     <Page {...page}>
+      <BlockStack gap="400">
+      {tabs}
       <Layout>
         {state === 'worst' && !synced && !check.count ? <Layout.Section><SyncBanner onRetry={() => {setSynced(true); onSave();}} /></Layout.Section> : null}
         {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
@@ -340,9 +376,25 @@ export function ReferralProgram() {
         <Layout.Section>
           <BlockStack gap="400">
             <Card>
+              <BlockStack gap="400">
+                <InlineStack align="space-between" blockAlign="start" gap="300" wrap={false}>
+                  <BlockStack gap="100">
+                    <InlineStack gap="200" blockAlign="center">
+                      <Text as="h2" variant="headingMd">Referral program</Text>
+                      <Badge tone={programOn ? 'success' : undefined}>{programOn ? 'On' : 'Off'}</Badge>
+                    </InlineStack>
+                    <Text as="p" tone="subdued">Expand your customer network and reward loyal customers for referring friends. <Link onClick={notYet}>Learn more</Link></Text>
+                  </BlockStack>
+                  <Button onClick={() => setProgramOn((v) => !v)} disabled={locked}>{programOn ? 'Turn off' : 'Turn on'}</Button>
+                </InlineStack>
+                <TextField label="Program name" value="Referral Program" onChange={notYet} autoComplete="off" disabled={locked} />
+                <Checkbox label="Enable multiple region rewards" checked={false} onChange={notYet} disabled={locked} />
+              </BlockStack>
+            </Card>
+            <Card>
               <BlockStack gap="300">
                 <Text as="p" tone="subdued">
-                  Referral rewards follow your order status setting. <Link onClick={notYet}>Change it in Settings</Link>
+                  Referral rewards follow your Order status setting. They're granted when the referred order is Paid or Fulfilled — change it under <Link onClick={notYet}>Settings → Order.</Link>
                 </Text>
                 <RewardRow title="Rewards for referrers" summary={referrerSummary(program)} redeemed={128} url="/demo/referrer" locked={false} />
                 <Divider />
@@ -355,6 +407,7 @@ export function ReferralProgram() {
           </BlockStack>
         </Layout.Section>
       </Layout>
+      </BlockStack>
       {guard}
     </Page>
   );
