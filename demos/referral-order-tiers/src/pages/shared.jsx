@@ -40,8 +40,8 @@ export function PlanBanner({onViewPlans}) {
 
 export function SyncBanner({onRetry}) {
   return (
-    <Banner tone="critical" title="Friend tier discounts couldn't update at checkout" action={{content: 'Try again', onAction: onRetry}}>
-      <p>Your tiers are saved. Until checkout updates, friends still get the tiers saved before 2:14 PM. Joy retries every 15 minutes.</p>
+    <Banner tone="critical" title="Couldn't save: checkout didn't accept the new tiers" action={{content: 'Try again', onAction: onRetry}}>
+      <p>Nothing changed. Friends and referrers keep the tiers saved on Oct 28. Your edits are still on this page.</p>
     </Banner>
   );
 }

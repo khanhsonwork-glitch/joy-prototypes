@@ -185,7 +185,7 @@ function TiersCard({program, setProgram, show, check, locked}) {
           disabled={locked}
         />
         {!program.tiersOn && program.tiers.length ? (
-          <Text as="p" variant="bodySm" tone="subdued">Your tiers are kept. 38 unused friend codes keep their tiers until they're used or expire.</Text>
+          <Text as="p" variant="bodySm" tone="subdued">Your tiers are kept for next time. Codes already sent keep the reward they were sent with.</Text>
         ) : null}
         {program.tiersOn ? (
           <>
@@ -247,7 +247,7 @@ function TiersCard({program, setProgram, show, check, locked}) {
               </InlineStack>
             ) : null}
             <Text as="p" variant="bodySm" tone="subdued">
-              Order subtotal is counted after other discounts and before the referral discount, without shipping and taxes. A tier applies from its amount up to the next tier.
+              Order subtotal is counted after other discounts and before the referral discount, without shipping and taxes. A tier applies from its amount up to the next tier. Codes already sent keep the tiers they were sent with; new friends get the tiers you save.
             </Text>
             {sorted.length ? <TryOrder program={program} /> : null}
           </>
@@ -329,7 +329,7 @@ export function ReferralProgram() {
   return (
     <Page {...page}>
       <Layout>
-        {state === 'worst' && !synced ? <Layout.Section><SyncBanner onRetry={() => {setSynced(true); notify('Friend tier discounts updated at checkout');}} /></Layout.Section> : null}
+        {state === 'worst' && !synced ? <Layout.Section><SyncBanner onRetry={() => {setSynced(true); onSave();}} /></Layout.Section> : null}
         {locked ? <Layout.Section><PlanBanner onViewPlans={notYet} /></Layout.Section> : null}
         {touched && check.count ? (
           <Layout.Section>

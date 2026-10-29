@@ -61,7 +61,7 @@ function WidgetView() {
           <div><p className="sf-pair__label">Friend gets</p><p className="sf-pair__value">{friendHead.replace(' your first order', '')}</p></div>
         </div>
         <TierTable lines={lines} who="referrer" />
-        {program.tiersOn && first ? <p className="sf-note">{`Rewards are given when your friend's first order from ${money(first.min)} is paid.`}</p> : null}
+        {program.tiersOn && first ? <p className="sf-note">{`You get your reward when your friend's first order from ${money(first.min)} is paid.`}</p> : null}
         <div className="sf-link">
           <input aria-label="Your referral link" readOnly value={`${STORE.domain}/?ref=AVA2026`} />
           <button type="button" className="sf-btn" onClick={() => notify('Link copied')}>Copy</button>
