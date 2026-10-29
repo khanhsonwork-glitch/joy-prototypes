@@ -185,7 +185,7 @@ function TiersCard({program, setProgram, show, check, locked}) {
           disabled={locked}
         />
         {!program.tiersOn && program.tiers.length ? (
-          <Text as="p" variant="bodySm" tone="subdued">Your tiers are kept for next time. Codes already sent keep the reward they were sent with.</Text>
+          <Text as="p" variant="bodySm" tone="subdued">Your tiers are kept for next time. Codes already sent keep the friend's reward they were sent with.</Text>
         ) : null}
         {program.tiersOn ? (
           <>
@@ -247,7 +247,7 @@ function TiersCard({program, setProgram, show, check, locked}) {
               </InlineStack>
             ) : null}
             <Text as="p" variant="bodySm" tone="subdued">
-              Order subtotal is counted after other discounts and before the referral discount, without shipping and taxes. A tier applies from its amount up to the next tier. Codes already sent keep the tiers they were sent with; new friends get the tiers you save.
+              Order subtotal is counted after other discounts and before the referral discount, without shipping and taxes. A tier applies from its amount up to the next tier. Codes already sent keep the friend's reward they were sent with. Referrers get the tiers saved when the referral completes.
             </Text>
             {sorted.length ? <TryOrder program={program} /> : null}
           </>
