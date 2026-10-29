@@ -10,8 +10,10 @@ run(playwright, ['install', ...(process.env.CI ? ['--with-deps'] : []), 'chromiu
 run(process.execPath, [path.join(ROOT, 'scripts/check-source.mjs')]);
 run(process.execPath, [path.join(ROOT, 'scripts/check-images.mjs')]);
 run(process.execPath, [path.join(ROOT, 'scripts/check-licenses.mjs')]);
+run(process.execPath, [path.join(ROOT, 'scripts/check-reference.mjs')]);
 run(process.execPath, [path.join(ROOT, 'test/gates-check.mjs')]);
 run(process.execPath, [path.join(ROOT, 'test/scaffold-check.mjs')]);
+run(process.execPath, [path.join(ROOT, 'test/reference-check.mjs')]);
 run(process.execPath, [path.join(ROOT, 'scripts/build.mjs')]);
 run(process.execPath, [path.join(ROOT, 'scripts/check-bundle.mjs')]);
 
