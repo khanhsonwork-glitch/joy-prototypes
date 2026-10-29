@@ -64,6 +64,7 @@ export function outcome(p, subtotal) {
   let referrer;
   if (p.tiersOn && (rT || fT) && min !== null && subtotal < min) referrer = null; // below the first tier: nobody is rewarded yet
   else if (rT) referrer = tier ? referrerValueText(p.referrerMethod, tier.referrer) : null;
+  else if (p.referrerVipRates) referrer = "their VIP tier's reward";
   else if (p.referrerMethod === 'point_order_value' || p.referrerMethod === 'store_credit_order_value') {
     // Amount still comes from the order subtotal after every discount, the referral discount included (as today).
     const paid = Math.max(subtotal - friendDiscount(p, subtotal), 0);
