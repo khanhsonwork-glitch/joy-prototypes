@@ -12,7 +12,11 @@
 .rt-cell--name {padding-top: 6px;}
 .rt-row[data-tier-row='1'] .rt-cell--name, .rt-row[data-tier-row='1'] .rt-cell--action {padding-top: 30px;}
 .rt-cell--action {padding-top: 2px;}
-.rt-warn {grid-column: 2 / -1;}
+.rt-warn {grid-column: 3 / -1;}
+.rt-switch {width: 36px; height: 20px; border-radius: var(--p-border-radius-full); border: 0; padding: 2px; background: var(--p-color-bg-fill-disabled); cursor: pointer; display: inline-flex;}
+.rt-switch[aria-checked='true'] {background: var(--p-color-bg-fill-brand); justify-content: flex-end;}
+.rt-switch span {width: 16px; height: 16px; border-radius: var(--p-border-radius-full); background: var(--p-color-bg-surface);}
+.rt-switch:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
 
 /* Release 2 marker: prototype-only, amber like the Prototype panel, never product UI. */
 .rt-release {position: relative; padding: var(--p-space-400) var(--p-space-300) var(--p-space-300); border: 1px dashed var(--proto-amber-border); border-radius: var(--p-border-radius-200);}

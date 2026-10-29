@@ -133,7 +133,7 @@ export function checkTierList(tiers, kind, {checkMin = true} = {}) {
     const w = [];
     const below = tiers[i - 1];
     if (kind === 'amount' && n(t.value) >= n(t.min) && n(t.min) > 0) w.push(`A ${money(t.value)} discount is as big as this tier's starting amount (${money(t.min)})`);
-    if (below && n(t.value) > 0 && n(t.value) < n(below.value)) w.push(`Less than the tier below (${kind === 'points' ? pointsText(below.value) : friendValueText(kind, below.value)})`);
+    if (below && n(t.value) > 0 && n(t.value) < n(below.value)) w.push(`Less than tier ${i} (${kind === 'points' ? pointsText(below.value) : friendValueText(kind, below.value)})`);
     if (w.length) warnings[t.id] = w;
   });
   const count = Object.values(errors).reduce((s, e) => s + Object.keys(e).length, 0);

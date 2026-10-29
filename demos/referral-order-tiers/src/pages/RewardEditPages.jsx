@@ -67,7 +67,7 @@ function ReferrerTierExamples({tiers}) {
   return (
     <BlockStack gap="100">
       <div data-tier-example><Text as="p" tone="subdued">{`Referrer will receive ${parts.join('')}.`}</Text></div>
-      {first ? <Text as="p" tone="subdued">{`A first order below ${money(first.min)} earns nothing yet: the referral stays pending until the friend orders from ${money(first.min)}.`}</Text> : null}
+      {first ? <Text as="p" tone="subdued">{`An order below ${money(first.min)} earns nothing: the referral stays pending until one of the friend's orders reaches ${money(first.min)}.`}</Text> : null}
     </BlockStack>
   );
 }
@@ -92,6 +92,10 @@ export function ReferrerRewards() {
   const setTiers = (next) => setForm({...form, referrerTiers: next});
   const raw = form.referrerTiers;
   const pickMethod = (v) => {
+    // Leaving tiers while the friend's discount reuses these amounts: the friend keeps them as its own list.
+    if (v !== TIERS_METHOD && friendLinked(form)) {
+      return setForm({...form, referrerMethod: v, friendSameAmounts: false, friendTiers: friendTiers(form).map((t) => ({id: newId(), min: String(t.min), value: String(t.value)}))});
+    }
     if (v !== TIERS_METHOD || raw.length) return setForm({...form, referrerMethod: v});
     // First time on tiers: tier 1 = today's minimum order and today's points, so nothing changes until tier 2 is added.
     const points = form.referrerMethod === 'point' ? String(form.referrerValue) : '100';
@@ -152,6 +156,9 @@ export function ReferrerRewards() {
                         <BlockStack gap="200">
                           <ReferrerTierExamples tiers={tiers} />
                           {friendLinked(form) ? <Text as="p" tone="subdued">Rewards for referees uses these order amounts too.</Text> : null}
+                          {!friendTiered(form) && tiers[0] && Number(form.friendMinOrder) !== Number(tiers[0].min) ? (
+                            <Text as="p" tone="caution">{`Friends can use their coupon from ${Number(form.friendMinOrder) > 0 ? money(form.friendMinOrder) : 'any amount'} (Rewards for referees), but the referral completes only from ${money(tiers[0].min)}.`}</Text>
+                          ) : null}
                           <Text as="p" variant="bodySm" tone="subdued">Order value is the friend's subtotal after other discounts and before the referral discount, without shipping and taxes. A tier applies from its amount up to the next tier.</Text>
                         </BlockStack>
                       )}
@@ -370,6 +377,14 @@ export function RefereeRewards() {
                   <BlockStack gap="300">
                     <Text as="span" variant="headingMd">Reward conditions</Text>
                     <Select label="Discount applies to" options={[{label: 'All orders', value: 'all'}, {label: 'Specific collections', value: 'collections'}]} value="all" onChange={notYet} disabled={locked} />
+                    <Select
+                      label="Purchase type"
+                      options={[{label: 'One-time purchase', value: 'otp'}, {label: 'Subscription', value: 'sub'}, {label: 'Both', value: 'both'}]}
+                      value="otp"
+                      onChange={notYet}
+                      helpText="The discount applies to one-time purchase orders"
+                      disabled={locked}
+                    />
                     <ChoiceList
                       title="Order value requirement"
                       disabled={locked}

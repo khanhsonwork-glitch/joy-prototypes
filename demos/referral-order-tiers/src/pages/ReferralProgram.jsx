@@ -63,7 +63,10 @@ export function ReferralProgram() {
           <Text as="p">Live mode - all customers can earn and redeem rewards.</Text>
           <Link onClick={notYet}>Watch video guide</Link>
         </BlockStack>
-        <Badge tone="success">Live mode</Badge>
+        <InlineStack gap="200" align="end" blockAlign="center">
+          <button type="button" className="rt-switch" role="switch" aria-checked="true" aria-label="Live mode" onClick={notYet}><span /></button>
+          <Badge tone="success">Live mode</Badge>
+        </InlineStack>
       </InlineStack>
     </Card>
   );
