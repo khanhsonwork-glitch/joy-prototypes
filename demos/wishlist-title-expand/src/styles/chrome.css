@@ -1,7 +1,7 @@
-/* Shopify admin chrome: top bar, left navigation, app title bar. Hand-written; matches refs/membership.png. */
+/* Shopify admin chrome, current look: near-black sidebar with the logo and search, the page in a rounded light panel,
+   app header "‹ [Joy] / page". Colours sampled from the live admin (On-site content, 29/10/2026) into tokens.css. */
 
-/* Reset only the chrome's own buttons/links (zero specificity, so the classes below win). Polaris content is untouched. */
-:where(.adm-top, .adm-nav, .adm-appbar, .adm-sidekick) :where(button),
+:where(.adm-nav, .adm-appbar, .adm-sidekick) :where(button),
 :where(.adm-sidekick) {
   font: inherit;
   color: inherit;
@@ -17,225 +17,107 @@
   text-decoration: none;
 }
 
-/* ---------------------------------------------------------------- top bar */
-
-.adm-top {
-  position: fixed;
-  inset: 0 0 auto 0;
-  z-index: 400;
-  height: var(--chrome-topbar-height);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px 0 20px;
-  background: var(--chrome-topbar);
-  color: var(--p-color-text-inverse);
+.adm {
+  min-height: 100vh;
+  background: var(--adm2-bg);
 }
 
-.adm-top__menu {
-  display: none;
-  width: 32px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-.adm-top__menu:hover {
-  background: var(--chrome-topbar-field);
-}
-
-.adm-wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--p-color-text-inverse);
-  flex: none;
-}
-.adm-wordmark__text {
-  font-family: var(--p-font-family-sans);
-  font-style: italic;
-  font-weight: 700;
-  font-size: 21px;
-  letter-spacing: -0.8px;
-  line-height: 1;
-  transform: translateY(1px);
-}
-
-.adm-top .Polaris-Icon,
-.adm-nav .Polaris-Icon {
-  margin: 0;
-}
-.adm-top .Polaris-Icon {
-  --p-color-icon: var(--p-color-text-inverse);
-}
-
-.adm-search {
-  position: absolute;
-  left: 50%;
-  top: 10px;
-  transform: translateX(-50%);
-  width: min(640px, 42vw);
-  height: 36px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 10px 0 8px;
-  border-radius: 10px;
-  background: var(--chrome-topbar-field);
-  border: 1px solid var(--chrome-topbar-field-border);
-  color: var(--p-color-text-inverse);
-  font-size: 13px;
-  line-height: 20px;
-}
-.adm-search:hover {
-  border-color: var(--chrome-topbar-muted);
-}
-.adm-search__icon {
-  display: inline-flex;
-  width: 20px;
-  height: 20px;
-}
-.adm-search__label {
-  flex: 1;
-  color: var(--p-color-text-inverse);
-}
-.adm-search__keys {
-  display: inline-flex;
-  gap: 4px;
-}
-.adm-search__keys kbd {
-  font: 500 11px/16px var(--p-font-family-sans);
-  min-width: 16px;
-  text-align: center;
-  padding: 0 3px;
-  border-radius: 4px;
-  background: var(--chrome-topbar-pill);
-  color: var(--chrome-topbar-muted);
-}
-
-.adm-top__right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.adm-top__icon {
-  width: 32px;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-.adm-top__icon:hover {
-  background: var(--chrome-topbar-field);
-}
-
-.adm-store {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 6px 0 2px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--p-color-text-inverse);
-}
-.adm-store:hover {
-  background: var(--chrome-topbar-field);
-}
-.adm-store__avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--chrome-avatar);
-  color: var(--p-color-text-inverse);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-}
-.adm-store__pill {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--chrome-topbar-pill);
-  color: var(--chrome-topbar-muted);
-}
-
-/* ---------------------------------------------------------------- navigation */
+/* ---------------------------------------------------------------- sidebar */
 
 .adm-nav {
   position: fixed;
+  inset: 0 auto 0 0;
   z-index: 300;
-  top: var(--chrome-topbar-height);
-  bottom: 0;
-  left: 0;
-  width: var(--chrome-nav-width);
+  width: var(--adm2-nav-width);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px 22px 16px 10px;
-  background: var(--chrome-nav-bg);
-  overflow-y: auto;
-  scrollbar-width: none;
+  padding: 12px 10px 8px;
+  background: var(--adm2-bg);
+  color: var(--adm2-nav-text);
   font-size: 13px;
-  line-height: 20px;
-  color: var(--chrome-nav-text);
-}
-.adm-nav::-webkit-scrollbar {
-  display: none;
-}
-.adm-nav__group {
-  display: flex;
-  flex-direction: column;
-}
-.adm-nav__group--bottom {
-  margin-top: auto;
 }
 
-.adm-nav__row,
-.adm-nav__section {
+.adm-nav__brand {
   display: flex;
   align-items: center;
-  box-sizing: border-box;
-  width: 100%;
+  justify-content: space-between;
+  padding: 2px 6px 12px 10px;
+}
+
+.adm-nav__collapse {
+  width: 28px;
   height: 28px;
+  display: inline-grid;
+  place-items: center;
   border-radius: 8px;
-  font-weight: 550;
-  color: var(--chrome-nav-text);
 }
-.adm-nav__row {
-  gap: 8px;
-  padding: 0 8px;
-}
+
+.adm-nav__collapse:hover,
 .adm-nav__row:hover,
-.adm-sub__item:hover {
-  background: var(--chrome-nav-hover);
+.adm-sub__item:hover,
+.adm-store__btn:hover,
+.adm-store__bell:hover {
+  background: var(--adm2-nav-hover);
 }
-.adm-nav__row.is-selected,
-.adm-sub__item.is-selected {
-  background: var(--chrome-nav-selected);
-}
-.adm-nav__icon {
-  flex: none;
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+
 .adm-nav .Polaris-Icon {
-  --p-color-icon: var(--chrome-nav-icon);
-  width: 20px;
-  height: 20px;
+  --p-color-icon: var(--adm2-nav-icon);
+  width: 16px;
+  height: 16px;
+  margin: 0;
 }
+
+.adm-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  margin: 0 4px 10px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: var(--adm2-search) !important;
+  color: var(--adm2-nav-muted) !important;
+}
+
+.adm-search__label {
+  flex: 1;
+}
+
+.adm-search__keys {
+  font-size: 12px;
+}
+
+.adm-nav__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.adm-nav__group {
+  padding: 0 0 12px;
+}
+
+.adm-nav__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--adm2-nav-text);
+}
+
+.adm-nav__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  flex: none;
+}
+
 .adm-nav__label {
   flex: 1;
   min-width: 0;
@@ -243,289 +125,262 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .adm-nav__badge {
   min-width: 20px;
-  padding: 0 8px;
-  border-radius: 999px;
-  background: var(--chrome-nav-hover);
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--adm2-search);
   font-size: 12px;
-  font-weight: 550;
   text-align: center;
-  line-height: 20px;
 }
-.adm-nav__appicon {
-  width: 20px;
-  height: 20px;
-  border-radius: 5px;
-  background: var(--chrome-nav-icon);
-  display: inline-flex;
+
+.adm-nav__section {
+  display: inline-flex !important;
   align-items: center;
-  justify-content: center;
+  gap: 2px;
+  min-height: 28px;
+  padding: 0 10px !important;
+  color: var(--adm2-nav-muted) !important;
+  font-size: 13px;
 }
-.adm-nav__appicon .Polaris-Icon {
-  --p-color-icon: var(--chrome-nav-bg);
+
+.adm-nav__section .Polaris-Icon {
   width: 14px;
   height: 14px;
 }
 
-.adm-nav__section {
-  gap: 2px;
-  padding: 0 10px;
-  margin: 0;
-}
-.adm-nav__section-chevron {
-  display: inline-flex;
-}
-.adm-nav__section .Polaris-Icon {
-  width: 16px;
-  height: 16px;
-  --p-color-icon: var(--chrome-nav-text);
-}
-
-/* Joy sub-items with the tree line that ends in the selected item */
 .adm-sub {
   display: flex;
   flex-direction: column;
 }
+
 .adm-sub__item {
-  position: relative;
+  display: block;
+  min-height: 30px;
+  line-height: 30px;
+  margin: 1px 0;
+  padding: 0 10px 0 36px;
+  border-radius: 8px;
+  color: var(--adm2-nav-muted);
+}
+
+.adm-sub__item.is-selected {
+  background: var(--adm2-nav-selected);
+  color: var(--adm2-nav-text);
+  font-weight: 600;
+}
+
+.adm-nav__bottom {
+  padding-top: 8px;
+}
+
+.adm-store {
   display: flex;
   align-items: center;
-  box-sizing: border-box;
-  height: 28px;
-  padding: 0 8px 0 36px;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.adm-store__btn {
+  flex: 1;
+  min-width: 0;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 6px !important;
   border-radius: 8px;
-  font-weight: 450;
-  color: var(--chrome-nav-sub);
 }
-.adm-sub__item.is-selected {
-  font-weight: 600;
-  color: var(--chrome-nav-text);
+
+.adm-store__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--chrome-avatar);
+  color: var(--p-color-text-inverse);
+  font-size: 10px;
+  font-weight: 700;
 }
-.adm-sub__item.has-line::before {
-  content: '';
-  position: absolute;
-  left: 17px;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--chrome-tree);
+
+.adm-store__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.adm-sub__item.has-line:first-child::before {
-  top: -4px;
+
+.adm-store__pill {
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--adm2-search);
+  color: var(--adm2-nav-muted);
+  font-size: 12px;
 }
-.adm-sub__item.is-selected::before {
-  content: '';
-  position: absolute;
-  left: 17px;
-  top: -1px;
-  width: 13px;
-  height: 15px;
-  box-sizing: border-box;
-  border-left: 1px solid var(--chrome-tree);
-  border-bottom: 1px solid var(--chrome-tree);
-  border-bottom-left-radius: 6px;
-}
-.adm-sub__item.is-selected:first-child::before {
-  top: -5px;
-  height: 19px;
-}
-.adm-sub__item.is-selected::after {
-  content: '';
-  position: absolute;
-  left: 25px;
-  top: 10px;
-  width: 6px;
-  height: 6px;
-  box-sizing: border-box;
-  border-top: 1px solid var(--chrome-tree);
-  border-right: 1px solid var(--chrome-tree);
-  transform: rotate(45deg);
+
+.adm-store__bell {
+  width: 30px;
+  height: 30px;
+  display: inline-grid !important;
+  place-items: center;
+  border-radius: 8px;
 }
 
 .adm-scrim {
   position: fixed;
   inset: 0;
   z-index: 450;
-  background: rgba(26, 26, 26, 0.4);
+  background: var(--adm2-scrim);
 }
 
-/* ---------------------------------------------------------------- main area + app title bar */
+/* ---------------------------------------------------------------- page panel + app header */
 
 .adm-main {
-  box-sizing: border-box;
-  margin-left: var(--chrome-nav-width);
-  padding-top: var(--chrome-topbar-height);
-  min-height: 100vh;
+  position: fixed;
+  inset: 4px 4px 4px var(--adm2-nav-width);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
   background: var(--p-color-bg);
 }
 
 .adm-appbar {
-  position: sticky;
-  top: var(--chrome-topbar-height);
-  z-index: 200;
-  box-sizing: border-box;
-  height: 56px;
+  flex: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background: var(--p-color-bg);
-  border-bottom: 1px solid var(--chrome-nav-bg);
+  gap: 10px;
+  height: 52px;
+  padding: 0 14px;
+  background: var(--p-color-bg-surface);
+  border-bottom: 1px solid var(--p-color-border-secondary);
 }
-.adm-appbar__title {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding-top: 3px;
-  font-size: 18px;
-  line-height: 28px;
-  font-weight: 600;
-  letter-spacing: -0.1px;
-  color: var(--chrome-nav-text);
-}
-.adm-appbar__more {
+
+.adm-appbar__menu {
+  display: none !important;
   width: 32px;
   height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  place-items: center;
   border-radius: 8px;
 }
-.adm-appbar__more:hover {
-  background: var(--chrome-nav-hover);
+
+.adm-appbar__circle {
+  width: 30px;
+  height: 30px;
+  display: inline-grid !important;
+  place-items: center;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--p-color-border);
 }
+
+.adm-appbar__circle:hover {
+  background: var(--p-color-bg-surface-hover) !important;
+}
+
+.adm-appbar__crumb {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adm-appbar__slash {
+  color: var(--p-color-text-disabled);
+}
+
+.adm-appbar__title {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--p-color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .adm-appbar .Polaris-Icon {
-  --p-color-icon: var(--chrome-nav-sub);
+  width: 16px;
+  height: 16px;
+  margin: 0;
 }
 
 .adm-content {
-  padding: 0 0 56px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 0 72px;
 }
 
-/* Rounded corners where the black bar meets the nav (left) and the main area (right) */
-.adm-corner {
-  position: fixed;
-  top: var(--chrome-topbar-height);
-  z-index: 350;
-  width: var(--chrome-radius);
-  height: var(--chrome-radius);
-  pointer-events: none;
+.adm-sidekick {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  width: min(360px, calc(100% - 140px));
+  height: 44px;
+  padding: 0 16px !important;
+  border-radius: 999px;
+  background: var(--p-color-bg-surface) !important;
+  box-shadow: var(--p-shadow-400);
+  color: var(--p-color-text-secondary) !important;
+  font-size: 13px;
 }
-.adm-corner--left {
-  left: 0;
-  background: radial-gradient(circle at 100% 100%, transparent calc(var(--chrome-radius) - 0.5px), var(--chrome-topbar) var(--chrome-radius));
-}
-.adm-corner--right {
-  right: 0;
-  background: radial-gradient(circle at 0 100%, transparent calc(var(--chrome-radius) - 0.5px), var(--chrome-topbar) var(--chrome-radius));
+
+.adm-sidekick .Polaris-Icon {
+  width: 18px;
+  height: 18px;
+  margin: 0;
 }
 
 /* ---------------------------------------------------------------- responsive */
 
-@media (max-width: 1199.98px) {
-  body:has(.adm-nav.is-open) .kit-proto {display: none;}
-  .adm-top {
-    padding-left: 8px;
-  }
-  .adm-top__menu {
-    display: inline-flex;
+@media (max-width: 1023.98px) {
+  body:has(.adm-nav.is-open) .kit-proto {
+    display: none;
   }
   .adm-nav {
     z-index: 500;
     transform: translateX(-102%);
-    top: 0;
-    padding-top: calc(var(--chrome-topbar-height) + 4px);
-    box-shadow: none;
   }
-  /* animate only when the drawer opens: crossing the breakpoint (window resize) hides the nav at once, never mid-slide */
-  /* off-screen nav must not take keyboard focus */
   .adm-nav:not(.is-open) {
     visibility: hidden;
   }
   .adm-nav.is-open {
     transform: none;
     transition: transform 160ms ease-out;
-    box-shadow: var(--p-shadow-600);
   }
   .adm-main {
-    margin-left: 0;
+    inset: 0;
+    border-radius: 0;
   }
-}
-
-/* Reserve a reviewer-only lane below the scrolling product viewport, at every width: bottom padding alone cannot stop
-   a floating button covering a row mid-scroll (review 26/10 found it at 375, 768 and 1024). */
-body:has(.kit-proto) {
-  --proto-lane: calc(64px + env(safe-area-inset-bottom, 0px));
-}
-body:has(.kit-proto) .adm-main {min-height: 0;}
-body:has(.kit-proto) .adm-content {
-  box-sizing: border-box;
-  height: calc(100dvh - var(--chrome-topbar-height) - 56px - var(--proto-lane));
-  overflow-y: auto;
-  padding-bottom: 16px; /* the lane below already keeps the button off the last row */
-  scroll-padding-block: 16px;
-}
-body:has(.kit-proto) .Polaris-Frame-ToastManager {
-  bottom: var(--proto-lane);
-}
-
-@media (max-width: 899.98px) {
-  .adm-store__name {
-    display: none;
-  }
-  .adm-search {
-    width: min(420px, 36vw);
+  .adm-appbar__menu {
+    display: inline-grid !important;
   }
 }
 
 @media (max-width: 639.98px) {
-  .adm-wordmark__text {
-    display: none;
-  }
-  .adm-search {
-    position: static;
-    transform: none;
-    width: 36px;
-    padding: 0;
-    justify-content: center;
-    margin-left: auto;
-  }
-  .adm-search__label,
-  .adm-search__keys {
-    display: none;
-  }
-  .adm-top__right {
-    margin-left: 0;
-  }
-  .adm-store__pill {
-    display: none;
-  }
-  .adm-appbar {
-    padding: 0 12px 0 16px;
-  }
-  .adm-appbar__title {
-    font-size: 16px;
+  .adm-sidekick {
+    display: none !important;
   }
 }
 
-/* keyboard focus */
-.adm-top button:focus-visible,
+/* Reviewer-only lane under the page so the amber Prototype button never covers a row. */
+body:has(.kit-proto) .adm-main {
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
 .adm-nav button:focus-visible,
 .adm-nav a:focus-visible,
 .adm-appbar button:focus-visible,
-/* Hidden under the fixed top bar; out of flow so it does not push the page down by its own height. */
-.adm-sidekick {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
 .adm-sidekick:focus-visible {
   outline: 2px solid var(--p-color-border-focus);
-  outline-offset: -2px;
+  outline-offset: 1px;
 }
 
-/* Respect the OS "reduce motion" setting: the phone nav opens without sliding. */
 @media (prefers-reduced-motion: reduce) {
   .adm-nav.is-open {
     transition: none;

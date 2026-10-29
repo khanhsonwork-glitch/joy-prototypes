@@ -1,0 +1,544 @@
+/* Joy widget editor V4, sized from the live editor at 1440 (29/10/2026) and WidgetEditorV4 styles:
+   max modal inset over the admin, 340px menu column (52px icon tab bar), 20px collapse strip, settings panel with
+   32px/20px padding, preview at 45% (min 420px) with the widget panel docked left over a dimmed store. */
+
+:where(.ed-modal) :where(.ed-titlebar__guide, .ed-titlebar__close, .ed-tabbar__tab, .ed-menu__grouphead, .ed-menu__itembtn, .ed-switch, .ed-collapse, .ed-ptool__as) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Sits under Polaris popovers (400), the reviewer button (440) and Polaris modals/toasts (519+). */
+.ed-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 350;
+  padding: 12px 8px 0;
+  background: color-mix(in srgb, var(--ed-backdrop) 55%, transparent);
+}
+
+/* Leave the reviewer lane (amber Prototype button) free under the modal; the backdrop still covers the admin. */
+body:has(.kit-proto) .ed-backdrop {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+.ed-modal {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-600);
+}
+
+body:has(.kit-proto) .ed-modal {
+  border-radius: 12px;
+}
+
+/* ---------------------------------------------------------------- title bar */
+
+.ed-titlebar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 48px;
+  padding: 0 12px 0 16px;
+  background: var(--ed-titlebar);
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.ed-titlebar__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--p-color-text);
+}
+
+.ed-titlebar__title > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ed-titlebar__guide {
+  height: 28px;
+  padding: 0 12px !important;
+  border-radius: 8px;
+  background: var(--p-color-bg-fill-tertiary) !important;
+  font-size: 13px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.ed-titlebar__guide:hover {
+  background: var(--p-color-bg-fill-tertiary-hover) !important;
+}
+
+.ed-titlebar__close {
+  width: 28px;
+  height: 28px;
+  display: inline-grid !important;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.ed-titlebar__close:hover {
+  background: var(--p-color-bg-fill-transparent-hover) !important;
+}
+
+.ed-titlebar .Polaris-Icon {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- body */
+
+.ed-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.ed-side {
+  flex: none;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--ed-line);
+}
+
+.ed-tabbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  background: var(--ed-rail-bg);
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.ed-tabbar__tab {
+  width: 36px;
+  height: 36px;
+  display: inline-grid !important;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.ed-tabbar__tab .Polaris-Icon {
+  --p-color-icon: var(--ed-tab-icon);
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
+
+.ed-tabbar__tab:hover {
+  background: var(--ed-hover) !important;
+}
+
+.ed-tabbar__tab.is-active,
+.ed-tabbar__tab.is-active:hover {
+  background: var(--ed-tab-active-bg) !important;
+}
+
+.ed-tabbar__tab.is-active .Polaris-Icon {
+  --p-color-icon: var(--ed-tab-active-icon);
+}
+
+.ed-menu {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ed-menu__search {
+  padding: 16px;
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.ed-menu__group {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.ed-menu__grouphead {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 8px 12px !important;
+}
+
+.ed-menu__grouphead .Polaris-Icon {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  --p-color-icon: var(--ed-muted-icon);
+}
+
+.ed-menu__items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ed-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 37px;
+  padding-right: 4px;
+  border-radius: 8px;
+}
+
+.ed-menu__item:hover {
+  background: var(--ed-hover);
+}
+
+.ed-menu__item.is-active {
+  background: var(--ed-item-active);
+}
+
+.ed-menu__itembtn {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px !important;
+  font-size: 13px;
+  color: var(--p-color-text);
+}
+
+.ed-menu__item.is-active .ed-menu__itembtn {
+  font-weight: 500;
+}
+
+.ed-menu__itembtn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ed-menu__itembtn .Polaris-Icon {
+  --p-color-icon: var(--ed-muted-icon);
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* Same small switch as the live Extensions list: rounded square knob, dark when on. */
+.ed-switch {
+  flex: none;
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border-radius: 6px !important;
+  background: var(--p-color-bg-fill-tertiary) !important;
+  box-shadow: inset 0 0 0 1px var(--p-color-border);
+}
+
+.ed-switch span {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-100);
+  transition: transform 120ms ease-out;
+}
+
+.ed-switch.is-on {
+  background: var(--p-color-bg-fill-brand) !important;
+  box-shadow: none;
+}
+
+.ed-switch.is-on span {
+  transform: translateX(12px);
+}
+
+.ed-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ed-collapse {
+  flex: none;
+  width: 20px;
+  padding-top: 16px !important;
+  text-align: center !important;
+  background: var(--ed-collapse-bg) !important;
+  border-right: 1px solid var(--ed-line) !important;
+  color: var(--ed-muted-icon) !important;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.ed-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 32px 20px;
+}
+
+.ed-content .Polaris-Choice__Label,
+.ed-content .Polaris-Choice__Descriptions {
+  font-size: 13px;
+}
+
+.ed-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--p-color-bg-surface-warning);
+}
+
+/* ---------------------------------------------------------------- preview */
+
+.ed-preview {
+  flex: 0 0 45%;
+  min-width: 420px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--ed-line);
+}
+
+.ed-ptool {
+  flex: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 58px;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.ed-ptool__as {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px !important;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--p-color-border);
+  font-size: 13px;
+  font-weight: 450;
+  white-space: nowrap;
+}
+
+.ed-ptool__as:hover {
+  background: var(--p-color-bg-surface-hover) !important;
+}
+
+.ed-ptool__as .Polaris-Icon {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.ed-ptool__spacer {
+  flex: 1;
+}
+
+.ed-ptool__store {
+  color: var(--p-color-text-link);
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ed-ptool__store:hover {
+  text-decoration: underline;
+}
+
+.ed-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--p-color-bg-surface);
+}
+
+/* The shop page behind the widget, greyed out the way the live preview greys it. */
+.ed-store {
+  position: absolute;
+  inset: 0;
+  padding: 0 0 0 calc(min(412px, 100%) + 24px);
+  font-family: 'Inter', sans-serif;
+  color: var(--p-color-text);
+}
+
+.ed-store::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--ed-canvas) 90%, transparent);
+}
+
+.ed-canvas--mobile .ed-store {
+  padding-left: 24px;
+}
+
+.ed-store__nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 24px 18px 0;
+  font-size: 13px;
+}
+
+.ed-store__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-right: 24px;
+  padding: 48px 24px;
+  border-radius: 8px;
+  background: var(--p-color-bg-fill-tertiary);
+}
+
+.ed-store__hero b {
+  font-size: 22px;
+}
+
+.ed-store__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 140px));
+  gap: 12px;
+  margin: 20px 24px 0 0;
+}
+
+.ed-store__grid span {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.ed-store__grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Desktop: the widget panel docks to the left edge, full height, like the live preview. */
+.ed-panel {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(412px, 100%);
+  display: flex;
+  box-shadow: var(--p-shadow-400);
+}
+
+.ed-panel > .jw {
+  flex: 1;
+  width: 100%;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Mobile: a 390px phone screen, centred. */
+.ed-device {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(390px, calc(100% - 32px));
+  display: flex;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-600);
+}
+
+.ed-device > .jw {
+  flex: 1;
+}
+
+.ed-preview__off {
+  flex: 1;
+  padding: 24px;
+  background: var(--p-color-bg-surface);
+}
+
+/* ---------------------------------------------------------------- narrow screens */
+
+/* The live editor needs ~800px (340 + 420 minimums). Below that the prototype stacks menu, panel and preview in
+   one scroll so phone reviewers can still walk the flow; that stacking is a prototype adaptation. */
+@media (max-width: 899.98px) {
+  .ed-backdrop {
+    padding: 0;
+  }
+  .ed-modal,
+  body:has(.kit-proto) .ed-modal {
+    border-radius: 0;
+  }
+  .ed-body {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .ed-side {
+    width: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--ed-line);
+  }
+  .ed-menu {
+    overflow: visible;
+  }
+  .ed-collapse {
+    display: none;
+  }
+  .ed-content {
+    flex: none;
+    overflow: visible;
+    padding: 24px 16px;
+    border-bottom: 1px solid var(--ed-line);
+  }
+  .ed-preview {
+    flex: none;
+    min-width: 0;
+    height: 720px;
+    border-left: 0;
+  }
+  .ed-titlebar__guide {
+    display: none;
+  }
+}
+
+.ed-modal button:focus-visible,
+.ed-modal a:focus-visible {
+  outline: 2px solid var(--p-color-border-focus);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-switch span {
+    transition: none;
+  }
+}

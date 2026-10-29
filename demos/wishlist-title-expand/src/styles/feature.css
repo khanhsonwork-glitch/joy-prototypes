@@ -277,3 +277,198 @@
 .fx-stage--mobile .fx-launcher {
   margin-top: 420px;
 }
+
+/* ---------------------------------------------------------------- On-site content › Widget (live page, 29/10/2026) */
+
+.os-page {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 28px 24px 24px;
+}
+
+.os-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.os-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--p-color-text-secondary);
+  font: 450 13px/1 var(--p-font-family-sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.os-tabs button:hover {
+  background: var(--p-color-bg-fill-transparent-hover);
+}
+
+.os-tabs button.is-active {
+  background: var(--p-color-bg-fill-transparent-selected);
+  color: var(--p-color-text);
+  font-weight: 550;
+}
+
+.os-tabs__pill {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--p-color-bg-fill-tertiary);
+  font-size: 12px;
+}
+
+.os-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* The small browser drawing on each card. */
+.os-sketch {
+  padding: 14px 20px 14px;
+  border-radius: 12px;
+  background: var(--p-color-bg-surface-secondary);
+}
+
+.os-sketch__window {
+  border: 1px solid var(--p-color-border-secondary);
+  border-radius: 4px;
+  background: var(--p-color-bg-surface);
+  overflow: hidden;
+}
+
+.os-sketch__bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--p-color-border-secondary);
+}
+
+.os-sketch__bar i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--p-color-bg-fill-critical);
+}
+
+.os-sketch__bar i:nth-child(2) {
+  background: var(--p-color-bg-fill-caution);
+}
+
+.os-sketch__bar i:nth-child(3) {
+  background: var(--p-color-bg-fill-success);
+}
+
+.os-sketch__bar span {
+  width: 45%;
+  height: 5px;
+  margin-left: 12px;
+  border-radius: 3px;
+  background: var(--p-color-bg-fill-secondary);
+}
+
+.os-sketch__page {
+  display: flex;
+  gap: 24px;
+  height: 190px;
+  padding: 10px 0 0 4px;
+}
+
+.os-sketch__widget {
+  flex: 0 0 26%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 6px;
+  border: 1px solid var(--p-color-border-secondary);
+  border-radius: 3px;
+  box-shadow: var(--p-shadow-100);
+}
+
+.os-sketch__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 20px 0 0;
+}
+
+.os-l {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--p-color-bg-fill-tertiary);
+}
+
+.os-l.w40 { width: 40%; }
+.os-l.w50 { width: 50%; }
+.os-l.w60 { width: 60%; }
+.os-l.w70 { width: 70%; }
+.os-l.w80 { width: 80%; }
+.os-l.w90 { width: 90%; }
+
+.os-card {
+  display: block;
+  height: 36px;
+  border-radius: 3px;
+  background: var(--p-color-bg-surface-secondary);
+  border: 1px solid var(--p-color-border-secondary);
+}
+
+.os-card--yellow {
+  background: var(--p-color-bg-surface-caution);
+  border-color: var(--p-color-border-caution);
+}
+
+.os-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-top: auto;
+}
+
+.os-row i {
+  height: 14px;
+  border-radius: 2px;
+  background: var(--p-color-bg-fill-secondary);
+}
+
+.os-blocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.os-blocks i {
+  height: 60px;
+  border-radius: 2px;
+  background: var(--p-color-bg-surface-secondary);
+}
+
+@media (max-width: 767.98px) {
+  .os-page {
+    padding: 20px 16px 24px;
+  }
+  .os-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .os-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .os-sketch__page {
+    height: 150px;
+  }
+}

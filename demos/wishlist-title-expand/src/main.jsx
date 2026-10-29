@@ -6,6 +6,7 @@ import './styles/chrome.css';
 import './kit/kit.css';
 import './widget/widget.css';
 import './styles/feature.css';
+import './editor/editor.css';
 import App from './App.jsx';
 
 createRoot(document.getElementById('root')).render(<App />);

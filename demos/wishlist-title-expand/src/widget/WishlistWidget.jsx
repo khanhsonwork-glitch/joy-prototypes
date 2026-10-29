@@ -187,6 +187,43 @@ function Row({item, rowStyle, open, onToggle, added, onAdd, onRemove, onOpenProd
   );
 }
 
+// Carousel and Grid cards, as joy-product-card draws them (full variant): 3:4 photo with the heart on it, the name on
+// one line, price, then a full-width "Add to cart". Not changed by this prototype; drawn so the preview stays honest.
+function Card({item, added, onAdd, onRemove, onOpenProduct}) {
+  return (
+    <li className="jw-card">
+      <a className="jw-card__img" href="#" onClick={(e) => onOpenProduct(e, item)}>
+        <img src={item.img} alt={item.title} loading="lazy" />
+        <button
+          type="button"
+          className="jw-card__fav"
+          aria-label="Remove from wishlist"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onRemove(item);
+          }}
+        >
+          <Heart />
+        </button>
+      </a>
+      <p className="jw-card__name" title={item.title}>{item.title}</p>
+      <Prices item={item} />
+      {item.variant ? <p className="jw-variant">{item.variant}</p> : null}
+      <div className="jw-card__atc">
+        {item.soldOut ? (
+          <button type="button" className="jw-btn jw-btn--block" disabled>Sold out</button>
+        ) : (
+          <button type="button" className={cx('jw-btn jw-btn--block', added && 'is-added')} onClick={() => onAdd(item)}>
+            {added ? <Check /> : null}
+            {added ? 'Added to cart' : 'Add to cart'}
+          </button>
+        )}
+      </div>
+    </li>
+  );
+}
+
 function Skeleton() {
   return (
     <ul className="jw-list" aria-hidden="true">
@@ -205,10 +242,11 @@ function Skeleton() {
 }
 
 /**
- * items: wishlist rows · rowStyle: 'one-line' | 'two-lines' · device: 'mobile' | 'desktop'
+ * items: wishlist rows · rowStyle: 'one-line' | 'two-lines' (list layout only) · layout: 'list' | 'carousel' | 'grid'
+ * device: 'mobile' | 'desktop'
  * status: 'ready' | 'loading' | 'error' · onNotify(text): toast from the host page · onClose: header × (optional)
  */
-export function WishlistWidget({shop, items, rowStyle, device, status = 'ready', onNotify, onRetry, onRemove, onClose}) {
+export function WishlistWidget({shop, items, rowStyle, layout = 'list', device, status = 'ready', onNotify, onRetry, onRemove, onClose}) {
   const [openIds, setOpenIds] = useState(() => new Set());
   const [addedIds, setAddedIds] = useState(() => new Set());
 
@@ -254,6 +292,23 @@ export function WishlistWidget({shop, items, rowStyle, device, status = 'ready',
           <Heart />
           {`${items.length} ${items.length === 1 ? 'product' : 'products'}`}
         </p>
+        {layout !== 'list' ? (
+          <ul className={cx('jw-cards', `jw-cards--${layout}`)}>
+            {items.map((item) => (
+              <Card
+                key={item.id}
+                item={item}
+                added={addedIds.has(item.id)}
+                onAdd={add}
+                onRemove={(it) => {
+                  onRemove?.(it);
+                  onNotify?.('Removed from wishlist');
+                }}
+                onOpenProduct={openProduct}
+              />
+            ))}
+          </ul>
+        ) : (
         <ul className={cx('jw-list', rowStyle === 'two-lines' && 'jw-list--two')}>
           {items.map((item) => (
             <Row
@@ -272,6 +327,7 @@ export function WishlistWidget({shop, items, rowStyle, device, status = 'ready',
             />
           ))}
         </ul>
+        )}
       </>
     );
   }

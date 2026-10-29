@@ -2,6 +2,9 @@
 // fitment list (most names are 60-140 characters), and the Pomelo Park skincare shop where most names are short.
 // Names, prices and photos are made up for this prototype (the photos are generated, not taken from any shop).
 
+/** The fictional merchant whose admin the prototype shows. */
+export const STORE = {name: 'Ridgeline Moto', initials: 'RM'};
+
 export const SHOPS = {
   moto: {
     id: 'moto',

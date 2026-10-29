@@ -28,6 +28,32 @@
   --chrome-nav-width: 240px;
   --chrome-radius: 12px;
 
+  /* Current Shopify admin (dark sidebar), sampled from the live On-site content page 29/10/2026 */
+  --adm2-bg: #0a0a0a;
+  --adm2-nav-width: 220px;
+  --adm2-nav-text: #f3f3f3;
+  --adm2-nav-muted: #b5b5b5;
+  --adm2-nav-icon: #cfcfcf;
+  --adm2-nav-hover: #1c1c1c;
+  --adm2-nav-selected: #252525;
+  --adm2-search: #383838;
+  --adm2-scrim: rgba(0, 0, 0, 0.5);
+  --adm2-shopify-green: #95bf47;
+
+  /* Joy widget editor V4 (packages/assets/src/pages/Branding/WidgetDesign/WidgetEditorV4.scss) */
+  --ed-line: #e0e0e0;
+  --ed-rail-bg: #fafafa;
+  --ed-tab-icon: #616161;
+  --ed-tab-active-bg: #e3f2fd;
+  --ed-tab-active-icon: #0070f3;
+  --ed-hover: #f6f6f7;
+  --ed-item-active: #f1f1f1;
+  --ed-collapse-bg: #f6f6f7;
+  --ed-muted-icon: #8c9196;
+  --ed-titlebar: #f2f2f2;
+  --ed-backdrop: #050505;
+  --ed-canvas: #768086;
+
   /* Prototype controls: visibly not product UI */
   --proto-amber-bg: #fff4d6;
   --proto-amber-border: #c98a00;

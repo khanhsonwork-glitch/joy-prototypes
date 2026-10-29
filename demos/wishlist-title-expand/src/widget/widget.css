@@ -449,3 +449,100 @@
     transition: none;
   }
 }
+
+/* Carousel / Grid cards (joy-product-card, full variant): 3:4 photo, name on one line, price, full-width button.
+   Carousel cards are 140px wide and scroll sideways; Grid is two columns, 12px apart. */
+.jw-cards {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0 4px;
+  gap: 12px;
+}
+
+.jw-cards--carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.jw-cards--carousel .jw-card {
+  flex: 0 0 140px;
+  scroll-snap-align: start;
+}
+
+.jw-cards--grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.jw-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.jw-card__img {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  margin-bottom: 8px;
+  border: 1px solid var(--jw-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--jw-soft);
+}
+
+.jw-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.jw-card__fav {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--jw-brand);
+  cursor: pointer;
+}
+
+.jw-card__fav svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.jw-card__name {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jw-card .jw-prices,
+.jw-card .jw-variant {
+  padding: 0 4px;
+}
+
+.jw-card__atc {
+  margin-top: auto;
+  padding: 8px 4px 0;
+}
+
+.jw-btn--block {
+  width: 100%;
+  justify-content: center;
+}
