@@ -3,11 +3,11 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
-  {value: 'default', label: 'Release 1', help: 'Referrer earns by tier: from $50 → 100 points, from $100.01 → 200 points'},
-  {value: 'release2', label: 'Release 2', help: "Friend's discount by tier too: $5 off, $10 off"},
+  {value: 'default', label: 'Release 1', help: 'Referrer: fixed points by order amount, from $50 → 100 points, from $100.01 → 200 points'},
+  {value: 'release2', label: 'Release 2', help: "Friend's discount by order amount too: $5 off, $10 off"},
   {value: 'today', label: 'Today', help: 'Before this feature: 100 points, $5 off from $50'},
-  {value: 'worst', label: 'Worst case', help: '5 tiers, a duplicate amount, a blank value, a tier paying less'},
-  {value: 'disabled', label: 'Disabled', help: 'Essential plan: tiers need Advanced'},
+  {value: 'worst', label: 'Worst case', help: '5 order amounts, a duplicate amount, a blank value, a row paying less'},
+  {value: 'disabled', label: 'Disabled', help: 'Essential plan: order amounts need Advanced'},
   {value: 'loading', label: 'Loading', help: 'Data on its way'},
   {value: 'error', label: 'Error', help: 'Loading failed'},
 ];

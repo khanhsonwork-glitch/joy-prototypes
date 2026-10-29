@@ -1,5 +1,6 @@
-// The tier table both Edit pages put inside their Reward settings card: one row per tier,
-// "Friend's first order from" → the reward, Add tier up to 5, worked examples under it.
+// The order-amount table both Edit pages put inside their Reward settings card: one row per order amount,
+// "Friend's first order from" → the reward, up to 5 rows, worked examples under it. No "tier" wording on screen:
+// it would read as VIP tiers (Alex 29/10 17:53).
 import React, {useEffect, useState} from 'react';
 import {BlockStack, Button, InlineStack, Text, TextField} from '@shopify/polaris';
 import {DeleteIcon, PlusIcon} from '@shopify/polaris-icons';
@@ -27,16 +28,13 @@ export function TierTable({tiers, valueLabel, unit, minLocked, minLockedHelp, on
   const narrow = useNarrow();
   return (
     <BlockStack gap="300">
-      <div className="rt-table" role="group" aria-label="Tiers">
+      <div className="rt-table" role="group" aria-label="Order amounts">
         {tiers.map((t, i) => {
           const hide = i > 0 && !narrow;
           const e = check.errors[t.id] || {};
           const w = check.warnings[t.id];
           return (
             <div className="rt-row" data-tier-row={i + 1} key={t.id} onBlur={onResort}>
-              <div className="rt-cell rt-cell--name">
-                <Text as="span" variant="bodyMd" tone="subdued">{`Tier ${i + 1}`}</Text>
-              </div>
               <div className="rt-cell">
                 <TextField
                   label="Friend's first order from"
@@ -68,7 +66,7 @@ export function TierTable({tiers, valueLabel, unit, minLocked, minLockedHelp, on
                 <Button
                   icon={DeleteIcon}
                   variant="tertiary"
-                  accessibilityLabel={`Remove tier ${i + 1}`}
+                  accessibilityLabel={`Remove row ${i + 1}`}
                   onClick={() => onRemove(t.id)}
                   disabled={locked || minLocked || tiers.length === 1}
                 />
@@ -86,8 +84,8 @@ export function TierTable({tiers, valueLabel, unit, minLocked, minLockedHelp, on
         <Text as="p" variant="bodySm" tone="subdued">{minLockedHelp}</Text>
       ) : (
         <InlineStack gap="300" blockAlign="center">
-          <Button icon={PlusIcon} onClick={onAdd} disabled={locked || !canAddTier(tiers)}>Add tier</Button>
-          <Text as="span" variant="bodySm" tone="subdued">{canAddTier(tiers) ? `Up to ${MAX_TIERS} tiers` : `You've reached ${MAX_TIERS} tiers`}</Text>
+          <Button icon={PlusIcon} onClick={onAdd} disabled={locked || !canAddTier(tiers)}>Add order amount</Button>
+          <Text as="span" variant="bodySm" tone="subdued">{canAddTier(tiers) ? `Up to ${MAX_TIERS} order amounts` : `You've reached ${MAX_TIERS} order amounts`}</Text>
         </InlineStack>
       )}
       {examples}
