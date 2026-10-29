@@ -54,16 +54,18 @@ function ExpandButton({open, onToggle, controls, name}) {
   );
 }
 
-/** True when the element's text does not fit (one line: wider than its box; two lines: taller than its box). */
+/** True when the one-line name would not fit even with the whole name line to itself (the arrow's own width does
+    not count, so widening the screen hides an arrow that is no longer needed — review 29/10, 375 → 390px). */
 function useIsCut(ref, deps) {
   const [cut, setCut] = useState(false);
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return undefined;
-    const measure = () => setCut(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+    const line = el?.parentElement;
+    if (!el || !line) return undefined;
+    const measure = () => setCut(el.scrollWidth > line.clientWidth + 1);
     measure();
     const ro = new ResizeObserver(measure);
-    ro.observe(el);
+    ro.observe(line);
     return () => ro.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
@@ -104,7 +106,7 @@ function AddButton({item, added, onAdd, compact}) {
 
 function Row({item, rowStyle, open, onToggle, added, onAdd, onRemove, onOpenProduct}) {
   const nameRef = useRef(null);
-  // Measure the name while it is closed; once open it stays "cut" so the arrow is there to close it again.
+  // Measured on the closed one-line name; an open row keeps its arrow so it can be closed again.
   const cut = useIsCut(nameRef, [item.title, rowStyle, open]);
   const nameId = `jw-name-${item.id}`;
   const showArrow = rowStyle === 'one-line' && (cut || open);

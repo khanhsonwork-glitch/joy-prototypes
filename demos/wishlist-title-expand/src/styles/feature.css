@@ -231,14 +231,15 @@
     padding: 12px 0 88px;
   }
 
+  /* A phone shows the widget as a full-height sheet that scrolls inside, so the header and close stay in view. */
   .fx-stage .fx-phone {
     border-width: 0;
     border-radius: 0;
     box-shadow: none;
     width: 100%;
-    height: auto;
+    height: calc(100dvh - 72px);
     max-height: none;
-    min-height: 640px;
+    min-height: 520px;
   }
 
   .fx-stage--desktop {
