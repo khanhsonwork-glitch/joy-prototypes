@@ -2,7 +2,7 @@
 // with the two row styles this prototype proposes:
 //   'one-line'  today's row: name on one line, Add + remove on the right, plus an arrow that shows the full name
 //   'two-lines' new row: name up to two lines, remove in the row's top corner, Add next to the price
-import React, {useLayoutEffect, useRef, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 
 const cx = (...parts) => parts.filter(Boolean).join(' ');
 
@@ -54,7 +54,7 @@ function ExpandButton({open, onToggle, controls, name}) {
   );
 }
 
-/** True when the one-line name would not fit even with the whole name line to itself (the arrow's own width does
+/** True when the name would not fit on one line even with the whole name line to itself (the arrow's own width does
     not count, so widening the screen hides an arrow that is no longer needed — review 29/10, 375 → 390px). */
 function useIsCut(ref, deps) {
   const [cut, setCut] = useState(false);
@@ -62,7 +62,16 @@ function useIsCut(ref, deps) {
     const el = ref.current;
     const line = el?.parentElement;
     if (!el || !line) return undefined;
-    const measure = () => setCut(el.scrollWidth > line.clientWidth + 1);
+    // Width of the name on one line, measured on a hidden copy so it also works while the row is open (wrapped).
+    const measure = () => {
+      const probe = document.createElement('span');
+      probe.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font:${getComputedStyle(el).font}`;
+      probe.textContent = el.textContent;
+      line.appendChild(probe);
+      const width = probe.getBoundingClientRect().width;
+      probe.remove();
+      setCut(width > line.clientWidth + 1);
+    };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(line);
@@ -106,10 +115,14 @@ function AddButton({item, added, onAdd, compact}) {
 
 function Row({item, rowStyle, open, onToggle, added, onAdd, onRemove, onOpenProduct}) {
   const nameRef = useRef(null);
-  // Measured on the closed one-line name; an open row keeps its arrow so it can be closed again.
   const cut = useIsCut(nameRef, [item.title, rowStyle, open]);
   const nameId = `jw-name-${item.id}`;
-  const showArrow = rowStyle === 'one-line' && (cut || open);
+  const showArrow = rowStyle === 'one-line' && cut;
+  // An open row whose name now fits on one line (screen got wider) goes back to one line by itself.
+  useEffect(() => {
+    if (open && !cut && rowStyle === 'one-line') onToggle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, cut, rowStyle]);
   const media = item.img ? (
     <img className="jw-img" src={item.img} alt="" width="60" height="60" />
   ) : (
