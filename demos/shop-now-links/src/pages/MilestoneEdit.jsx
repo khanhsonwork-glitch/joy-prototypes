@@ -13,7 +13,6 @@ import {ShopNowLinkField, SummaryCard} from './shared.jsx';
 
 const initialForm = (state) => ({
   title: 'Spend more, earn more',
-  newTab: false,
   shopNowLink: state === 'own' ? '/collections/night-notes' : state === 'worst'
     ? 'https://pomelopark.com/collections/night-notes?utm_source=loyalty&utm_medium=milestone&utm_campaign=winter-skincare-favourites-2026'
     : '',
@@ -62,8 +61,6 @@ export function MilestoneEdit() {
                   <ShopNowLinkField
                     value={form.shopNowLink}
                     onChange={set('shopNowLink')}
-                    newTab={form.newTab}
-                    onNewTab={set('newTab')}
                     target={target}
                     help="Where the Shop now button of this milestone takes customers, in the widget, on the loyalty page and in the customer account page. Leave blank to use the shopping link in Settings."
                   />

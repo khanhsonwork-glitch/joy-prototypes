@@ -12,7 +12,6 @@ import {Programs} from './pages/Programs.jsx';
 import {Settings} from './pages/Settings.jsx';
 import {RewardEdit} from './pages/RewardEdit.jsx';
 import {MilestoneEdit} from './pages/MilestoneEdit.jsx';
-import {WaysToEarn} from './pages/WaysToEarn.jsx';
 import './styles/links.css';
 import {KitPage} from './pages/KitPage.jsx';
 import {DEMO} from './demo.config.js';
@@ -37,11 +36,10 @@ function Screen() {
   }, []);
   let page = <NotFound />;
   // #/settings (Settings › General › Redemption behavior) · #/reward (Free product edit) · #/milestone (Milestone edit)
-  // · #/earn?program=order|instagram (On-site content › Ways to earn › Edit) · #/programs?type=redeem|milestone (the lists that open them) · #/kit
+  // · #/programs?type=redeem|milestone (the lists that open them) · #/kit
   if (segments[0] === 'settings' && segments.length === 1) page = <Settings />;
   else if (segments[0] === 'reward' && segments.length === 1) page = <RewardEdit />;
   else if (segments[0] === 'milestone' && segments.length === 1) page = <MilestoneEdit />;
-  else if (segments[0] === 'earn' && segments.length === 1) page = <WaysToEarn />;
   else if ((segments[0] === 'programs' || segments[0] === 'demo') && segments.length === 1) page = <Programs />;
   else if (segments[0] === 'kit' && segments.length === 1) page = <KitPage />;
   return <AdminChrome>{page}</AdminChrome>;

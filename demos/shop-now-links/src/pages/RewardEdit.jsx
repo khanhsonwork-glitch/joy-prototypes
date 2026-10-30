@@ -21,7 +21,6 @@ function initialForm(state) {
     giftType: 'products',
     products: ['p1'],
     collections: ['c1'],
-    newTab: true,
     shopNowLink: state === 'own' ? '/pages/holiday-gift-guide' : state === 'worst' ? 'pages/holiday-gift-guide' : '',
   };
 }
@@ -84,8 +83,6 @@ export function RewardEdit() {
                   <ShopNowLinkField
                     value={form.shopNowLink}
                     onChange={set('shopNowLink')}
-                    newTab={form.newTab}
-                    onNewTab={set('newTab')}
                     target={target}
                     help="Where Shop now takes customers after they redeem this reward or open its coupon. Leave blank and Joy picks: the product or collection page when the reward is for only one, otherwise the shopping link in Settings."
                   />

@@ -13,7 +13,6 @@ import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {LINK_PLACEHOLDER} from '../data/index.js';
 import {linkError, useLinks} from '../state/links.jsx';
-import {NewTabCheckbox} from './shared.jsx';
 
 const SECTIONS = [
   {content: 'General', icon: AppsIcon, active: true},
@@ -41,7 +40,7 @@ export function Settings() {
   const today = state === 'today';
   const initial = useMemo(() => ({
     link: initialLink(state, saved),
-    newTab: false, apply: 'go_to_cart', freeGift: 'manual', calc: 'go_to_login',
+    apply: 'go_to_cart', freeGift: 'manual', calc: 'go_to_login',
   }), [state, saved]);
   const [form, setForm] = useState(initial);
   useEffect(() => setForm(initial), [initial]);
@@ -152,7 +151,6 @@ export function Settings() {
                     </BlockStack>
                   )}
               />
-              {today ? null : <NewTabCheckbox checked={form.newTab} onChange={set('newTab')} />}
             </BlockStack>
             <ChoiceList
               title={(
