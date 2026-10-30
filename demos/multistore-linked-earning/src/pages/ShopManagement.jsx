@@ -53,7 +53,7 @@ function RateModal({shop, initial, onClose, onSave}) {
               autoFocus
             />
           </div>
-          <Text as="p" tone="subdued">The rate stays fixed until you change it. A new rate applies to new orders only.</Text>
+          <Text as="p" tone="subdued">The rate stays fixed until you change it. A new rate applies from the moment you save it.</Text>
         </BlockStack>
       </Modal.Section>
     </Modal>
