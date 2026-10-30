@@ -84,3 +84,5 @@
 .sa-file { display: inline-flex; align-items: center; gap: var(--p-space-200); }
 .sa-search { padding: var(--p-space-200) var(--p-space-400); }
 .sa-filebig { display: flex; justify-content: center; padding: var(--p-space-400); background: var(--p-color-bg-surface-secondary); border-radius: var(--p-border-radius-200); }
+.sa-order { display: flex; flex-direction: column; gap: var(--p-space-150); width: min(360px, 100%); padding: var(--p-space-400); background: var(--p-color-bg-surface); border: var(--p-border-width-025) solid var(--p-color-border); border-radius: var(--p-border-radius-200); font-size: var(--p-font-size-325); }
+.sa-order__total { font-weight: var(--p-font-weight-semibold); padding-top: var(--p-space-150); border-top: var(--p-border-width-025) solid var(--p-color-border-secondary); }

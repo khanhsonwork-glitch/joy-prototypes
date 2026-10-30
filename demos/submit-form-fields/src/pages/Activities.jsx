@@ -9,19 +9,28 @@ import {useScenario} from '../kit/scenario.jsx';
 import {Drawer} from '../kit/Drawer.jsx';
 import {EmptyView, ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {OVERFLOW_SUBMISSION, SUBMISSIONS} from '../data/form.js';
-import {useVersion} from '../state/form.jsx';
+import {useForm, useVersion} from '../state/form.jsx';
 
 const ACTIVITY_TABS = ['All activities', 'Tier Activities', 'Environmental impact', 'Referral Activities', 'Google Reviews', 'Review Activities', 'Submitted receipts', 'Submit Form Activities', 'Launch tier'];
 const STATUS = {pending: {label: 'Pending', tone: 'attention'}, approved: {label: 'Approved', tone: 'success'}, disapproved: {label: 'Disapproved', tone: 'critical'}};
 
 // tagsAdded = tags Joy actually wrote to the customer (set on the first approval, kept after a later Disapprove).
-const withTags = (list) => list.map((x) => ({...x, tagsAdded: x.status === 'approved' ? x.tags : []}));
+// Option tags are a snapshot taken at submit; the form's own tags are read from the saved program when approving.
+const withTags = (list, formTags) => list.map((x) => ({...x, tagsAdded: x.status === 'approved' ? [...formTags, ...x.optionTags] : []}));
 const FILE_URL = (name) => `https://files.example/${name}`;
 
-function seed(state) {
+function seed(state, formTags) {
   if (state === 'empty') return [];
-  if (state === 'overflow' || state === 'worst') return withTags([OVERFLOW_SUBMISSION, ...SUBMISSIONS, ...SUBMISSIONS.map((s) => ({...s, id: `${s.id}b`}))]);
-  return withTags(SUBMISSIONS);
+  if (state === 'overflow' || state === 'worst') {
+    const rows = withTags([OVERFLOW_SUBMISSION, ...SUBMISSIONS, ...SUBMISSIONS.map((s) => ({...s, id: `${s.id}b`}))], formTags);
+    if (state === 'worst') {
+      // 250-tag cap reached part way, and a Shopify write that failed: the two tag problems a reviewer must see.
+      rows[0] = {...rows[0], status: 'approved', tagsAdded: formTags, tagsSkipped: rows[0].optionTags};
+      rows[3] = {...rows[3], tagsAdded: [], tagError: true};
+    }
+    return rows;
+  }
+  return withTags(SUBMISSIONS, formTags);
 }
 
 function Proof({name}) {
@@ -62,13 +71,15 @@ function toCsv(rows) {
 export function Activities() {
   const {state} = useScenario();
   const [version] = useVersion();
+  const {savedFormTags} = useForm();
+  const tagsFor = (r) => [...savedFormTags, ...r.optionTags];
   const {notify, notYet} = useShell();
-  const [rows, setRows] = useState(() => seed(state));
+  const [rows, setRows] = useState(() => seed(state, savedFormTags));
   const [filter, setFilter] = useState(0);
   const [open, setOpen] = useState(null);
   const [query, setQuery] = useState('');
-  const [file, setFile] = useState(null);
-  React.useEffect(() => setRows(seed(state)), [state]);
+  const [file, setFile] = useState(null); // the submission whose file is open
+  React.useEffect(() => setRows(seed(state, savedFormTags)), [state, savedFormTags]);
 
   const filters = ['all', 'pending', 'approved', 'disapproved'];
   const shown = useMemo(() => {
@@ -80,10 +91,10 @@ export function Activities() {
   const {selectedResources, allResourcesSelected, handleSelectionChange, clearSelection} = useIndexResourceState(shown);
   const setStatus = (ids, status) => {
     const list = Array.isArray(ids) ? ids : [ids];
-    setRows((all) => all.map((r) => (list.includes(r.id) ? {...r, status, tagsAdded: status === 'approved' && version === 'new' && !r.tagsAdded.length ? r.tags : r.tagsAdded} : r)));
+    setRows((all) => all.map((r) => (list.includes(r.id) ? {...r, status, tagsAdded: status === 'approved' && version === 'new' && !r.tagsAdded.length && !r.tagError ? tagsFor(r) : r.tagsAdded} : r)));
     const one = rows.find((x) => x.id === list[0]);
     notify(list.length > 1 ? `${list.length} submissions marked ${STATUS[status].label.toLowerCase()}`
-      : status === 'approved' && version === 'new' ? `Approved. ${one.name} gets 200 points and tags: ${one.tags.join(', ')}` : `Marked ${STATUS[status].label.toLowerCase()}`);
+      : status === 'approved' && version === 'new' ? `Approved. ${one.name} gets 200 points and tags: ${tagsFor(one).join(', ')}` : `Marked ${STATUS[status].label.toLowerCase()}`);
   };
   const current = rows.find((r) => r.id === open);
 
@@ -171,12 +182,19 @@ export function Activities() {
             <InlineStack gap="200" blockAlign="center"><Badge tone={STATUS[current.status].tone}>{STATUS[current.status].label}</Badge><Text as="span" tone="subdued">{current.program}</Text></InlineStack>
             <dl className="sa-dl">
               {current.answers.map(([l, v]) => (
-                <div key={l}><dt>{l}</dt><dd>{l === 'Order screenshot' ? <Button variant="plain" onClick={() => setFile(v)}><span className="sa-file"><Proof name={v} /> {v}</span></Button> : v}</dd></div>
+                <div key={l}><dt>{l}</dt><dd>{l === 'Order screenshot' ? <Button variant="plain" onClick={() => setFile(current)}><span className="sa-file"><Proof name={v} /> {v}</span></Button> : v}</dd></div>
               ))}
             </dl>
             <BlockStack gap="200">
               <Text as="h3" variant="headingSm">{current.tagsAdded.length ? 'Tags added to this customer' : current.status === 'pending' ? 'Tags added when you approve' : 'No tags added'}</Text>
-              {current.tagsAdded.length || current.status === 'pending' ? <InlineStack gap="200">{(current.tagsAdded.length ? current.tagsAdded : current.tags).map((t) => <Tag key={t}>{t}</Tag>)}</InlineStack> : null}
+              {current.tagsAdded.length || current.status === 'pending' ? <InlineStack gap="200">{(current.tagsAdded.length ? current.tagsAdded : tagsFor(current)).map((t) => <Tag key={t}>{t}</Tag>)}</InlineStack> : null}
+              {current.tagsSkipped?.length ? <Text as="p" variant="bodySm" tone="caution">{`Some tags weren’t added: this customer already has 250 tags in Shopify. Not added: ${current.tagsSkipped.join(', ')}`}</Text> : null}
+              {current.tagError ? (
+                <InlineStack gap="200" blockAlign="center">
+                  <Text as="p" variant="bodySm" tone="critical">Tags not added yet. Shopify didn’t accept the change.</Text>
+                  <Button size="slim" onClick={() => {setRows((all) => all.map((x) => (x.id === current.id ? {...x, tagError: false, tagsAdded: tagsFor(x)} : x))); notify('Tags added. Points were not added again.');}}>Try again</Button>
+                </InlineStack>
+              ) : null}
               {current.tagsAdded.length && current.status === 'disapproved' ? <Text as="p" variant="bodySm" tone="subdued">Added when this form was approved. Disapproving later doesn’t remove tags.</Text> : null}
             </BlockStack>
             {current.status === 'pending' ? (
@@ -185,8 +203,16 @@ export function Activities() {
           </BlockStack>
         ) : null}
       </Drawer>
-      <Modal open={Boolean(file)} onClose={() => setFile(null)} title={file || ''} secondaryActions={[{content: 'Close', onAction: () => setFile(null)}]}>
-        <Modal.Section><div className="sa-filebig"><svg viewBox="0 0 28 36" width="168" height="216" aria-hidden="true"><path d="M3 1h22v32l-3.6-2-3.7 2-3.7-2-3.6 2-3.7-2L3 33z" fill="var(--p-color-bg-surface)" stroke="var(--p-color-border)" /><path d="M7 8h14M7 12h10M7 16h12M7 22h8" stroke="var(--p-color-icon-secondary)" strokeWidth="1.4" strokeLinecap="round" /></svg></div></Modal.Section>
+      <Modal open={Boolean(file)} onClose={() => setFile(null)} title={file ? file.answers.find(([l]) => l === 'Order screenshot')?.[1] : ''} secondaryActions={[{content: 'Close', onAction: () => setFile(null)}]}>
+        <Modal.Section><div className="sa-filebig">{file ? (
+          <div className="sa-order" aria-label="Uploaded order screenshot">
+            <strong>Order details</strong>
+            <span>{`Order # ${file.answers[0][1]}`}</span>
+            <span>{`Sold by Pomelo Park · ${file.answers[1][1]}`}</span>
+            <span>Placed on Oct 28, 2026</span>
+            <span className="sa-order__total">{`Item(s) subtotal: ${file.answers[2][1]}`}</span>
+          </div>
+        ) : null}</div></Modal.Section>
       </Modal>
     </Page>
   );

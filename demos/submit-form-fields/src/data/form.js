@@ -71,25 +71,25 @@ export const SUBMISSIONS = [
     id: 's1', at: '2026-10-30 09:42', program: 'Bought elsewhere? Get points', name: 'Ava Nguyen', email: 'ava@example.com', status: 'pending',
     today: '113-4829104-5512 Amazon $64.90',
     answers: [['Order ID', '113-4829104-5512'], ['Where did you buy?', 'Amazon'], ['Order total before tax', '$64.90'], ['Email used for the order', 'ava@example.com'], ['Order screenshot', 'order-113.png']],
-    tags: ['Amazon', 'receipt-reward'],
+    optionTags: ['Amazon'],
   },
   {
     id: 's2', at: '2026-10-30 08:15', program: 'Bought elsewhere? Get points', name: 'Ben Carter', email: 'ben@example.com', status: 'pending',
     today: 'ebay order 2291-55 total 38',
     answers: [['Order ID', '22-91055-73810'], ['Where did you buy?', 'eBay'], ['Order total before tax', '$38.00'], ['Email used for the order', 'ben.carter@example.com'], ['Order screenshot', 'IMG_2201.jpg']],
-    tags: ['eBay', 'receipt-reward'],
+    optionTags: ['eBay'],
   },
   {
     id: 's3', at: '2026-10-29 17:03', program: 'Bought elsewhere? Get points', name: 'Chloe Martin', email: 'chloe@example.com', status: 'approved',
     today: 'Walmart #7731',
     answers: [['Order ID', '7731'], ['Where did you buy?', 'Walmart'], ['Order total before tax', '$22.50'], ['Email used for the order', 'chloe@example.com'], ['Order screenshot', 'receipt.jpg']],
-    tags: ['Walmart', 'receipt-reward'],
+    optionTags: ['Walmart'],
   },
   {
     id: 's4', at: '2026-10-29 11:20', program: 'Bought elsewhere? Get points', name: 'Daniel Okafor', email: 'daniel@example.com', status: 'disapproved',
     today: 'Amazon',
     answers: [['Order ID', '111-0000000-0000000'], ['Where did you buy?', 'Amazon'], ['Order total before tax', '$12.00'], ['Email used for the order', 'daniel@example.com'], ['Order screenshot', 'screenshot.png']],
-    tags: ['Amazon', 'receipt-reward'],
+    optionTags: ['Amazon'],
   },
 ];
 
@@ -97,5 +97,5 @@ export const OVERFLOW_SUBMISSION = {
   id: 's9', at: '2026-10-30 10:01', program: 'Bought on a marketplace, a pop-up market or in one of our partner stores? Send us the receipt', name: 'Maximiliana Alexandra Fitzgerald-Rodriguez', email: 'maximiliana.fitzgerald.rodriguez@example.com', status: 'pending',
   today: '113-4829104-5512113-4829104-5512 bought at the Saturday market in the old town square, paid cash, receipt attached',
   answers: [['Order ID', '113-4829104-5512113-4829104-5512113-4829104'], ['Where did you buy?', 'In a store'], ['Order total before tax', '$12,450.00'], ['Email used for the order', 'maximiliana.fitzgerald.rodriguez@example.com'], ['Order screenshot', 'very-long-file-name-of-the-receipt-photo-2026-10-30.png']],
-  tags: ['Retail store', 'receipt-reward'],
+  optionTags: ['Retail store'],
 };

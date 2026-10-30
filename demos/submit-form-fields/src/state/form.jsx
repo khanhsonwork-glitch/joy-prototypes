@@ -45,8 +45,8 @@ export function FormProvider({children}) {
   const setFields = useCallback((fn) => setDraft((d) => ({...d, fields: typeof fn === 'function' ? fn(d.fields) : fn})), []);
   const setFormTags = useCallback((tags) => setDraft((d) => ({...d, formTags: tags})), []);
   const value = useMemo(
-    () => ({...draft, dirty, save, discard, applyTemplate, setFields, setFormTags, answered}),
-    [draft, dirty, save, discard, applyTemplate, setFields, setFormTags, answered],
+    () => ({...draft, savedFormTags: saved.formTags, dirty, save, discard, applyTemplate, setFields, setFormTags, answered}),
+    [draft, saved.formTags, dirty, save, discard, applyTemplate, setFields, setFormTags, answered],
   );
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>;
 }
