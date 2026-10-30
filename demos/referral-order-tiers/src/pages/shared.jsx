@@ -32,7 +32,7 @@ export function useLeaveGuard(dirty) {
 
 export function PlanBanner({onViewPlans}) {
   return (
-    <Banner tone="warning" title="Points by order amount are available on the Advanced plan" action={{content: 'View plans', onAction: onViewPlans}}>
+    <Banner tone="warning" title="Rewards by order amount are available on the Advanced plan" action={{content: 'View plans', onAction: onViewPlans}}>
       <p>Your current plan is Essential. Your referral rewards keep working as they are.</p>
     </Banner>
   );

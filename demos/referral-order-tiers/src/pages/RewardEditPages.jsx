@@ -250,7 +250,7 @@ export function ReferrerRewards() {
                             setForm({
                               ...form,
                               referrerTiers: [...raw, {id, min: x.min, points: x.value}],
-                              ...(lastFriend ? {friendTierValues: {...form.friendTierValues, [id]: String(lastFriend * 2)}} : {}),
+                              ...(lastFriend ? {friendTierValues: {...form.friendTierValues, [id]: String(form.friendMethod === 'percentage' ? Math.min(lastFriend * 2, 100) : lastFriend * 2)}} : {}),
                             });
                           }}
                           onRemove={(id) => setTiers(raw.filter((t) => t.id !== id))}
@@ -397,7 +397,7 @@ export function RefereeRewards() {
                           minLockedHelp={<>Order amounts follow <Button variant="plain" url="/demo/referrer">Rewards for referrers</Button>. Change or add them there.</>}
                           onMin={(id, v) => setForm({...form, friendTiers: form.friendTiers.map((t) => (t.id === id ? {...t, min: v} : t))})}
                           onValue={setValue}
-                          onAdd={() => {const x = nextTier(tiers, form.friendMinOrder || 50, form.friendValue); setForm({...form, friendTiers: [...form.friendTiers, {id: newId(), ...x}]});}}
+                          onAdd={() => {const x = nextTier(tiers, form.friendMinOrder || 50, form.friendValue); if (form.friendMethod === 'percentage') x.value = String(Math.min(Number(x.value) || 0, 100)); setForm({...form, friendTiers: [...form.friendTiers, {id: newId(), ...x}]});}}
                           onRemove={(id) => setForm({...form, friendTiers: form.friendTiers.filter((t) => t.id !== id)})}
                           onResort={() => (linked ? null : setForm({...form, friendTiers: sortTiers(form.friendTiers)}))}
                           check={check}
