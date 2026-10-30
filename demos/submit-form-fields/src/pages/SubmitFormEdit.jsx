@@ -319,6 +319,7 @@ function Approval({version, disabled}) {
     if (!v) return;
     if (v.includes(',')) return setErr('Add one tag at a time. Tags can’t contain commas.');
     if (formTags.some((t) => t.toLowerCase() === v.toLowerCase())) return setErr(`“${v}” is already added.`);
+    if (formTags.length >= 5) return setErr('A form can add up to 5 tags.');
     setFormTags([...formTags, v]);
     setDraft('');
     setErr('');

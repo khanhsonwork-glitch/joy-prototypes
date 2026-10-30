@@ -39,7 +39,7 @@ function Field({field}) {
   const label = (
     <span className="sfp-label">
       {field.label || 'Untitled field'}
-      {field.required ? <span className="sfp-req" aria-label="required"> *</span> : <span className="sfp-opt"> (optional)</span>}
+      {field.required ? <span className="sfp-req" aria-label="required"> *</span> : null}
     </span>
   );
   let control;
