@@ -1,13 +1,27 @@
 // Pieces both edit pages share: the Shop now link field with its live "Shop now opens …" line, the summary card.
 import React from 'react';
-import {BlockStack, Card, InlineStack, Text, TextField, Badge} from '@shopify/polaris';
+import {BlockStack, Card, Checkbox, InlineStack, Text, TextField, Badge} from '@shopify/polaris';
 import {LINK_PLACEHOLDER} from '../data/index.js';
 import {linkError, shopNowTarget} from '../state/links.jsx';
 
-export function ShopNowLinkField({value, onChange, target, help}) {
+/** The Widget Design control for the same choice (Subscription / Survey links), reused under every link field. */
+export function NewTabCheckbox({checked, onChange, disabled, help}) {
+  return (
+    <Checkbox
+      label="Open in new tab"
+      checked={checked}
+      onChange={onChange}
+      disabled={disabled}
+      helpText={help || 'When off, the link opens in the current tab instead of a new one'}
+    />
+  );
+}
+
+export function ShopNowLinkField({value, onChange, target, help, newTab, onNewTab}) {
   const error = linkError(value);
   const t = shopNowTarget(target);
   return (
+    <BlockStack gap="200">
     <TextField
       id="shop-now-link"
       label="Shop now link (optional)"
@@ -23,6 +37,8 @@ export function ShopNowLinkField({value, onChange, target, help}) {
         </BlockStack>
       )}
     />
+    <NewTabCheckbox checked={newTab} onChange={onNewTab} />
+    </BlockStack>
   );
 }
 

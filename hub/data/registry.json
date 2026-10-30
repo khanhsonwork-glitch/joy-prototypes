@@ -1030,7 +1030,7 @@
     {
       "product": "loyalty",
       "slug": "shop-now-links",
-      "name": "Shop now links: shopping link and per reward",
+      "name": "Shop now links, same tab or new tab",
       "area": "Settings",
       "surfaces": [
         "Admin"
@@ -1047,7 +1047,9 @@
       "kind": "prototype",
       "aliases": [
         "Shop now link",
-        "Button link"
+        "Button link",
+        "Open in new tab",
+        "Custom URL on click"
       ],
       "legacy": [],
       "parity": null

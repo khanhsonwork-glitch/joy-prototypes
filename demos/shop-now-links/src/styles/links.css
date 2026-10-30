@@ -10,3 +10,5 @@
 .sl-row { display: grid; grid-template-columns: auto 1fr auto; gap: var(--p-space-300); align-items: center; padding-block: var(--p-space-200); }
 .sl-row__icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--p-border-radius-200); background: var(--p-color-bg-surface-secondary); }
 @media (max-width: 600px) { .sl-acc { grid-template-columns: 1fr auto; } .sl-acc__drag { display: none; } }
+.sl-icon { display: grid; place-items: center; height: 40px; border: var(--p-border-width-025) solid var(--p-color-border); border-radius: var(--p-border-radius-200); background: var(--p-color-bg-surface); cursor: pointer; }
+.sl-icon.is-on { border-color: var(--p-color-border-emphasis); box-shadow: 0 0 0 1px var(--p-color-border-emphasis); }

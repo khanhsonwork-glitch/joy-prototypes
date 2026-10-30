@@ -109,7 +109,7 @@ const JOY_SUB = [
   {id: 'customers', label: 'Customers'},
   {id: 'rewards', label: 'Reward programs', href: '#/programs?type=redeem', routes: ['programs', 'reward', 'milestone']},
   {id: 'membership', label: 'Membership'},
-  {id: 'onsite', label: 'On-site content'},
+  {id: 'onsite', label: 'On-site content', href: '#/earn', routes: ['earn']},
   {id: 'analytics', label: 'Analytics'},
   {id: 'integrations', label: 'Integrations'},
   {id: 'settings', label: 'Settings', href: '#/settings', routes: ['settings']},
