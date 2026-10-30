@@ -1029,6 +1029,31 @@
     },
     {
       "product": "loyalty",
+      "slug": "shop-now-links",
+      "name": "Shop now links: default and per reward",
+      "area": "Settings",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-10-30",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-shop-now-links.jpg",
+      "reviewUrl": "/loyalty/shop-now-links/#/settings",
+      "kind": "prototype",
+      "aliases": [
+        "Shop now link",
+        "Button link"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "sync-shopify-discounts",
       "name": "Sync Shopify discounts (My coupons)",
       "area": "On-site content",
