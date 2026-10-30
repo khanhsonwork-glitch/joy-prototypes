@@ -2,7 +2,7 @@
 // and a saved snapshot so Save / Discard behave like the real Rule tab. Also the "Today / New" version switch, kept
 // in the URL (?v=today) so a link opens the version under review.
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {FORM_TAGS, MAX_FIELDS, TEMPLATE_FIELDS} from '../data/form.js';
+import {FORM_TAGS, MAX_FIELDS, SUBMISSIONS, TEMPLATE_FIELDS} from '../data/form.js';
 import {useScenario} from '../kit/scenario.jsx';
 import {useNavigate, useRoute} from '../shell/router.jsx';
 
@@ -24,10 +24,18 @@ export function FormProvider({children}) {
   const {state} = useScenario();
   const [saved, setSaved] = useState(() => seedFor(state));
   const [draft, setDraft] = useState(saved);
+  // Fields that customers have already answered (the sample submissions use their labels): type is locked.
+  // Fixed by id when the program loads, so renaming or saving never changes which fields are locked.
+  const answeredFrom = (fields) => {
+    const labels = new Set(SUBMISSIONS.flatMap((x) => x.answers.map(([l]) => l)));
+    return new Set(fields.filter((f) => labels.has(f.label)).map((f) => f.id));
+  };
+  const [answered, setAnswered] = useState(() => answeredFrom(saved.fields));
   useEffect(() => {
     const seed = seedFor(state);
     setSaved(seed);
     setDraft(seed);
+    setAnswered(answeredFrom(seed.fields));
   }, [state]);
 
   const dirty = JSON.stringify(saved) !== JSON.stringify(draft);
@@ -36,9 +44,6 @@ export function FormProvider({children}) {
   const applyTemplate = useCallback((key) => setDraft((d) => ({...d, template: key, fields: TEMPLATE_FIELDS[key]()})), []);
   const setFields = useCallback((fn) => setDraft((d) => ({...d, fields: typeof fn === 'function' ? fn(d.fields) : fn})), []);
   const setFormTags = useCallback((tags) => setDraft((d) => ({...d, formTags: tags})), []);
-  // Fields that customers have already answered: type is locked (rule "type can't change after answers").
-  const answered = useMemo(() => new Set(saved.fields.slice(0, 5).map((f) => f.id)), [saved.fields]);
-
   const value = useMemo(
     () => ({...draft, dirty, save, discard, applyTemplate, setFields, setFormTags, answered}),
     [draft, dirty, save, discard, applyTemplate, setFields, setFormTags, answered],

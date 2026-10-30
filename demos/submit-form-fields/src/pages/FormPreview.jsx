@@ -9,7 +9,7 @@ import {TODAY} from '../data/form.js';
 function Pills({field}) {
   const [picked, setPicked] = useState([]);
   const toggle = (id) =>
-    setPicked((cur) => (field.type === 'single' ? [id] : cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
+    setPicked((cur) => (cur.includes(id) ? (field.type === 'single' && field.required ? cur : cur.filter((x) => x !== id)) : field.type === 'single' ? [id] : [...cur, id]));
   return (
     <div className="sfp-pills" role={field.type === 'single' ? 'radiogroup' : 'group'} aria-label={field.label}>
       {field.options.map((o) => {

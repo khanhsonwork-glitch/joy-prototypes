@@ -82,3 +82,5 @@
 .sa-dl dt { font-size: var(--p-font-size-300); color: var(--p-color-text-secondary); }
 .sa-dl dd { margin: 0; font-weight: var(--p-font-weight-medium); overflow-wrap: anywhere; }
 .sa-file { display: inline-flex; align-items: center; gap: var(--p-space-200); }
+.sa-search { padding: var(--p-space-200) var(--p-space-400); }
+.sa-filebig { display: flex; justify-content: center; padding: var(--p-space-400); background: var(--p-color-bg-surface-secondary); border-radius: var(--p-border-radius-200); }

@@ -23,7 +23,7 @@ const RESTRICTIONS = {
 };
 
 /** field: the field being edited, or {type} for a new one. locked: customers already answered it (type can't change). */
-export function FieldModal({open, field, locked, hasUpload, onClose, onSave}) {
+export function FieldModal({open, field, locked, hasUpload, otherLabels = [], onClose, onSave}) {
   const [f, setF] = useState(null);
   const [errors, setErrors] = useState({});
 
@@ -58,6 +58,7 @@ export function FieldModal({open, field, locked, hasUpload, onClose, onSave}) {
   const validate = () => {
     const e = {};
     if (!f.label.trim()) e.label = 'Enter a label customers will see.';
+    else if (otherLabels.includes(f.label.trim().toLowerCase())) e.label = 'Another field already uses this label. Each field needs its own label.';
     if (isChoice(f.type)) {
       const filled = f.options.filter((o) => o.label.trim());
       if (filled.length < 2) e.options = 'Add at least two options.';

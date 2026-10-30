@@ -105,9 +105,10 @@ function ProgramInfo() {
       <BlockStack gap="400">
         <Text as="h2" variant="headingMd">Program information</Text>
         <TextField label="Program name" value="Bought elsewhere? Get points" onChange={() => {}} autoComplete="off" />
+        <TextField label="Description" value="Earn {{earning_point_raw}} {{loyalty_point}}" disabled onChange={() => {}} autoComplete="off" helpText={<span>To edit this description text, please go to the <Button variant="plain" onClick={() => {}}>Translation</Button></span>} />
         <InlineStack gap="300" wrap={false}>
-          <Box width="50%"><TextField label="Start date" value="10/30/2026" onChange={() => {}} autoComplete="off" /></Box>
-          <Box width="50%"><TextField label="End date" placeholder="mm/dd/yyyy" value="" onChange={() => {}} autoComplete="off" /></Box>
+          <Box width="50%"><TextField label="Start date" type="date" value="2026-10-30" onChange={() => {}} autoComplete="off" /></Box>
+          <Box width="50%"><TextField label="End date" type="date" value="" onChange={() => {}} autoComplete="off" /></Box>
         </InlineStack>
       </BlockStack>
     </Card>
@@ -120,6 +121,7 @@ function RewardSettings() {
       <BlockStack gap="400">
         <Text as="h2" variant="headingMd">Reward settings</Text>
         <Select label="Reward method" options={[{label: 'Point reward', value: 'point'}]} value="point" onChange={() => {}} />
+        <Checkbox label="Apply tier-based reward rates" checked={false} disabled onChange={() => {}} helpText="Please enable VIP Tier to use this feature." />
         <TextField label="Reward value" type="number" value="200" suffix="points" onChange={() => {}} autoComplete="off" />
       </BlockStack>
     </Card>
@@ -258,6 +260,7 @@ function FormFields({disabled}) {
         field={editing}
         locked={Boolean(editing?.id && answered.has(editing.id))}
         hasUpload={hasUpload}
+        otherLabels={fields.filter((x) => x.id !== editing?.id).map((x) => x.label.toLowerCase())}
         onClose={() => setEditing(null)}
         onSave={(f) => {
           setFields((list) => (list.some((x) => x.id === f.id) ? list.map((x) => (x.id === f.id ? f : x)) : [...list, f]));
