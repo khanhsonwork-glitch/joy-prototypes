@@ -1,0 +1,548 @@
+/* The Joy storefront widget, Wishlist tab, list layout. Sizes follow the live widget's default text size:
+   name and price 13px, variant 11px, 60px photo, 8px row padding, 12px gaps, 36px-high buttons.
+   The shop colour arrives as --jw-brand from the widget's brand setting; nothing below hard-codes a shop colour. */
+
+.jw {
+  --jw-text: #1a1a1a;
+  --jw-muted: #666;
+  --jw-line: #e8e8e8;
+  --jw-soft: #f5f5f5;
+  --jw-brand-tint: color-mix(in srgb, var(--jw-brand) 10%, #fff);
+  --jw-brand-soft: color-mix(in srgb, var(--jw-brand) 14%, transparent);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--jw-text);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.jw--desktop {
+  width: 380px;
+  max-width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgb(0 0 0 / 18%);
+  max-height: 640px;
+}
+
+.jw--mobile {
+  width: 100%;
+  height: 100%;
+}
+
+.jw-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px 18px 20px;
+  background: var(--jw-brand);
+  color: var(--jw-brand-text);
+}
+
+.jw-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: inline-grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+  background: color-mix(in srgb, var(--jw-brand-text) 16%, transparent);
+}
+
+.jw-title {
+  flex: 1;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.jw-head-close {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.jw-head-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.jw-tabs {
+  display: flex;
+  padding: 0 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.jw-tab {
+  padding: 13px 2px 11px;
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--jw-brand);
+  box-shadow: inset 0 -2px 0 var(--jw-brand);
+}
+
+.jw-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px 12px;
+}
+
+.jw-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 4px 2px;
+  color: var(--jw-brand);
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.jw-count svg {
+  width: 15px;
+  height: 15px;
+}
+
+.jw-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------------------------------------------------------------- row */
+
+.jw-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 10px;
+  transition: background 120ms ease;
+}
+
+.jw-row:hover {
+  background: var(--jw-brand-tint);
+}
+
+.jw-row.is-open,
+.jw-row--two {
+  align-items: flex-start;
+}
+
+.jw-img-link {
+  flex-shrink: 0;
+  display: block;
+  border-radius: 10px;
+}
+
+.jw-img {
+  display: block;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--jw-line);
+  background: #fff;
+}
+
+.jw-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.jw-nameline {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.jw-row.is-open .jw-nameline {
+  align-items: flex-start;
+}
+
+.jw-name {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.5;
+  color: var(--jw-brand);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  border-radius: 4px;
+}
+
+.jw-name:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.jw-name.is-one-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jw-name.is-two-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  padding-right: 26px;
+}
+
+.jw-variant {
+  color: var(--jw-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jw-prices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 6px;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--jw-muted);
+}
+
+.jw-compare {
+  font-size: 11px;
+  text-decoration: line-through;
+}
+
+.jw-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jw-priceline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.jw-priceline .jw-prices {
+  margin-top: 0;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.jw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--jw-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--jw-text);
+  font: 600 13px/1 'Inter', sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.jw-btn--compact {
+  height: 32px;
+  padding: 0 14px;
+}
+
+.jw-btn:hover:not(:disabled) {
+  background: #fafafa;
+}
+
+.jw-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.jw-btn.is-added {
+  gap: 4px;
+  padding: 0 10px;
+  color: var(--jw-brand);
+  border-color: var(--jw-brand-soft);
+}
+
+.jw-btn--compact.is-added {
+  padding: 0 12px;
+}
+
+.jw-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Remove: today 44×36 on the right (joy-button sm ghost + 12px icon). In the two-line row it moves to the top
+   corner with a 32×32 touch area, the same size as the widget's existing "⋮" list menu. */
+.jw-remove {
+  width: 44px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--jw-brand);
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.jw-remove:hover {
+  background: var(--jw-brand-soft);
+}
+
+.jw-remove svg {
+  width: 12px;
+  height: 12px;
+}
+
+.jw-remove--corner {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+}
+
+/* ---------------------------------------------------------------- expand arrow
+   Chevron in the widget brand colour, no background: 18px icon centred in a 32×32 touch area. The negative
+   margins keep the 32px box from making the row taller; the box starts right after the last letter, so a tap on
+   the arrow never lands on the product link. */
+.jw-expand {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  margin: -7px -8px -7px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--jw-brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.jw-expand svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 160ms ease;
+}
+
+.jw-expand.is-open svg {
+  transform: rotate(180deg);
+}
+
+.jw :is(a, button):focus-visible {
+  outline: 2px solid var(--jw-brand);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- empty / error / loading */
+
+.jw-message {
+  text-align: center;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.jw-message__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--jw-brand);
+  background: var(--jw-brand-soft);
+}
+
+.jw-message__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.jw-message__title {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.jw-message__text {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--jw-muted);
+  max-width: 260px;
+}
+
+.jw-row--skel:hover {
+  background: transparent;
+}
+
+.jw-skel {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0f0f0, #f8f8f8, #f0f0f0);
+  background-size: 200% 100%;
+  animation: jw-shimmer 1.2s linear infinite;
+}
+
+.jw-skel--img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.jw-skel--btn {
+  width: 64px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.jw-skel-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@keyframes jw-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jw-skel,
+  .jw-expand svg {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Carousel / Grid cards (joy-product-card, full variant): 3:4 photo, name on one line, price, full-width button.
+   Carousel cards are 140px wide and scroll sideways; Grid is two columns, 12px apart. */
+.jw-cards {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0 4px;
+  gap: 12px;
+}
+
+.jw-cards--carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.jw-cards--carousel .jw-card {
+  flex: 0 0 140px;
+  scroll-snap-align: start;
+}
+
+.jw-cards--grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.jw-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.jw-card__img {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  margin-bottom: 8px;
+  border: 1px solid var(--jw-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--jw-soft);
+}
+
+.jw-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.jw-card__fav {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--jw-brand);
+  cursor: pointer;
+}
+
+.jw-card__fav svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.jw-card__name {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jw-card .jw-prices,
+.jw-card .jw-variant {
+  padding: 0 4px;
+}
+
+.jw-card__atc {
+  margin-top: auto;
+  padding: 8px 4px 0;
+}
+
+.jw-btn--block {
+  width: 100%;
+  justify-content: center;
+}

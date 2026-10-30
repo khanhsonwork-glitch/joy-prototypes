@@ -1,0 +1,100 @@
+/* Inter, the Shopify admin / Polaris font, self-hosted (SIL OFL 1.1, src/fonts/OFL.txt): no request leaves the prototype. */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Colours that are NOT Polaris tokens live here, as variables. Everything else uses var(--p-…). */
+:root {
+  /* Shopify admin chrome, sampled from refs/membership.png */
+  --chrome-topbar: #0a0a0a;
+  --chrome-topbar-field: #282828;
+  --chrome-topbar-field-border: #3a3a3a;
+  --chrome-topbar-pill: #3a3a3a;
+  --chrome-topbar-muted: #a8a8a8;
+  --chrome-nav-bg: #ebebeb;
+  --chrome-nav-hover: #e3e3e3;
+  --chrome-nav-selected: #fafafa;
+  --chrome-nav-text: #303030;
+  --chrome-nav-sub: #616161;
+  --chrome-nav-icon: #4a4a4a;
+  --chrome-tree: #a8a8a8;
+  --chrome-joy-red: #e53935;
+  --chrome-avatar: #9474ff;
+  --chrome-topbar-height: 56px;
+  --chrome-nav-width: 240px;
+  --chrome-radius: 12px;
+
+  /* Current Shopify admin (dark sidebar), sampled from the live On-site content page 29/10/2026 */
+  --adm2-bg: #0a0a0a;
+  --adm2-nav-width: 220px;
+  --adm2-nav-text: #f3f3f3;
+  --adm2-nav-muted: #b5b5b5;
+  --adm2-nav-icon: #cfcfcf;
+  --adm2-nav-hover: #1c1c1c;
+  --adm2-nav-selected: #252525;
+  --adm2-search: #383838;
+  --adm2-scrim: rgba(0, 0, 0, 0.5);
+  --adm2-shopify-green: #95bf47;
+
+  /* Joy widget editor V4 (packages/assets/src/pages/Branding/WidgetDesign/WidgetEditorV4.scss) */
+  --ed-line: #e0e0e0;
+  --ed-rail-bg: #fafafa;
+  --ed-tab-icon: #616161;
+  --ed-tab-active-bg: #e3f2fd;
+  --ed-tab-active-icon: #0070f3;
+  --ed-hover: #f6f6f7;
+  --ed-item-active: #f1f1f1;
+  --ed-collapse-bg: #f6f6f7;
+  --ed-muted-icon: #8c9196;
+  --ed-titlebar: #f2f2f2;
+  --ed-backdrop: #050505;
+  --ed-canvas: #768086;
+
+  /* Prototype controls: visibly not product UI */
+  --proto-amber-bg: #fff4d6;
+  --proto-amber-border: #c98a00;
+  --proto-amber-text: #5a3d00;
+
+  /* Pomelo Park storefront (fictional merchant), sampled from the product photography */
+  --pp-cream: #fef8ea;
+  --pp-paper: #fffdf7;
+  --pp-ink: #3b1f2b;
+  --pp-ink-soft: #6b4a58;
+  --pp-line: #ecdcc7;
+  --pp-yellow: #fae13f;
+  --pp-yellow-soft: #fdf0a6;
+  --pp-pink: #fbcac3;
+  --pp-pink-soft: #fde6e1;
+  --pp-pomelo: #f19ea6;
+  --pp-sage: #5b7a4a;
+  --pp-red: #b5303f;
+  --pp-font-head: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --pp-font-body: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--p-font-family-sans);
+  background: var(--p-color-bg);
+  color: var(--p-color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Polaris <Frame> is only the host for Toast and ContextualSaveBar here (the admin chrome is ours): drop its 1px right border. */
+.Polaris-Frame__Main {
+  border-inline-end: 0;
+}

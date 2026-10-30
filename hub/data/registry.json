@@ -1214,6 +1214,32 @@
         }
       ],
       "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "wishlist-title-expand",
+      "name": "Wishlist product names",
+      "area": "Unified Widget",
+      "surfaces": [
+        "Admin",
+        "Storefront"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-10-29",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-wishlist-title-expand.jpg",
+      "reviewUrl": "/loyalty/wishlist-title-expand/#/demo/widget-editor/extensions/wishlist",
+      "kind": "prototype",
+      "aliases": [
+        "Wishlist expand",
+        "Wishlist two-line names"
+      ],
+      "legacy": [],
+      "parity": null
     }
   ]
 }

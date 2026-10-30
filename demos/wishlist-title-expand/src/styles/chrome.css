@@ -1,0 +1,388 @@
+/* Shopify admin chrome, current look: near-black sidebar with the logo and search, the page in a rounded light panel,
+   app header "‹ [Joy] / page". Colours sampled from the live admin (On-site content, 29/10/2026) into tokens.css. */
+
+:where(.adm-nav, .adm-appbar, .adm-sidekick) :where(button),
+:where(.adm-sidekick) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+}
+:where(.adm-nav) :where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.adm {
+  min-height: 100vh;
+  background: var(--adm2-bg);
+}
+
+/* ---------------------------------------------------------------- sidebar */
+
+.adm-nav {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 300;
+  width: var(--adm2-nav-width);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px 8px;
+  background: var(--adm2-bg);
+  color: var(--adm2-nav-text);
+  font-size: 13px;
+}
+
+.adm-nav__brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 6px 12px 10px;
+}
+
+.adm-nav__collapse {
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.adm-nav__collapse:hover,
+.adm-nav__row:hover,
+.adm-sub__item:hover,
+.adm-store__btn:hover,
+.adm-store__bell:hover {
+  background: var(--adm2-nav-hover);
+}
+
+.adm-nav .Polaris-Icon {
+  --p-color-icon: var(--adm2-nav-icon);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.adm-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  margin: 0 4px 10px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: var(--adm2-search) !important;
+  color: var(--adm2-nav-muted) !important;
+}
+
+.adm-search__label {
+  flex: 1;
+}
+
+.adm-search__keys {
+  font-size: 12px;
+}
+
+.adm-nav__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.adm-nav__group {
+  padding: 0 0 12px;
+}
+
+.adm-nav__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--adm2-nav-text);
+}
+
+.adm-nav__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  flex: none;
+}
+
+.adm-nav__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-nav__badge {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--adm2-search);
+  font-size: 12px;
+  text-align: center;
+}
+
+.adm-nav__section {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 2px;
+  min-height: 28px;
+  padding: 0 10px !important;
+  color: var(--adm2-nav-muted) !important;
+  font-size: 13px;
+}
+
+.adm-nav__section .Polaris-Icon {
+  width: 14px;
+  height: 14px;
+}
+
+.adm-sub {
+  display: flex;
+  flex-direction: column;
+}
+
+.adm-sub__item {
+  display: block;
+  min-height: 30px;
+  line-height: 30px;
+  margin: 1px 0;
+  padding: 0 10px 0 36px;
+  border-radius: 8px;
+  color: var(--adm2-nav-muted);
+}
+
+.adm-sub__item.is-selected {
+  background: var(--adm2-nav-selected);
+  color: var(--adm2-nav-text);
+  font-weight: 600;
+}
+
+.adm-nav__bottom {
+  padding-top: 8px;
+}
+
+.adm-store {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.adm-store__btn {
+  flex: 1;
+  min-width: 0;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 6px !important;
+  border-radius: 8px;
+}
+
+.adm-store__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--chrome-avatar);
+  color: var(--p-color-text-inverse);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.adm-store__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-store__pill {
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--adm2-search);
+  color: var(--adm2-nav-muted);
+  font-size: 12px;
+}
+
+.adm-store__bell {
+  width: 30px;
+  height: 30px;
+  display: inline-grid !important;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.adm-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 450;
+  background: var(--adm2-scrim);
+}
+
+/* ---------------------------------------------------------------- page panel + app header */
+
+.adm-main {
+  position: fixed;
+  inset: 4px 4px 4px var(--adm2-nav-width);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--p-color-bg);
+}
+
+.adm-appbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 14px;
+  background: var(--p-color-bg-surface);
+  border-bottom: 1px solid var(--p-color-border-secondary);
+}
+
+.adm-appbar__menu {
+  display: none !important;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.adm-appbar__circle {
+  width: 30px;
+  height: 30px;
+  display: inline-grid !important;
+  place-items: center;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--p-color-border);
+}
+
+.adm-appbar__circle:hover {
+  background: var(--p-color-bg-surface-hover) !important;
+}
+
+.adm-appbar__crumb {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adm-appbar__slash {
+  color: var(--p-color-text-disabled);
+}
+
+.adm-appbar__title {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--p-color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-appbar .Polaris-Icon {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.adm-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 0 72px;
+}
+
+.adm-sidekick {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  width: min(360px, calc(100% - 140px));
+  height: 44px;
+  padding: 0 16px !important;
+  border-radius: 999px;
+  background: var(--p-color-bg-surface) !important;
+  box-shadow: var(--p-shadow-400);
+  color: var(--p-color-text-secondary) !important;
+  font-size: 13px;
+}
+
+.adm-sidekick .Polaris-Icon {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- responsive */
+
+@media (max-width: 1023.98px) {
+  body:has(.adm-nav.is-open) .kit-proto {
+    display: none;
+  }
+  .adm-nav {
+    z-index: 500;
+    transform: translateX(-102%);
+  }
+  .adm-nav:not(.is-open) {
+    visibility: hidden;
+  }
+  .adm-nav.is-open {
+    transform: none;
+    transition: transform 160ms ease-out;
+  }
+  .adm-main {
+    inset: 0;
+    border-radius: 0;
+  }
+  .adm-appbar__menu {
+    display: inline-grid !important;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .adm-sidekick {
+    display: none !important;
+  }
+}
+
+/* Reviewer-only lane under the page so the amber Prototype button never covers a row. */
+body:has(.kit-proto) .adm-main {
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+.adm-nav button:focus-visible,
+.adm-nav a:focus-visible,
+.adm-appbar button:focus-visible,
+.adm-sidekick:focus-visible {
+  outline: 2px solid var(--p-color-border-focus);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-nav.is-open {
+    transition: none;
+  }
+}
