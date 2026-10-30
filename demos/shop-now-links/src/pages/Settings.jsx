@@ -72,7 +72,7 @@ export function Settings() {
   const nowLine = error
     ? 'Until the link is fixed and saved, these buttons keep their saved destinations.'
     : form.link.trim()
-    ? `Now: these buttons open ${form.link.trim()}.`
+    ? `Now: buttons without their own link open ${form.link.trim()}.`
     : 'Now (blank): Continue shopping, No orders yet and loyalty page Milestones open /collections/all; the other Shop now buttons open your homepage.';
 
   let right;
