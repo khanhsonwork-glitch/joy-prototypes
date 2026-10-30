@@ -1030,7 +1030,7 @@
     {
       "product": "loyalty",
       "slug": "shop-now-links",
-      "name": "Shop now links: default and per reward",
+      "name": "Shop now links: shopping link and per reward",
       "area": "Settings",
       "surfaces": [
         "Admin"
