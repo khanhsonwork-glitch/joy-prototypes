@@ -1029,6 +1029,28 @@
     },
     {
       "product": "loyalty",
+      "slug": "submit-form-fields",
+      "name": "Submit form · form fields",
+      "area": "Earning programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-10-30",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-submit-form-fields.jpg",
+      "reviewUrl": "/loyalty/submit-form-fields/#/demo/submit-form",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "sync-shopify-discounts",
       "name": "Sync Shopify discounts (My coupons)",
       "area": "On-site content",
