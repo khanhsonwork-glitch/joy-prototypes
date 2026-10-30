@@ -12,7 +12,7 @@ import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {useProgram} from '../state/program.jsx';
 import {CALC_AMOUNT, CALC_RATE, FRIEND_METHODS, REFERRER_METHODS, TIERABLE_FRIEND, VIP_TIERS, money, num} from '../data/index.js';
 import {
-  checkFriend, checkReferrer, examples, friendDiscount, outcome, friendLinked, friendTiered, friendTiers, friendValueText, pointsText, referrerTiered,
+  checkFriend, checkReferrer, examples, outcome, friendLinked, friendTiered, friendTiers, friendValueText, pointsText, referrerTiered,
   referrerTiers, sortTiers, unitFor,
 } from '../state/logic.js';
 import {PlanBanner, useLeaveGuard} from './shared.jsx';
@@ -59,24 +59,32 @@ function useSave({form, save, setTouched, count}) {
 
 // ---------------------------------------------------------------- Rewards for referrers
 
-/** "With these settings: …" under the order-amount table, built from the numbers being typed and the friend's code. */
-function ReferrerAmountHelp({form, tiers}) {
-  const ex = examples(tiers);
-  const first = tiers.find((t) => Number(t.min) > 0);
-  if (!ex.length) return null;
-  const parts = ex.map((e) => {
-    const res = outcome(form, e.order);
-    const friend = res.discount ? ` (friend gets ${money(res.discount)} off)` : '';
-    return ` Order ${money(e.order)} → ${res.referrer || 'no points yet'}${friend}.`;
-  });
-  // An order under the lowest amount: the referral stays pending.
-  const below = first && Number(first.min) > 5 ? Number(first.min) - 5 : null;
-  const under = below ? ` Order ${money(below)} → under ${money(first.min)}, so the referral doesn't complete yet.` : '';
+/** "With these settings:" and one line per example order, under both order-amount tables. */
+function SettingsExamples({lines}) {
   return (
     <div data-tier-example>
-      <Text as="p" tone="subdued">{`With these settings:${parts.join('')}${under}`}</Text>
+      <Text as="p" tone="subdued">With these settings:</Text>
+      <ul className="rt-examples">{lines.map((l) => <li key={l}><Text as="span" tone="subdued">{l}</Text></li>)}</ul>
     </div>
   );
+}
+
+/** An order $5 under the lowest amount, for the "no reward" example line. */
+const belowFirst = (tiers) => {
+  const first = tiers.find((t) => Number(t.min) > 0);
+  return first && Number(first.min) > 5 ? {order: Number(first.min) - 5, min: Number(first.min)} : null;
+};
+
+const ORDER_AMOUNT_NOTE = 'Order amount = items total after other discounts, before the referral code, shipping and taxes.';
+
+/** Example orders under the referrer's table, built from the numbers being typed. */
+function ReferrerAmountHelp({form, tiers}) {
+  const ex = examples(tiers);
+  if (!ex.length) return null;
+  const lines = ex.map((e) => `${money(e.order)} order → ${outcome(form, e.order).referrer || 'no points'}`);
+  const below = belowFirst(tiers);
+  if (below) lines.push(`${money(below.order)} order → no points (below ${money(below.min)})`);
+  return <SettingsExamples lines={lines} />;
 }
 
 const rateText = (rate) => `${num(rate)} ${Number(rate) === 1 ? 'point' : 'points'} per $1`;
@@ -253,7 +261,7 @@ export function ReferrerRewards() {
                               {!friendTiered(form) && tiers[0] && Number(form.friendMinOrder) !== Number(tiers[0].min) ? (
                                 <Text as="p" tone="caution">{`Friends can use their coupon from ${Number(form.friendMinOrder) > 0 ? money(form.friendMinOrder) : 'any amount'} (Rewards for referees), but the referral completes only from ${money(tiers[0].min)}.`}</Text>
                               ) : null}
-                              <Text as="p" variant="bodySm" tone="subdued">Counted amount is the friend's order subtotal before the referral code: after other discounts, before shipping and taxes. Each amount applies up to the next one.</Text>
+                              <Text as="p" variant="bodySm" tone="subdued">{ORDER_AMOUNT_NOTE}</Text>
                             </BlockStack>
                           )}
                         />
@@ -290,13 +298,14 @@ function num100(form) {
 
 function FriendTierExamples({tiers, method}) {
   const ex = examples(tiers);
-  const first = tiers.find((t) => Number(t.min) > 0);
   if (!ex.length) return null;
-  const parts = ex.map((e) => ` Order ${money(e.order)} → ${friendValueText(method, e.tier.value)}.`);
+  const lines = ex.map((e) => `${money(e.order)} order → ${friendValueText(method, e.tier.value)}`);
+  const below = belowFirst(tiers);
+  if (below) lines.push(`${money(below.order)} order → no discount (below ${money(below.min)})`);
   return (
-    <BlockStack gap="100">
-      <div data-tier-example><Text as="p" tone="subdued">{`With these settings:${parts.join('')}`}</Text></div>
-      {first ? <Text as="p" tone="subdued">{`Below ${money(first.min)} the code doesn't apply at checkout.`}</Text> : null}
+    <BlockStack gap="200">
+      <SettingsExamples lines={lines} />
+      <Text as="p" variant="bodySm" tone="subdued">{ORDER_AMOUNT_NOTE}</Text>
     </BlockStack>
   );
 }
@@ -363,7 +372,7 @@ export function RefereeRewards() {
                     <BlockStack gap="300">
                       <Checkbox
                         label="Set the discount by the friend's order value"
-                        helpText="One code for every order amount: checkout takes off the discount for the amount the cart reaches. The lowest amount is the minimum order."
+                        helpText="Bigger orders get a bigger discount. One code works for every amount. Orders below the lowest amount can't use the code."
                         checked={form.friendTiersOn}
                         onChange={turnOn}
                         disabled={locked}
@@ -461,7 +470,7 @@ export function RefereeRewards() {
                       allowMultiple
                       title="Combinations"
                       choices={[
-                        {label: 'Order discounts', value: 'order', disabled: tiered, helpText: tiered ? 'Off while the discount is set by order amount: another order discount would change which amount the cart reaches.' : undefined},
+                        {label: 'Order discounts', value: 'order', disabled: tiered, helpText: tiered ? "Off while the discount is set by order amount, so another order discount can't change the amount." : undefined},
                         {label: 'Product discounts', value: 'product'},
                         {label: 'Shipping discounts', value: 'shipping'},
                       ]}

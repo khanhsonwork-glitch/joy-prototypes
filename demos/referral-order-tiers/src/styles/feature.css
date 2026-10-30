@@ -4,15 +4,17 @@
 .rt-table {display: flex; flex-direction: column; gap: var(--p-space-300);}
 .rt-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 36px;
+  grid-template-columns: minmax(0, 1fr) 150px minmax(0, 1fr) 36px;
   gap: var(--p-space-300);
   align-items: start;
 }
+.rt-cell--range .Polaris-Text--root {margin-bottom: var(--p-space-100);}
+.rt-range {margin: 0; min-height: 32px; display: flex; align-items: center; color: var(--p-color-text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap;}
 .rt-cell {min-width: 0;}
 .rt-cell--name {padding-top: 6px;}
 .rt-row[data-tier-row='1'] .rt-cell--action {padding-top: 30px;}
 .rt-cell--action {padding-top: 2px;}
-.rt-warn {grid-column: 2 / -1;}
+.rt-warn {grid-column: 3 / -1;}
 .rt-switch {width: 36px; height: 20px; border-radius: var(--p-border-radius-full); border: 0; padding: 2px; background: var(--p-color-bg-fill-disabled); cursor: pointer; display: inline-flex;}
 .rt-switch[aria-checked='true'] {background: var(--p-color-bg-fill-brand); justify-content: flex-end;}
 .rt-switch span {width: 16px; height: 16px; border-radius: var(--p-border-radius-full); background: var(--p-color-bg-surface);}
@@ -131,3 +133,4 @@
   background: var(--proto-amber-bg); border: 1px solid var(--proto-amber-border); color: var(--proto-amber-text);
 }
 .rt-proto-note p {margin: 0;}
+.rt-examples {margin: var(--p-space-100) 0 0; padding-left: var(--p-space-500);}

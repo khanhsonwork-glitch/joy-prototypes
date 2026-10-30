@@ -168,8 +168,8 @@ function CheckoutView() {
       </div>
       <p className="sf-proto-note">
         {res.qualifies
-          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` Counted amount: ${money2(res.counted)}, the subtotal before the referral code.` : ''}`
-          : `Counted amount ${money2(res.counted)} is below ${money(res.min)}, Ava's lowest order amount: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until an order from this friend counts ${money(res.min)} or more.`}
+          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` Order amount: ${money2(res.counted)}, before the referral code.` : ''}`
+          : `Order amount ${money2(res.counted)} is below ${money(res.min)}, Ava's lowest order amount: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until an order from this friend counts ${money(res.min)} or more.`}
       </p>
     </div>
   );
@@ -185,7 +185,7 @@ function EmailView() {
         <p className="sf-email__brand">{STORE.name}</p>
         <h2 className="sf-email__title">{`You earned ${res.referrer}`}</h2>
         <p>Your friend Ben Carter placed a qualifying order, so your referral is complete. Thanks for spreading the word!</p>
-        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(res.counted)} before the referral code · orders from ${money(res.tier.min)} earn ${pointsText(res.tier.value)}`}</p> : null}
+        {res.tier ? <p className="sf-muted">{`Order amount ${money2(res.counted)} before the referral code · orders from ${money(res.tier.min)} earn ${pointsText(res.tier.value)}`}</p> : null}
         <span className="sf-btn">See my rewards</span>
       </div>
     </div>

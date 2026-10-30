@@ -4,7 +4,7 @@
 import React, {useEffect, useState} from 'react';
 import {BlockStack, Button, InlineStack, Text, TextField} from '@shopify/polaris';
 import {DeleteIcon, PlusIcon} from '@shopify/polaris-icons';
-import {MAX_TIERS} from '../data/index.js';
+import {MAX_TIERS, money2} from '../data/index.js';
 import {canAddTier} from '../state/logic.js';
 
 // Phones stack each tier into a block, so every field needs its own label there.
@@ -18,6 +18,15 @@ function useNarrow() {
     return () => mq.removeEventListener('change', on);
   }, []);
   return narrow;
+}
+
+/** The orders a row covers, from the amounts as typed: "$50.00 – $100.00", "$100.01 and above"; "—" while the amount is invalid. */
+export function rangeText(tiers, t) {
+  const min = Number(t.min);
+  if (!(t.min !== '' && min > 0) || tiers.filter((x) => Number(x.min) === min).length > 1) return '—';
+  const above = tiers.map((x) => Number(x.min)).filter((v) => v > min);
+  if (!above.length) return `${money2(min)} and above`;
+  return `${money2(min)} – ${money2(Math.round((Math.min(...above) - 0.01) * 100) / 100)}`;
 }
 
 /**
@@ -47,6 +56,10 @@ export function TierTable({tiers, valueLabel, unit, minLocked, minLockedHelp, on
                   disabled={locked || minLocked}
                   autoComplete="off"
                 />
+              </div>
+              <div className="rt-cell rt-cell--range">
+                {hide ? null : <Text as="p">Order range</Text>}
+                <p className="rt-range" data-range>{rangeText(tiers, t)}</p>
               </div>
               <div className="rt-cell">
                 <TextField
