@@ -1,5 +1,6 @@
 // Settings › General, scrolled to the "Redemption behavior" card (CustomerBehaviorSettings in the Joy admin).
-// The new "Trigger: Customer clicks Shop now" block sits first in that card; the rest of the card is unchanged.
+// The free-shipping "Continue shopping URL" becomes the shop's shopping link for every Shop now button: new heading,
+// label and help text, plus a one-time notice for shops that had already filled it.
 import React, {useEffect, useMemo, useState} from 'react';
 import {
   ActionList, Badge, Banner, BlockStack, Card, Checkbox, ChoiceList, Divider, Layout, Page, RadioButton, Select, Text, TextField,
@@ -27,7 +28,7 @@ const SECTIONS = [
 ];
 
 function initialLink(state, saved) {
-  if (state === 'blank') return '';
+  if (state === 'blank' || state === 'today') return state === 'today' ? saved.defaultLink : '';
   if (state === 'worst') return 'pomelopark.com/collections/winter-skincare-favourites-for-dry-and-sensitive-skin-gift-sets-under-50';
   return saved.defaultLink;
 }
@@ -38,36 +39,39 @@ export function Settings() {
   const {saved, save} = useLinks();
   const today = state === 'today';
   const initial = useMemo(() => ({
-    defaultLink: initialLink(state, saved),
-    apply: 'go_to_cart', freeGift: 'manual', freeShippingUrl: '', calc: 'go_to_login',
+    link: initialLink(state, saved),
+    apply: 'go_to_cart', freeGift: 'manual', calc: 'go_to_login',
   }), [state, saved]);
   const [form, setForm] = useState(initial);
   useEffect(() => setForm(initial), [initial]);
   const set = (key) => (value) => setForm((f) => ({...f, [key]: value}));
   const dirty = JSON.stringify(form) !== JSON.stringify(initial);
-  const error = linkError(form.defaultLink);
+  const error = linkError(form.link);
+  // A shop that had already filled the free-shipping URL sees a one-time notice that it now drives Shop now too.
+  const hadLink = state === 'default' || state === 'own';
+  const [noticeClosed, setNoticeClosed] = useState(false);
 
   // The real page scrolls to #customer-behavior-settings when opened from a deep link.
   useEffect(() => {
     if (state === 'loading' || state === 'error') return;
     // After the shell has reset the scroll for the new route.
-    const t = window.setTimeout(() => document.getElementById('customer-behavior-settings')?.scrollIntoView({block: 'start'}), 50);
+    const t = window.setTimeout(() => (document.getElementById('shopping-link') || document.getElementById('customer-behavior-settings'))?.scrollIntoView({block: 'center'}), 50);
     return () => window.clearTimeout(t);
   }, [state]);
 
   const onSave = () => {
     if (error) {
       notify('1 field needs attention', {error: true});
-      document.querySelector('#default-shop-now-link')?.focus();
+      document.querySelector('#shopping-link')?.focus();
       return;
     }
-    save({defaultLink: form.defaultLink.trim()});
+    save({defaultLink: form.link.trim()});
     notify('Settings saved');
   };
 
-  const nowLine = form.defaultLink.trim() && !error
-    ? `Now: these buttons open ${form.defaultLink.trim()}.`
-    : 'Now: these buttons open your homepage.';
+  const nowLine = form.link.trim() && !error
+    ? `Now: these buttons open ${form.link.trim()}.`
+    : 'Now (blank): Continue shopping, No orders yet and loyalty page Milestones open /collections/all; the other Shop now buttons open your homepage.';
 
   let right;
   if (state === 'loading') right = <LoadingView />;
@@ -100,30 +104,6 @@ export function Settings() {
                   : 'Control what happens when customers apply discounts, redeem rewards or click Shop now.'}
               </Text>
             </BlockStack>
-            {today ? null : (
-              <>
-                <BlockStack gap="200">
-                  <Text as="h3" variant="headingSm">Trigger: Customer clicks Shop now</Text>
-                  <TextField
-                    id="default-shop-now-link"
-                    label="Default Shop now link"
-                    labelHidden
-                    autoComplete="url"
-                    placeholder={LINK_PLACEHOLDER}
-                    value={form.defaultLink}
-                    onChange={set('defaultLink')}
-                    error={error}
-                    helpText={(
-                      <BlockStack gap="100">
-                        <span>Where Shop now takes customers after they redeem a reward, open a coupon in My coupons, view Milestones, view Place order, or have no orders yet. A reward that is for one product or one collection opens that page instead. Leave blank to use your homepage.</span>
-                        <span className="sl-now">{nowLine}</span>
-                      </BlockStack>
-                    )}
-                  />
-                </BlockStack>
-                <Divider />
-              </>
-            )}
             <ChoiceList
               title="Trigger: Apply discount"
               choices={[
@@ -145,15 +125,29 @@ export function Settings() {
               onChange={(v) => set('freeGift')(v[0])}
             />
             <BlockStack gap="200">
-              <Text as="h3" variant="headingSm">Trigger: After customer redeems free shipping</Text>
+              <Text as="h3" variant="headingSm">{today ? 'Trigger: After customer redeems free shipping' : 'Trigger: Customer clicks Continue shopping or Shop now'}</Text>
+              {!today && hadLink && !noticeClosed ? (
+              <Banner tone="info" title="Your Continue shopping URL now sets Shop now buttons too" onDismiss={() => setNoticeClosed(true)}>
+                <p>{`Shop now buttons that don't lead to one product or collection now open ${saved.defaultLink}, the link you set for free shipping. Change or clear it below if that's not where you want customers to go.`}</p>
+              </Banner>
+            ) : null}
               <TextField
-                label="Continue shopping URL"
+                id="shopping-link"
+                label={today ? 'Continue shopping URL' : 'Shopping link'}
                 labelHidden
                 autoComplete="url"
                 placeholder={LINK_PLACEHOLDER}
-                value={form.freeShippingUrl}
-                onChange={set('freeShippingUrl')}
-                helpText="Destination URL when the customer clicks Continue shopping after redeeming a free shipping reward. Leave blank to use the default /collections/all."
+                value={form.link}
+                onChange={set('link')}
+                error={today ? undefined : error}
+                helpText={today
+                  ? 'Destination URL when the customer clicks Continue shopping after redeeming a free shipping reward. Leave blank to use the default /collections/all.'
+                  : (
+                    <BlockStack gap="100">
+                      <span>Where customers go when they click Continue shopping after redeeming free shipping, and Shop now after redeeming a reward, in My coupons, on Milestones, on Place order or with no orders yet. A reward for one product or one collection opens that page instead.</span>
+                      <span className="sl-now">{nowLine}</span>
+                    </BlockStack>
+                  )}
               />
             </BlockStack>
             <ChoiceList

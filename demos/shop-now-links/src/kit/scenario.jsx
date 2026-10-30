@@ -3,7 +3,7 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
-  {value: 'default', label: 'With this change', help: 'Default link set in Settings; reward and milestone left blank'},
+  {value: 'default', label: 'With this change', help: 'Shopping link already filled in Settings; reward and milestone left blank'},
   {value: 'own', label: 'Own links typed in', help: 'The reward and the milestone each have their own link'},
   {value: 'blank', label: 'Nothing set', help: 'Every link blank: Shop now picks the page by itself'},
   {value: 'today', label: 'Today', help: 'The screen as merchants see it now'},

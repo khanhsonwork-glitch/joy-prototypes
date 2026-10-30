@@ -29,7 +29,8 @@ export function MilestoneEdit() {
   useEffect(() => setForm(initial), [initial]);
   const set = (key) => (value) => setForm((f) => ({...f, [key]: value}));
   const dirty = JSON.stringify(form) !== JSON.stringify(initial);
-  const target = {ownLink: form.shopNowLink, giftType: 'none', defaultLink: state === 'blank' ? '' : saved.defaultLink};
+  const target = {ownLink: form.shopNowLink, giftType: 'none', defaultLink: state === 'blank' ? '' : saved.defaultLink,
+    fallbackWhy: 'your homepage (/collections/all on the loyalty page), because the shopping link in Settings is blank'};
 
   const onSave = () => {
     if (!today && linkError(form.shopNowLink)) {
@@ -61,7 +62,7 @@ export function MilestoneEdit() {
                     value={form.shopNowLink}
                     onChange={set('shopNowLink')}
                     target={target}
-                    help="Where the Shop now button of this milestone takes customers, in the widget, on the loyalty page and in the customer account page. Leave blank to use your default Shop now link."
+                    help="Where the Shop now button of this milestone takes customers, in the widget, on the loyalty page and in the customer account page. Leave blank to use the shopping link in Settings."
                   />
                 </div>
               )}

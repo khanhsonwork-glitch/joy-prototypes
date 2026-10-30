@@ -84,7 +84,7 @@ export function RewardEdit() {
                     value={form.shopNowLink}
                     onChange={set('shopNowLink')}
                     target={target}
-                    help="Where Shop now takes customers after they redeem this reward or open its coupon. Leave blank and Joy picks: the product or collection page when the reward is for only one, otherwise your default Shop now link."
+                    help="Where Shop now takes customers after they redeem this reward or open its coupon. Leave blank and Joy picks: the product or collection page when the reward is for only one, otherwise the shopping link in Settings."
                   />
                 </div>
               )}

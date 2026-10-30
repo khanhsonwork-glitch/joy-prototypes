@@ -1,6 +1,6 @@
 // One place for every "Shop now" destination, shared by Settings, the reward form and the milestone form.
 // The storefront picks: the button's own link → the one product / one collection the reward is for →
-// the default Shop now link in Settings → the homepage.
+// the shopping link in Settings (the old free-shipping Continue shopping URL) → where the button goes today.
 import React, {createContext, useContext, useMemo, useState} from 'react';
 
 /** Same rule the server already applies to the free-shipping "Continue shopping URL". */
@@ -13,7 +13,8 @@ export const linkError = (value) => {
 };
 
 /** Where Shop now goes, and the reason in words a merchant reads under the field. */
-export function shopNowTarget({ownLink = '', products = [], collections = [], giftType = 'products', defaultLink = ''}) {
+export function shopNowTarget({ownLink = '', products = [], collections = [], giftType = 'products', defaultLink = '',
+  fallback = '/', fallbackWhy = 'your homepage, because the shopping link in Settings is blank'}) {
   const own = ownLink.trim();
   if (own && !linkError(own)) return {url: own, why: 'the link above'};
   if (giftType === 'products' && products.length === 1) {
@@ -23,8 +24,8 @@ export function shopNowTarget({ownLink = '', products = [], collections = [], gi
     return {url: `/collections/${collections[0].handle}`, why: `the ${collections[0].title} collection, the only collection in this reward`};
   }
   const def = defaultLink.trim();
-  if (def && !linkError(def)) return {url: def, why: 'your default Shop now link in Settings'};
-  return {url: '/', why: 'your homepage, because no default Shop now link is set in Settings'};
+  if (def && !linkError(def)) return {url: def, why: 'the shopping link in Settings'};
+  return {url: fallback, why: fallbackWhy};
 }
 
 const LinksContext = createContext(null);
