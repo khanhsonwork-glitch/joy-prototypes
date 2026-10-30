@@ -560,6 +560,28 @@
     },
     {
       "product": "loyalty",
+      "slug": "multistore-linked-earning",
+      "name": "Multi-store: linked-store orders earn into the main store",
+      "area": "Prototype",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-10-30",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-multistore-linked-earning.jpg",
+      "reviewUrl": "/loyalty/multistore-linked-earning/#/multi-shop/shops",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "paid-membership",
       "name": "Paid membership",
       "area": "Membership",

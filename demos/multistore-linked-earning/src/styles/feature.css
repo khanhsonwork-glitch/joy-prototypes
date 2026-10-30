@@ -1,0 +1,12 @@
+/* Joy's own on/off switch (Avada-Switch V2) as a Polaris-token button. */
+.ms-switch {flex: none; width: 36px; height: 20px; border-radius: var(--p-border-radius-full); border: 0; padding: 2px; background: var(--p-color-bg-fill-disabled); cursor: pointer; display: inline-flex;}
+.ms-switch[aria-checked='true'] {background: var(--p-color-bg-fill-brand); justify-content: flex-end;}
+.ms-switch:disabled {cursor: default; opacity: 0.6;}
+.ms-switch span {width: 16px; height: 16px; border-radius: var(--p-border-radius-full); background: var(--p-color-bg-surface);}
+.ms-switch:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
+
+/* The new row sits under Multi-Shop (Beta), indented like a child setting. */
+.ms-subrow {margin-inline-start: var(--p-space-400); padding-inline-start: var(--p-space-400); border-inline-start: var(--p-border-width-025) solid var(--p-color-border);}
+
+/* Five columns on a phone: let the table scroll inside its card, never the page. */
+.ms-table {overflow-x: auto;}
