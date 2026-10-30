@@ -12,10 +12,15 @@ function calcFromUrl() {
 
 export function seedFor(state) {
   // Both sides by order amount, as the merchant asked: friend $5 / $10 off, referrer 100 / 200 points.
+  const calc = calcFromUrl();
   const byAmount = {
-    ...BASE_PROGRAM, referrerMethod: 'point_order_value', referrerCalc: calcFromUrl(), referrerTiers: REFERRER_TIERS,
+    ...BASE_PROGRAM, referrerMethod: 'point_order_value', referrerCalc: calc, referrerTiers: REFERRER_TIERS,
     friendTiersOn: true, friendTierValues: FRIEND_TIER_VALUES,
   };
+  // Referrer on "Points for every $1 spent": the friend keeps the same amounts as its own table.
+  if (calc === CALC_RATE) {
+    Object.assign(byAmount, {friendSameAmounts: false, friendTiers: REFERRER_TIERS.map((t) => ({id: `f${t.id}`, min: t.min, value: FRIEND_TIER_VALUES[t.id]}))});
+  }
   if (state === 'today') return {...BASE_PROGRAM};
   if (state === 'worst') return {...byAmount, referrerTiers: WORST_TIERS};
   return byAmount;

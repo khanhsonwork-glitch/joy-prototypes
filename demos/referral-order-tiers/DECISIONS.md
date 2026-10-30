@@ -15,6 +15,7 @@ Every scope decision Alex made, word for word, one per line. Check each screen a
 - 29/10 17:53 · "ok nhưng mà phải nói dễ hiểu để MC biết phân biệt hoặc là có help text dynamic rõ ràng"
 - 29/10 17:56 · Both ways of calculating count what Joy already counts for "Points based on order value": the Shopify subtotal after every discount, the referral code included, before shipping and taxes.
 - 30/10 09:13 · "Đợt 1 đợt 2 là sao với nhiều cái trong prd khó hiểu quá" · "tôi k muốn chia theo đợt làm là làm hết" → no releases: the friend's discount by order amount ships with the referrer side, in the same task. The prototype opens with both sides on.
+- 30/10 10:52 · "ok với final PRD đi" (to "tính trước mã referral cho cả 2 phía") → "Fixed points by order range" and the friend's discount by order amount both count the subtotal before the referral code (after other discounts, before shipping and taxes), so both sides always land in the same range: a $105 cart → $10 off and 200 points. "Points for every $1 spent" stays as today (after the code). Replaces 29/10 17:56 for Fixed.
 
 ## Rules this ledger implies
 
