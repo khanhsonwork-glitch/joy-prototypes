@@ -69,7 +69,9 @@ export function Settings() {
     notify('Settings saved');
   };
 
-  const nowLine = form.link.trim() && !error
+  const nowLine = error
+    ? 'Until the link is fixed and saved, these buttons keep their saved destinations.'
+    : form.link.trim()
     ? `Now: these buttons open ${form.link.trim()}.`
     : 'Now (blank): Continue shopping, No orders yet and loyalty page Milestones open /collections/all; the other Shop now buttons open your homepage.';
 
@@ -128,7 +130,7 @@ export function Settings() {
               <Text as="h3" variant="headingSm">{today ? 'Trigger: After customer redeems free shipping' : 'Trigger: Customer clicks Continue shopping or Shop now'}</Text>
               {!today && hadLink && !noticeClosed ? (
               <Banner tone="info" title="Your Continue shopping URL now sets Shop now buttons too" onDismiss={() => setNoticeClosed(true)}>
-                <p>{`Shop now buttons that don't lead to one product or collection now open ${saved.defaultLink}, the link you set for free shipping. Change or clear it below if that's not where you want customers to go.`}</p>
+                <p>{`Shop now buttons without their own link, and not for one product or collection, now open ${saved.defaultLink}, the link you set for free shipping. Change or clear it below if that's not where you want customers to go.`}</p>
               </Banner>
             ) : null}
               <TextField

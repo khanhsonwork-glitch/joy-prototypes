@@ -19,7 +19,7 @@ export function ShopNowLinkField({value, onChange, target, help}) {
       helpText={(
         <BlockStack gap="100">
           <span>{help}</span>
-          <span className="sl-now">{`Now: Shop now opens ${t.url}, ${t.why}.`}</span>
+          <span className="sl-now">{error ? `Until the link is fixed: Shop now opens ${t.url}, ${t.why}.` : `Now: Shop now opens ${t.url}, ${t.why}.`}</span>
         </BlockStack>
       )}
     />

@@ -3,12 +3,13 @@
 // the shopping link in Settings (the old free-shipping Continue shopping URL) → where the button goes today.
 import React, {createContext, useContext, useMemo, useState} from 'react';
 
-/** Same rule the server already applies to the free-shipping "Continue shopping URL". */
+/** The server's rule for the free-shipping URL ("/" but not "//", or http(s)://) plus a host, no spaces, 2,048 max. */
 export const linkError = (value) => {
   const v = (value || '').trim();
   if (!v) return undefined;
   if (/\s/.test(v)) return 'Remove the spaces from the link';
-  if (!/^(\/(?!\/)|https?:\/\/)/.test(v)) return 'Start the link with “/” or “https://”';
+  if (!/^(\/(?!\/)|https?:\/\/[^/?#]+)/.test(v)) return 'Start the link with “/” or “https://”';
+  if (v.length > 2048) return 'Use 2,048 characters or fewer';
   return undefined;
 };
 
