@@ -18,14 +18,6 @@
 .rt-switch span {width: 16px; height: 16px; border-radius: var(--p-border-radius-full); background: var(--p-color-bg-surface);}
 .rt-switch:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
 
-/* Release 2 marker: prototype-only, amber like the Prototype panel, never product UI. */
-.rt-release {position: relative; padding: var(--p-space-400) var(--p-space-300) var(--p-space-300); border: 1px dashed var(--proto-amber-border); border-radius: var(--p-border-radius-200);}
-.rt-release__tag {
-  position: absolute; top: -10px; left: var(--p-space-300); padding: 0 var(--p-space-200);
-  background: var(--proto-amber-bg); color: var(--proto-amber-text); border-radius: var(--p-border-radius-full);
-  font-size: var(--p-font-size-275); font-weight: var(--p-font-weight-semibold); line-height: 20px;
-}
-
 @media (max-width: 640px) {
   .rt-row {
     grid-template-columns: minmax(0, 1fr) 36px;

@@ -3,8 +3,7 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
-  {value: 'default', label: 'Release 1', help: 'Referrer: fixed points by order amount, from $50 → 100 points, from $100.01 → 200 points'},
-  {value: 'release2', label: 'Release 2', help: "Friend's discount by order amount too: $5 off, $10 off"},
+  {value: 'default', label: 'By order amount', help: 'From $50: friend $5 off, referrer 100 points · from $100.01: friend $10 off, referrer 200 points'},
   {value: 'today', label: 'Today', help: 'Before this feature: 100 points, $5 off from $50'},
   {value: 'worst', label: 'Worst case', help: '5 order amounts, a duplicate amount, a blank value, a row paying less'},
   {value: 'disabled', label: 'Disabled', help: 'Essential plan: order amounts need Advanced'},
@@ -12,9 +11,12 @@ export const STATES = [
   {value: 'error', label: 'Error', help: 'Loading failed'},
 ];
 const VALID = new Set(STATES.map((s) => s.value));
+// Old links keep working: ?state=release2 was the friend side, now part of the default.
+const ALIASES = {release2: 'default'};
 function readState() {
   const query = new URLSearchParams(window.location.hash.split('?').slice(1).join('?'));
-  const value = query.get('state') || new URLSearchParams(window.location.search).get('state');
+  const raw = query.get('state') || new URLSearchParams(window.location.search).get('state');
+  const value = ALIASES[raw] || raw;
   return VALID.has(value) ? value : 'default';
 }
 

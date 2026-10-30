@@ -13,6 +13,8 @@ Every scope decision Alex made, word for word, one per line. Check each screen a
 - 29/10 17:46 · (screenshot of the Reward method list) "2 cái này tên giống nhau nhỉ"
 - 29/10 17:53 · Referrer: NO separate line in Reward method. Merge into the existing "Points based on order value": picking it shows "Calculate points" with "Per $1 spent" (as today) and "Fixed points by order amount" (new table, "Order from $50 → 100 points"). Drop the word "tiers" everywhere in FR86, say "order amount", so it never reads as VIP tiers.
 - 29/10 17:53 · "ok nhưng mà phải nói dễ hiểu để MC biết phân biệt hoặc là có help text dynamic rõ ràng"
+- 29/10 17:56 · Both ways of calculating count what Joy already counts for "Points based on order value": the Shopify subtotal after every discount, the referral code included, before shipping and taxes.
+- 30/10 09:13 · "Đợt 1 đợt 2 là sao với nhiều cái trong prd khó hiểu quá" · "tôi k muốn chia theo đợt làm là làm hết" → no releases: the friend's discount by order amount ships with the referrer side, in the same task. The prototype opens with both sides on.
 
 ## Rules this ledger implies
 
@@ -22,5 +24,5 @@ Every scope decision Alex made, word for word, one per line. Check each screen a
 | Adds / removes a tier | max 5; the last tier can't be removed | count and range follow | same amounts follow when linked | follows |
 | Changes tier 1 amount | it is the minimum: an order below it keeps the referral Pending | range follows | linked amounts follow | note "from $X" follows |
 | Switches to another method | tiers hidden, kept until Save | back to the method's summary | linked option disappears | single reward |
-| Release 2: ticks "Set the discount by the friend's order value" (amount or %) | — | "$5–$10 off coupon · by order amount" | Reward value gives way to the tier table; minimum order requirement shows "Set by tier 1"; order discounts can't combine | popup lists the tiers |
-| Release 2: "Use the same order amounts as Rewards for referrers" | — | — | amounts read-only, copied from the referrer tiers | one list for both sides |
+| Ticks "Set the discount by the friend's order value" (amount or %) | — | "$5–$10 off coupon · by order amount" | Reward value gives way to the tier table; minimum order requirement shows "Set by tier 1"; order discounts can't combine | popup lists the tiers |
+| "Use the same order amounts as Rewards for referrers" | — | — | amounts read-only, copied from the referrer tiers | one list for both sides |

@@ -1,6 +1,6 @@
 // Rewards for referrers / Rewards for referees, card for card as the Joy admin draws them today
 // (ReferringCustomerReward.js, ReferredFriendReward.js). Tiers live inside each page's Reward settings card:
-// the referrer gets a new Reward method, the friend (release 2) a checkbox that swaps Reward value for tiers.
+// the referrer gets "Calculate points" inside "Points based on order value", the friend a checkbox that swaps Reward value for tiers.
 import React, {useEffect, useState} from 'react';
 import {
   Banner, BlockStack, Button, Card, Checkbox, ChoiceList, Layout, Page, Select, Text, TextField,
@@ -368,8 +368,7 @@ export function RefereeRewards() {
                 <Text as="span" variant="headingMd">Reward settings</Text>
                 <Select label="Reward method" options={FRIEND_METHODS} value={form.friendMethod} onChange={(v) => setForm({...form, friendMethod: v})} disabled={locked} />
                 {canTier ? (
-                  <div className="rt-release" id="tiers">
-                    <span className="rt-release__tag">Prototype · release 2</span>
+                  <div id="tiers">
                     <BlockStack gap="300">
                       <Checkbox
                         label="Set the discount by the friend's order value"

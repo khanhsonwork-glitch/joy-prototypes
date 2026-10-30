@@ -1,5 +1,5 @@
 // The tier rules the prototype shows. Pure functions so every screen (admin, widget, checkout, email) agrees.
-// Referrer tiers belong to the new referrer reward method; friend tiers (release 2) belong to the friend's discount.
+// Referrer tiers belong to the new referrer reward method; friend tiers belong to the friend's discount.
 import {CALC_AMOUNT, MAX_TIERS, TIERABLE_FRIEND, money, num} from '../data/index.js';
 
 const n = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));

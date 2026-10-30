@@ -11,11 +11,14 @@ function calcFromUrl() {
 }
 
 export function seedFor(state) {
-  const release1 = {...BASE_PROGRAM, referrerMethod: 'point_order_value', referrerCalc: calcFromUrl(), referrerTiers: REFERRER_TIERS};
+  // Both sides by order amount, as the merchant asked: friend $5 / $10 off, referrer 100 / 200 points.
+  const byAmount = {
+    ...BASE_PROGRAM, referrerMethod: 'point_order_value', referrerCalc: calcFromUrl(), referrerTiers: REFERRER_TIERS,
+    friendTiersOn: true, friendTierValues: FRIEND_TIER_VALUES,
+  };
   if (state === 'today') return {...BASE_PROGRAM};
-  if (state === 'release2') return {...release1, friendTiersOn: true, friendTierValues: FRIEND_TIER_VALUES};
-  if (state === 'worst') return {...release1, referrerTiers: WORST_TIERS};
-  return release1;
+  if (state === 'worst') return {...byAmount, referrerTiers: WORST_TIERS};
+  return byAmount;
 }
 
 const ProgramContext = createContext(null);
