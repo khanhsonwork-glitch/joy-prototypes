@@ -80,8 +80,7 @@ function MultiShopBlock() {
               <BlockStack gap="100">
                 <Text variant="bodyMd" as="span" fontWeight="semibold">Linked-store orders earn here</Text>
                 <Text variant="bodyMd" as="p" tone="subdued">
-                  Orders, refunds and cancellations in linked sub shops add points and tier progress to the customer in
-                  this main shop. Off by default. Turn on only for shops that asked for it.
+                  Orders in linked sub shops earn points and tier progress for the customer in this main shop. Refunds and cancellations adjust them here too. Off by default. Turn on only for shops that asked for it.
                 </Text>
               </BlockStack>
               <Switch
