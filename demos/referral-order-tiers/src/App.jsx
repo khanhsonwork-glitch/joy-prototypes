@@ -14,7 +14,7 @@ import {Storefront} from './pages/Storefront.jsx';
 import {KitPage} from './pages/KitPage.jsx';
 import {DEMO} from './demo.config.js';
 
-// Routes: #/demo (Reward programs ▸ Referrals) · #/demo/referrer (tiers: new reward method) · #/demo/referee (release 2) ·
+// Routes: #/demo (Reward programs ▸ Referrals) · #/demo/referrer (tiers: new reward method) · #/demo/referee (friend's discount by order amount) ·
 // #/demo/storefront (widget, claim popup, checkout, email; no admin chrome) · #/kit (components).
 function NotFound() {
   return (

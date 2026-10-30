@@ -75,12 +75,12 @@ export const BASE_PROGRAM = {
   referrerTiers: [],
 };
 
-// Release 1: fixed points by the friend's first order amount. The lowest amount = the old minimum, its points = the old 100.
+// Referrer: fixed points by the friend's first order amount. The lowest amount = the old minimum, its points = the old 100.
 export const REFERRER_TIERS = [
   {id: 't1', min: '50', points: '100'},
   {id: 't2', min: '100.01', points: '200'},
 ];
-// Release 2: the friend's discount by the same amounts.
+// Friend: the discount by the same amounts.
 export const FRIEND_TIER_VALUES = {t1: '5', t2: '10'};
 // Worst case: a duplicate amount, a row that pays less than the one above, a blank value, 5 rows.
 export const WORST_TIERS = [
