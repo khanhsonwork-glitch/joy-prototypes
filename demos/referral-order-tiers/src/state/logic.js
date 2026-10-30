@@ -80,12 +80,13 @@ export function friendDiscount(p, subtotal) {
 
 /**
  * What each side gets for a cart subtotal (after other discounts, before the referral code).
- * The referrer side counts what Joy already counts for "Points based on order value": the order subtotal after
- * every discount, the referral code included (Alex 29/10 17:56). The friend's code can only look at the cart before itself.
+ * "Fixed points by order range" counts that same cart, so both sides always land in the same range (Alex 30/10 10:52).
+ * "Points for every $1 spent" stays as today: the order subtotal after every discount, the referral code included.
  */
 export function outcome(p, subtotal) {
   const discount = friendDiscount(p, subtotal);
-  const counted = Math.round(Math.max(subtotal - discount, 0) * 100) / 100;
+  const paid = Math.round(Math.max(subtotal - discount, 0) * 100) / 100;
+  const counted = referrerTiered(p) ? subtotal : paid;
   const fTier = friendTiered(p) ? matchTier(friendTiers(p), subtotal) : null;
   const friend = friendTiered(p)
     ? (fTier ? friendValueText(p.friendMethod, fTier.value) : null)
@@ -99,7 +100,6 @@ export function outcome(p, subtotal) {
     referrer = tier ? pointsText(tier.value) : null; // below tier 1: the referral stays pending
   } else if (p.referrerVipRates) referrer = "their VIP tier's reward";
   else if (p.referrerMethod === 'point_order_value' || p.referrerMethod === 'store_credit_order_value') {
-    const paid = counted;
     const rate = Number(p.referrerMethod === 'point_order_value' ? p.referrerRate : p.referrerValue) || 0;
     const raw = Math.floor(paid * rate);
     const cap = p.referrerMaxOn ? Number(p.referrerMax) || 0 : 0;
@@ -195,22 +195,16 @@ export function friendHeadline(p) {
   return friendValueText(p.friendMethod, p.friendValue);
 }
 
-/** Two worked examples for the tier table's help text: a mid order in tier 1 and one in the top tier. */
+/** Two worked examples for the tier table's help text: an order inside tier 1 and one in the top tier ($80 and $115 for $50 / $100.01). */
 export function examples(tiers) {
   const valid = tiers.filter((t) => n(t.min) > 0 && n(t.value) > 0);
   if (!valid.length) return [];
   const pick = (i) => {
     const lo = n(valid[i].min);
-    const hi = valid[i + 1] ? n(valid[i + 1].min) : lo * 1.2;
-    return Math.max(Math.round((lo + hi) / 2 / 5) * 5, Math.ceil(lo));
+    const hi = valid[i + 1] ? n(valid[i + 1].min) : lo * 1.25;
+    const order = Math.max(Math.round((lo + (hi - lo) * 0.6) / 5) * 5, Math.ceil(lo));
+    return order < hi ? order : lo;
   };
   const idx = valid.length > 1 ? [0, valid.length - 1] : [0];
   return idx.map((i) => ({order: pick(i), tier: valid[i], index: tiers.indexOf(valid[i])}));
-}
-
-/** The cart amount (before the referral code) whose counted amount is `target`; iterates because a % code depends on the cart. */
-export function orderFor(p, target) {
-  let order = target;
-  for (let i = 0; i < 4; i += 1) order = Math.round((target + friendDiscount(p, order)) * 100) / 100;
-  return order;
 }

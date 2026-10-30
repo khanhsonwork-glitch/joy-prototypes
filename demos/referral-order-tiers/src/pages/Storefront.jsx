@@ -21,6 +21,7 @@ const CART_PRESETS = [
   {id: 'c45', label: '$45 cart', lines: [{name: 'Citrus Gel Cleanser', price: 22}, {name: 'Pomelo Peel PHA Toner', price: 23}]},
   {id: 'c60', label: '$60 cart', lines: [{name: 'Vitamin C Glow Serum', price: 38}, {name: 'Citrus Gel Cleanser', price: 22}]},
   {id: 'c100', label: '$100 cart', lines: [{name: 'Glow Getter Set', price: 100}]},
+  {id: 'c105', label: '$105 cart', lines: [{name: 'Glow Getter Set', price: 100}, {name: 'Citrus Lip Balm', price: 5}]},
   {id: 'c120', label: '$120 cart', lines: [{name: 'Glow Getter Set', price: 100}, {name: 'Sunny Side SPF 40', price: 20}]},
 ];
 
@@ -167,8 +168,8 @@ function CheckoutView() {
       </div>
       <p className="sf-proto-note">
         {res.qualifies
-          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` Counted amount: ${money2(res.counted)}, the subtotal after the referral code.` : ''}`
-          : `Counted amount ${money2(res.counted)}${discount ? ' (after the referral code)' : ''} is below ${money(res.min)}, Ava's lowest order amount: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until an order from this friend counts ${money(res.min)} or more.`}
+          ? `When this order is paid, Ava (the referrer) gets ${res.referrer}.${referrerTiered(program) ? ` Counted amount: ${money2(res.counted)}, the subtotal before the referral code.` : ''}`
+          : `Counted amount ${money2(res.counted)} is below ${money(res.min)}, Ava's lowest order amount: ${discount ? 'the friend still gets the discount, but ' : ''}Ava's referral stays pending until an order from this friend counts ${money(res.min)} or more.`}
       </p>
     </div>
   );
@@ -184,7 +185,7 @@ function EmailView() {
         <p className="sf-email__brand">{STORE.name}</p>
         <h2 className="sf-email__title">{`You earned ${res.referrer}`}</h2>
         <p>Your friend Ben Carter placed a qualifying order, so your referral is complete. Thanks for spreading the word!</p>
-        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(res.counted)} after the referral code · orders from ${money(res.tier.min)} earn ${pointsText(res.tier.value)}`}</p> : null}
+        {res.tier ? <p className="sf-muted">{`Order subtotal ${money2(res.counted)} before the referral code · orders from ${money(res.tier.min)} earn ${pointsText(res.tier.value)}`}</p> : null}
         <span className="sf-btn">See my rewards</span>
       </div>
     </div>
