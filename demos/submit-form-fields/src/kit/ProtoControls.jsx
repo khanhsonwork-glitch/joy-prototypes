@@ -1,11 +1,12 @@
 // Amber panel that is visibly NOT product UI: switch the screen state, open the component sheet.
 import React, {useEffect, useRef, useState} from 'react';
 import {STATES, useScenario} from './scenario.jsx';
-import {useVersion} from '../state/form.jsx';
+import {useShopV4, useVersion} from '../state/form.jsx';
 
 export function ProtoControls() {
   const {state, setState} = useScenario();
   const [version, setVersion] = useVersion();
+  const [v4, setV4] = useShopV4();
   const [open, setOpen] = useState(false);
   const toggle = useRef(null);
   const panel = useRef(null);
@@ -34,8 +35,8 @@ export function ProtoControls() {
             <legend>Version</legend>
             {[
               ['today', 'Today', 'avada/master, 30/10/2026'],
-              ['phase1', 'Phase 1', 'Form fields in 4 types, customer tags'],
-              ['phase2', 'Phase 2', 'Phase 1 + 5 more types, choice tags, locked types'],
+              ['phase1', 'Phase 1', 'Form fields in 5 types, customer tags'],
+              ['phase2', 'Phase 2', 'Phase 1 + 4 more types, choice tags, locked types'],
             ].map(([v, l, h]) => (
               <label key={v} className="kit-proto__state">
                 <input type="radio" name="kit-proto-version" value={v} checked={version === v} onChange={() => setVersion(v)} />
@@ -46,6 +47,18 @@ export function ProtoControls() {
               </label>
             ))}
           </fieldset>
+          {version !== 'today' ? (
+            <fieldset className="kit-proto__states">
+              <legend>Shop</legend>
+              <label className="kit-proto__state">
+                <input type="checkbox" name="kit-proto-v4" checked={v4} onChange={(e) => setV4(e.target.checked)} />
+                <span>
+                  <strong>Shop uses Widget V4</strong>
+                  <small>Off: the shop is on an older widget</small>
+                </span>
+              </label>
+            </fieldset>
+          ) : null}
           <fieldset className="kit-proto__states">
             <legend>Screen state</legend>
             {STATES.map((s) => (

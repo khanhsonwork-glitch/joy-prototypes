@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {BlockStack, Card, InlineStack, Text} from '@shopify/polaris';
 import {ViewIcon} from '@shopify/polaris-icons';
 import {Icon} from '@shopify/polaris';
-import {PROGRAM_NAME, TODAY} from '../data/form.js';
+import {MAX_PARAGRAPH, PROGRAM_NAME, TODAY} from '../data/form.js';
 
 function Pills({field}) {
   const [picked, setPicked] = useState([]);
@@ -45,7 +45,7 @@ function Field({field}) {
   let control;
   if (field.type === 'single' || field.type === 'multi') control = <Pills field={field} />;
   else if (field.type === 'upload') control = <Upload label="Tap to upload" format={field.format} />;
-  else if (field.type === 'paragraph') control = <textarea className="sfp-input" rows={3} placeholder={field.placeholder} aria-label={field.label} />;
+  else if (field.type === 'paragraph') control = <textarea className="sfp-input" rows={3} maxLength={MAX_PARAGRAPH} placeholder={field.placeholder} aria-label={field.label} />;
   else if (field.type === 'date') control = <input className="sfp-input" type="date" aria-label={field.label} />;
   else
     control = (

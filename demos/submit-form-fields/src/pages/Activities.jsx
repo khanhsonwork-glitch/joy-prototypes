@@ -21,8 +21,11 @@ function seed(state, version) {
   return rows;
 }
 
-// "Label: value", one per line. Files are not here: the file sits in the Image column.
-const answerLines = (row) => row.answers.map(([label, value]) => `${label}: ${value}`);
+// "Label: value", one per line. A form with one text field (the old shape, and every submission made before the feature)
+// has one answer, shown as just the value like today. Files are not here: the file sits in the Image/Video column.
+const answerLines = (row) => (row.answers.length === 1 ? [row.answers[0][1]] : row.answers.map(([label, value]) => `${label}: ${value}`));
+// Like master: the cell cuts the text at 50 characters, the tooltip has all of it.
+const clip50 = (text) => (text.length > 50 ? `${text.substring(0, 50)}...` : text);
 
 async function copyText(text) {
   try {
@@ -73,7 +76,7 @@ function AnswersCell({row, onCopy}) {
     <div className="sa-cell">
       <Tooltip width="wide" activatorWrapper="div" content={<div className="sa-tip">{lines.map((line) => <div key={line}>{line}</div>)}</div>}>
         <div className="sa-content">
-          <span className="sa-clip sa-clip--wide">{lines[0]}</span>
+          <span className="sa-clip sa-clip--wide">{clip50(lines[0])}</span>
           <Button icon={ClipboardIcon} variant="plain" accessibilityLabel={`Copy all answers of ${row.name}`} onClick={(e) => {e?.stopPropagation?.(); onCopy(row);}} />
         </div>
       </Tooltip>
@@ -131,7 +134,7 @@ export function Activities() {
           {content: 'Approved', onAction: () => {setStatus(selectedResources, 'approved'); clearSelection();}},
           {content: 'Disapproved', onAction: () => {setStatus(selectedResources, 'disapproved'); clearSelection();}},
         ]}
-        headings={[{title: 'Submitted at'}, {title: 'Program'}, {title: 'Customer name'}, {title: 'Email'}, {title: 'Content'}, {title: 'Image'}, {title: 'Status', alignment: 'center'}]}
+        headings={[{title: 'Submitted at'}, {title: 'Program'}, {title: 'Customer name'}, {title: 'Email'}, {title: 'Content'}, {title: 'Image/Video'}, {title: 'Status', alignment: 'center'}]}
       >
         {shown.map((r, i) => (
           <IndexTable.Row id={r.id} key={r.id} position={i} selected={selectedResources.includes(r.id)}>
@@ -180,14 +183,14 @@ export function Activities() {
         <Modal.Section><div className="sa-filebig">{file ? (
           <div className="sa-order" aria-label="Uploaded order screenshot">
             <strong>Order details</strong>
-            {file.answers ? (
+            {file.answers?.some(([l]) => l === 'Order ID') ? (
               <>
-                <span>{`Order # ${file.answers.find(([l]) => l === 'Order ID')?.[1]}`}</span>
+                <span>{`Order # ${file.answers.find(([l]) => l === 'Order ID')[1]}`}</span>
                 <span>Sold by Pomelo Park</span>
                 <span>Placed on Oct 28, 2026</span>
                 <span className="sa-order__total">{`Item(s) subtotal: ${file.answers.find(([l]) => l === 'Order total before tax')?.[1]}`}</span>
               </>
-            ) : <span>{file.content}</span>}
+            ) : <span>{file.answers ? file.answers[0][1] : file.content}</span>}
           </div>
         ) : null}</div></Modal.Section>
       </Modal>

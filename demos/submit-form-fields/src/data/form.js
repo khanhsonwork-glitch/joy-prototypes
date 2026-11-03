@@ -9,7 +9,7 @@ export const VERSIONS = ['today', 'phase1', 'phase2'];
 // `phase` = the first version that offers the type in the Add field menu.
 export const FIELD_TYPES = [
   {value: 'short', label: 'Short text', help: 'One line, like an order ID', phase: 1},
-  {value: 'paragraph', label: 'Paragraph', help: 'A few sentences', phase: 2},
+  {value: 'paragraph', label: 'Paragraph', help: 'Several lines, like a review', phase: 1},
   {value: 'number', label: 'Number', help: 'Digits only, like an order total', phase: 1},
   {value: 'email', label: 'Email', help: 'Checked for a valid address', phase: 1},
   {value: 'link', label: 'Link', help: 'Checked for a web address', phase: 2},
@@ -18,7 +18,7 @@ export const FIELD_TYPES = [
   {value: 'multi', label: 'Multiple choice', help: 'Customer picks one or more', phase: 2},
   {value: 'upload', label: 'File upload', help: 'Image or video proof', phase: 1},
 ];
-/** The field types a version offers: 4 in phase 1, all 9 in phase 2. */
+/** The field types a version offers: 5 in phase 1, all 9 in phase 2. */
 export const typesFor = (version) => FIELD_TYPES.filter((t) => version === 'phase2' || t.phase === 1);
 export const typeLabel = (value) => FIELD_TYPES.find((t) => t.value === value)?.label ?? value;
 export const isChoice = (type) => type === 'single' || type === 'multi';
@@ -26,14 +26,15 @@ export const isChoice = (type) => type === 'single' || type === 'multi';
 export const MAX_FIELDS = 10;
 export const MAX_OPTIONS = 20;
 export const MAX_FORM_TAGS = 5;
+export const MAX_PARAGRAPH = 5000;
 
 // Joy's own tags: "Joy: Add 100" style tags trigger Magic Tags (they change points), and the member tags are removed by
-// the auto-tag sync. A merchant tag may not start with "Joy:" or "Joy ", or equal one of the default member tags.
-const JOY_MEMBER_TAGS = ['joy member', 'joy non-member', 'joy active redeemer', 'joy non-redeemer'];
+// the auto-tag sync. A merchant tag may not start with "Joy:", "Joy " or "joy_", or equal one of the default member tags.
+const JOY_MEMBER_TAGS = ['joy member', 'joy non-member', 'joy active redeemer', 'joy non-redeemer', 'joy engaged member'];
 export const RESERVED_TAG_ERROR = 'This tag is reserved for Joy’s automatic tags. Use another name.';
 export const isReservedTag = (tag) => {
   const t = tag.trim().toLowerCase();
-  return t.startsWith('joy:') || t.startsWith('joy ') || JOY_MEMBER_TAGS.includes(t);
+  return t.startsWith('joy:') || t.startsWith('joy ') || t.startsWith('joy_') || JOY_MEMBER_TAGS.includes(t);
 };
 
 let seq = 0;
@@ -73,7 +74,7 @@ export const TEMPLATE_COPY = {
 };
 
 /**
- * What a template fills in: exactly 2 fields, like production today. One required Short text with the template's text
+ * What a template fills in: exactly 2 fields, like production today. One required Paragraph with the template's text
  * box label + placeholder, and one File upload with its upload label. The upload keeps the format and "required" of the
  * form's current File upload field (production templates leave those settings alone); with none, image and required.
  */
@@ -81,7 +82,7 @@ export function templateFields(key, current = []) {
   const copy = TEMPLATE_COPY[key];
   const upload = current.find((f) => f.type === 'upload');
   return [
-    {id: newId(), type: 'short', label: copy.inputLabel, placeholder: copy.inputPlaceholder, required: true},
+    {id: newId(), type: 'paragraph', label: copy.inputLabel, placeholder: copy.inputPlaceholder, required: true},
     {id: newId(), type: 'upload', label: copy.uploadLabel, format: upload?.format ?? 'image', required: upload?.required ?? true},
   ];
 }
@@ -100,19 +101,21 @@ export const TODAY = {inputLabel: TEMPLATE_COPY.receipt.inputLabel, inputPlaceho
 export const FORM_TAGS = ['Amazon'];
 
 /**
- * The "old shape" of a form: exactly one required Short text, optionally followed by one File upload. Only this shape
- * shows on every widget and on the Loyalty Hub; any other shape shows on Widget V4 and Loyalty page V2 only.
+ * The "old shape" of a form: exactly one required Paragraph, optionally followed by one File upload (what the single
+ * text box of today's form becomes). Only this shape shows on every widget and on the Loyalty Hub; any other shape shows
+ * on Widget V4 and Loyalty page V2 only.
  */
 export function isOldShape(fields) {
   if (fields.length < 1 || fields.length > 2) return false;
-  if (fields[0].type !== 'short' || !fields[0].required) return false;
+  if (fields[0].type !== 'paragraph' || !fields[0].required) return false;
   return fields.length === 1 || fields[1].type === 'upload';
 }
 
 /* ------------------------------------------------------------------ submissions */
 
 // Row shape: answers = [[label, value]] saved with the submission (files excluded: the file sits in the Image column);
-// content = the single text of a submission made before the feature (legacy rows and the whole "today" list).
+// content = the single text of the "today" list. A form with one text field (the old shape, and every submission made
+// before the feature) has exactly one answer, which the table shows as just the value.
 // optionTags = the tag of the option the customer picked (phase 2). tagIssue: 'failed' = Shopify refused the tag
 // write, 'cap' = the customer already has 250 tags.
 const PEOPLE = [
@@ -124,7 +127,7 @@ const PEOPLE = [
   {id: 's6', at: '2026-10-28 09:10', name: 'Grace Kim', email: 'grace@example.com', status: 'approved', tagIssue: 'cap', phase2Only: true, orderId: '113-9021177-6640', kind: 'Off-road lights', total: '129.00', orderEmail: 'grace@example.com', file: 'order-113b.png'},
 ];
 // Made before the feature, under the old program: one Content text, shown exactly as on master today.
-const LEGACY = {id: 's7', at: '2026-10-27 18:45', program: LEGACY_PROGRAM, name: 'Hana Lee', email: 'hana@example.com', status: 'approved', content: 'ebay order 2291-55 total 38', file: 'IMG_0912.jpg'};
+const LEGACY = {id: 's7', at: '2026-10-27 18:45', program: LEGACY_PROGRAM, name: 'Hana Lee', email: 'hana@example.com', status: 'approved', answers: [['Order number / Store', 'ebay order 2291-55 total 38']], file: 'IMG_0912.jpg'};
 
 const answersOf = (p, version) => (version === 'phase2'
   ? [['Order ID', p.orderId], ['What did you buy?', p.kind], ['Order total before tax', `$${p.total}`], ['Email used for the order', p.orderEmail]]

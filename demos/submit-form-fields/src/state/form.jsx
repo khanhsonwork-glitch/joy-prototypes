@@ -83,3 +83,19 @@ export function useVersion() {
   );
   return [version, setVersion];
 }
+
+/** Demo switch "Shop uses Widget V4" (default on), kept in the URL as ?v4=off so a link opens the shop that is not on V4. */
+export function useShopV4() {
+  const {path, query} = useRoute();
+  const navigate = useNavigate();
+  const value = query.get('v4') || new URLSearchParams(window.location.search).get('v4');
+  const setOn = useCallback(
+    (on) => {
+      const q = new URLSearchParams(query);
+      q.set('v4', on ? 'on' : 'off');
+      navigate(`${path}?${q.toString()}`, {replace: true});
+    },
+    [path, query, navigate],
+  );
+  return [value !== 'off', setOn];
+}

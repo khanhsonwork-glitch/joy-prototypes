@@ -4,7 +4,7 @@
 import React, {useLayoutEffect, useMemo, useState} from 'react';
 import {BlockStack, Banner, Box, Button, Checkbox, ChoiceList, InlineStack, List, Modal, Select, Text, TextField} from '@shopify/polaris';
 import {DeleteIcon, PlusIcon} from '@shopify/polaris-icons';
-import {FIELD_TYPES, MAX_OPTIONS, RESERVED_TAG_ERROR, isChoice, isReservedTag, newId, typesFor} from '../data/form.js';
+import {FIELD_TYPES, MAX_OPTIONS, MAX_PARAGRAPH, RESERVED_TAG_ERROR, isChoice, isReservedTag, newId, typesFor} from '../data/form.js';
 
 const blank = (type, phase2) => ({
   id: newId(),
@@ -37,14 +37,7 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
     setErrors({});
   }, [open, field]);
 
-  const typeOptions = useMemo(
-    () => typesFor(version).map((t) => ({
-      label: t.label,
-      value: t.value,
-      disabled: t.value === 'upload' && hasUpload && field?.type !== 'upload',
-    })),
-    [hasUpload, field, version],
-  );
+  const typeOptions = useMemo(() => typesFor(version).map((t) => ({label: t.label, value: t.value})), [version]);
 
   if (!f || !field) return null;
   const set = (patch) => {
@@ -54,8 +47,14 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
   const setOption = (id, patch) => set({options: f.options.map((o) => (o.id === id ? {...o, ...patch} : o))});
 
   const changeType = (type) => {
+    // One File upload per form: another field can't become one while the form already has it.
+    if (type === 'upload' && hasUpload && f.type !== 'upload') {
+      setErrors({type: 'One upload field per form'});
+      return;
+    }
     const next = {...blank(type, phase2), id: f.id, label: f.label, required: f.required};
     if (isChoice(type) && isChoice(f.type)) next.options = f.options;
+    setErrors({});
     setF(next);
   };
 
@@ -96,7 +95,9 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
   const isNew = !field.id;
   const typeHelp = locked
     ? 'Customers have already answered this field, so its type is fixed. Add a new field to ask in another way.'
-    : FIELD_TYPES.find((t) => t.value === f.type)?.help;
+    : f.type === 'paragraph'
+      ? `${FIELD_TYPES.find((t) => t.value === f.type).help}. Customers can type up to ${MAX_PARAGRAPH.toLocaleString('en-US')} characters.`
+      : FIELD_TYPES.find((t) => t.value === f.type)?.help;
 
   return (
     <Modal
@@ -108,7 +109,7 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
     >
       <Modal.Section>
         <BlockStack gap="400">
-          <Select label="Field type" options={typeOptions} value={f.type} onChange={changeType} disabled={locked} helpText={typeHelp} />
+          <Select label="Field type" options={typeOptions} value={f.type} onChange={changeType} disabled={locked} helpText={typeHelp} error={errors.type} />
           <TextField
             id="field-label"
             label="Label"

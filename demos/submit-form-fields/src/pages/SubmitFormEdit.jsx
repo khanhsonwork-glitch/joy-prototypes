@@ -49,7 +49,7 @@ import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {MAX_FIELDS, MAX_FORM_TAGS, PROGRAM_NAME, RESERVED_TAG_ERROR, TEMPLATES, TODAY, isChoice, isOldShape, isReservedTag, typeLabel, typesFor} from '../data/form.js';
-import {useForm, useVersion} from '../state/form.jsx';
+import {useForm, useShopV4, useVersion} from '../state/form.jsx';
 import {FieldModal} from './FieldModal.jsx';
 import {FormPreview} from './FormPreview.jsx';
 
@@ -186,6 +186,7 @@ function FormFields({disabled, version}) {
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState(null);
   const {notify} = useShell();
+  const [v4] = useShopV4();
   const phase2 = version === 'phase2';
   const hasUpload = fields.some((f) => f.type === 'upload');
   const full = fields.length >= MAX_FIELDS;
@@ -218,18 +219,24 @@ function FormFields({disabled, version}) {
 
   return (
     <BlockStack gap="300">
+      {!v4 && !isOldShape(fields) ? (
+        <Banner tone="warning">Your store doesn’t use Widget V4 yet. With these fields, customers can only see this program on Loyalty page V2.</Banner>
+      ) : null}
       <InlineStack align="space-between" blockAlign="center" gap="200">
         <BlockStack gap="050">
           <Text as="h3" variant="headingSm">Form fields</Text>
           <Text as="p" variant="bodySm" tone="subdued">{`${fields.length} of ${MAX_FIELDS} fields · ${fields.filter((f) => f.required).length} required`}</Text>
         </BlockStack>
-        {addMenu}
+        <BlockStack gap="100" inlineAlign="end">
+          {addMenu}
+          {full ? <Text as="p" variant="bodySm" tone="subdued">{`Up to ${MAX_FIELDS} fields per form`}</Text> : null}
+        </BlockStack>
       </InlineStack>
-      {isOldShape(fields) ? null : (
+      {v4 && !isOldShape(fields) ? (
         <Text as="p" variant="bodySm" tone="subdued">
-          With these fields, this program shows only on Widget V4 and Loyalty page V2. Older widgets, Loyalty page blocks and the Loyalty Hub hide it.
+          With these fields, this program shows only on Widget V4 and Loyalty page V2. Older widgets, headless storefronts, Loyalty page blocks and the Loyalty Hub hide it.
         </Text>
-      )}
+      ) : null}
 
       {fields.length ? (
         <ol className="sf-fields" aria-label="Form fields">
@@ -261,7 +268,6 @@ function FormFields({disabled, version}) {
           <Text as="p" tone="subdued">Customers can’t submit an empty form. Add at least one field, or pick a template above.</Text>
         </div>
       )}
-      {full ? <Text as="p" variant="bodySm" tone="subdued">{`A form can have up to ${MAX_FIELDS} fields.`}</Text> : null}
 
       <FieldModal
         version={version}
@@ -269,7 +275,7 @@ function FormFields({disabled, version}) {
         field={editing}
         locked={Boolean(editing?.id && answered.has(editing.id))}
         hasUpload={hasUpload}
-        otherLabels={fields.filter((x) => x.id !== editing?.id).map((x) => x.label.toLowerCase())}
+        otherLabels={fields.filter((x) => x.id !== editing?.id).map((x) => x.label.trim().toLowerCase())}
         onClose={() => setEditing(null)}
         onSave={(f) => {
           setFields((list) => (list.some((x) => x.id === f.id) ? list.map((x) => (x.id === f.id ? f : x)) : [...list, f]));
