@@ -1,0 +1,101 @@
+/* Customer page of the Joy admin (real: styles/pages/_customer.scss) + the Shopify title bar breadcrumb. */
+
+/* ---------------------------------------------------------------- title bar: breadcrumb + actions */
+.adm-appbar__crumbs {
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 450;
+  min-width: 0;
+}
+.adm-appbar__crumbs .adm-appbar__name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.adm-appbar__back {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--p-color-border);
+  margin-right: 4px;
+  flex: none;
+}
+.adm-appbar__sep {color: var(--p-color-text-secondary);}
+.adm-appbar__crumb {color: var(--p-color-text-secondary); white-space: nowrap;}
+.adm-appbar__crumb:hover {text-decoration: underline;}
+.adm-appbar__actions {display: inline-flex; align-items: center; gap: 8px; flex: none;}
+.adm-appbar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--p-color-border);
+  background: var(--p-color-bg-surface) !important;
+  font-size: 12px !important;
+  font-weight: 550 !important;
+  color: var(--p-color-text) !important;
+  box-shadow: var(--p-shadow-100);
+}
+.adm-appbar__btn:hover {background: var(--p-color-bg-surface-hover) !important;}
+.adm-appbar__chev {display: inline-flex; width: 16px; height: 16px;}
+.adm-appbar__chev .Polaris-Icon {width: 16px; height: 16px;}
+.adm-appbar__more--boxed {border: 1px solid var(--p-color-border); width: 28px; height: 28px;}
+.adm-appbar__btn:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 1px;}
+
+/* ---------------------------------------------------------------- stats summary */
+.cd-stats {display: flex;}
+.cd-stats__item {flex: 1; min-width: 0; padding: var(--p-space-300) var(--p-space-500);}
+.cd-stats__item + .cd-stats__item {border-left: var(--p-border-width-025) solid var(--p-color-border-secondary);}
+.cd-stats__label {border-bottom: 0.125rem dotted var(--p-color-border-tertiary);}
+
+.cd-icon {display: inline-flex;}
+
+/* ---------------------------------------------------------------- balance card */
+.Avada-CustomerPoint_Container {position: relative;}
+.Avada-CustomerPoint_OverlayContent {margin-bottom: 0.5rem; position: relative; z-index: 1;}
+.Avada-CustomerPoint_OverlayContent .Polaris-Text--root {color: var(--joy-balance);}
+
+/* Rule B5: one warning line under the Adjustment · Currency · Amount row */
+.sc-warning {display: flex; gap: var(--p-space-100); align-items: flex-start;}
+.sc-warning__icon {flex: none; display: inline-flex; margin-top: 0;}
+
+/* Expiration popover (real: ExpirationDatePopover, presets left, calendar right) */
+.sc-exp {display: flex; width: 580px; max-width: calc(100vw - 32px);}
+.sc-exp__presets {border-right: var(--p-border-width-025) solid var(--p-color-border); flex-shrink: 0; width: 180px;}
+.sc-exp__calendar {padding: 12px; flex: 1; min-width: 0;}
+
+/* ---------------------------------------------------------------- activities */
+.cd-timeline {padding: var(--p-space-400) var(--p-space-500) var(--p-space-500);}
+.cd-timeline__group + .cd-timeline__group {margin-top: var(--p-space-400);}
+.cd-timeline__row {display: flex; justify-content: space-between; gap: var(--p-space-400); padding: var(--p-space-200) 0 0;}
+
+/* ---------------------------------------------------------------- prototype panel extras */
+.kit-proto__screens {display: flex; flex-direction: column; gap: 4px; margin-top: 4px;}
+.kit-proto__toggle.is-pulsing {animation: proto-pulse 1.6s ease-in-out infinite;}
+@keyframes proto-pulse {
+  0%, 100% {box-shadow: var(--p-shadow-300);}
+  50% {box-shadow: 0 0 0 6px var(--proto-amber-bg), var(--p-shadow-300);}
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-proto__toggle.is-pulsing {animation: none;}
+}
+
+/* ---------------------------------------------------------------- small screens */
+@media (max-width: 767px) {
+  .cd-stats {flex-wrap: wrap;}
+  .cd-stats__item {flex: 1 1 45%; min-width: 150px;}
+  .cd-stats__item + .cd-stats__item {border-left: 0;}
+  .cd-stats__item:nth-child(n + 3) {border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);}
+  .cd-stats__item:nth-child(even) {border-left: var(--p-border-width-025) solid var(--p-color-border-secondary);}
+}
+@media (max-width: 600px) {
+  .adm-appbar__crumbs .adm-appbar__crumb,
+  .adm-appbar__crumbs .adm-appbar__sep:first-of-type,
+  .adm-appbar__btn {display: none;}
+}
