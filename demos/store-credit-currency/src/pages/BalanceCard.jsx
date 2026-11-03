@@ -1,7 +1,7 @@
 // Right-column card of the customer page: tabs Points | Store credit (real: pages/Customer/Details/Point.js)
-// and the Adjust store credit modal (real: useAdjustStoreCreditModal.js). New here: rules A1–A2 and B3–B8,
-// all read from currencyView() so the tab, the modal and its warning always agree.
-import React, {useState} from 'react';
+// and the Adjust store credit modal (real: useAdjustStoreCreditModal.js). New here: currency codes on the tab,
+// the suggested currency and the line under the modal row — all read from data/currency.js so they always agree.
+import React, {useEffect, useState} from 'react';
 import {
   BlockStack,
   Box,
@@ -19,7 +19,7 @@ import {
   TextField,
 } from '@shopify/polaris';
 import {AlertTriangleIcon} from '@shopify/polaris-icons';
-import {currencyView, money} from '../data/currency.js';
+import {currencyAfterTypeChange, defaultCurrency, modalView, money, tabView} from '../data/currency.js';
 import {useShell} from '../shell/ShellContext.jsx';
 import {ExpirationDatePopover} from './ExpirationDatePopover.jsx';
 
@@ -84,7 +84,7 @@ function StoreCreditTab({view, onAdjust}) {
       {view.rows.map((account, index) => {
         const code = account.currencyCode;
         const stats = view.stats[code] || {totalAdded: 0, totalDeducted: 0};
-        const note = view.noteFor(code);
+        const note = index === 0 ? view.note : null;
         return (
           <Box key={code} paddingBlockStart={index === 0 ? '0' : '400'} paddingBlockEnd="400" data-wallet={code}>
             <div className="Avada-CustomerPoint_OverlayContent">
@@ -93,7 +93,7 @@ function StoreCreditTab({view, onAdjust}) {
               </Text>
             </div>
             {note ? (
-              <div data-testid="order-currency-note">
+              <div data-testid="currency-note">
                 <Text as="p" variant="bodySm" tone="subdued">
                   {note}
                 </Text>
@@ -133,16 +133,27 @@ const PRESETS = [
  * @param customer  live customer object (accounts change after Confirm)
  * @param onAdjusted ({code, signed}) → parent updates accounts, stats and activity
  */
-export function BalanceCard({customer, shopCurrency, modalOpen, onOpenModal, onCloseModal, onAdjusted}) {
+export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModal, onAdjusted}) {
   const {notify} = useShell();
   const [tab, setTab] = useState(1); // the review link opens on Store credit
-  // Empty until the admin picks one, like the real Point.js, so the default keeps following the data.
-  const [picked, setPicked] = useState('');
   const [form, setForm] = useState({adjustmentType: 'credit', amount: '0', expiresAt: ''});
+  const [code, setCode] = useState(() => defaultCurrency(customer, shop));
   const [saving, setSaving] = useState(false);
-  const view = currencyView(customer, shopCurrency, picked);
-  const code = view.selected;
+  const tabData = tabView(customer, shop);
+  const view = modalView(customer, shop, form.adjustmentType, code);
   const set = (key, value) => setForm((f) => ({...f, [key]: value}));
+
+  // Every time the modal opens it starts on Credit + the suggested currency.
+  useEffect(() => {
+    if (!modalOpen) return;
+    setForm((f) => ({...f, adjustmentType: 'credit'}));
+    setCode(defaultCurrency(customer, shop));
+  }, [modalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const changeType = (type) => {
+    setCode((current) => currencyAfterTypeChange(customer, shop, type, current));
+    set('adjustmentType', type);
+  };
 
   const confirm = () => {
     const parsed = parseFloat(form.amount) || 0;
@@ -173,7 +184,7 @@ export function BalanceCard({customer, shopCurrency, modalOpen, onOpenModal, onC
       <LegacyCard>
         <Tabs tabs={tabs} selected={tab} onSelect={setTab} />
         <LegacyCard.Section>
-          {tab === 0 ? <PointsTab points={customer.points} /> : <StoreCreditTab view={view} onAdjust={onOpenModal} />}
+          {tab === 0 ? <PointsTab points={customer.points} /> : <StoreCreditTab view={tabData} onAdjust={onOpenModal} />}
         </LegacyCard.Section>
       </LegacyCard>
 
@@ -207,12 +218,12 @@ export function BalanceCard({customer, shopCurrency, modalOpen, onOpenModal, onC
                 {label: 'Debit', value: 'debit'},
               ]}
               value={form.adjustmentType}
-              onChange={(val) => set('adjustmentType', val)}
+              onChange={changeType}
             />
             {view.options.length > 1 ? (
-              <Select label="Currency" options={view.options.map((c) => ({label: c, value: c}))} value={code} onChange={setPicked} />
+              <Select label="Currency" options={view.options} value={code} onChange={setCode} />
             ) : (
-              <TextField label="Currency" value={code} disabled autoComplete="off" />
+              <TextField label="Currency" value={view.options[0]?.label || code} disabled autoComplete="off" />
             )}
             <TextField
               label="Amount"
@@ -225,13 +236,20 @@ export function BalanceCard({customer, shopCurrency, modalOpen, onOpenModal, onC
             />
           </InlineGrid>
 
-          {view.warning ? (
+          {view.line?.kind === 'warning' ? (
             <div className="sc-warning" role="status" data-testid="currency-warning">
               <span className="sc-warning__icon">
                 <Icon source={AlertTriangleIcon} tone="caution" />
               </span>
               <Text as="p" tone="caution">
-                {view.warning}
+                {view.line.text}
+              </Text>
+            </div>
+          ) : null}
+          {view.line?.kind === 'reason' ? (
+            <div data-testid="currency-reason">
+              <Text as="p" tone="subdued">
+                {view.line.text}
               </Text>
             </div>
           ) : null}

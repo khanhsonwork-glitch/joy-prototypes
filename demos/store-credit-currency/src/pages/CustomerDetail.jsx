@@ -24,7 +24,7 @@ import {
 } from '@shopify/polaris';
 import {EditIcon, InfoIcon, PersonFilledIcon, RefreshIcon} from '@shopify/polaris-icons';
 import {CUSTOMERS, STORE} from '../data/index.js';
-import {shopMoney} from '../data/currency.js';
+import {money, shopMoney} from '../data/currency.js';
 import {useScenario} from '../kit/scenario.jsx';
 import {useRoute} from '../shell/router.jsx';
 import {useAppTitle, useShell} from '../shell/ShellContext.jsx';
@@ -150,12 +150,19 @@ function Overview({customer, loading}) {
               </Row>
               <Row label="Customer since">{customer.since}</Row>
               <Row label="Default country">
-                <InlineStack gap="100" blockAlign="center">
-                  <Text as="span">{customer.country}</Text>
-                  <Tooltip width="wide" content="The customer's country, detected from their default address (or storefront region on visit). Used to prefix their referral link with the matching market, e.g. /fr — so referred friends land on the right regional storefront.">
-                    <Icon source={InfoIcon} tone="subdued" />
-                  </Tooltip>
-                </InlineStack>
+                {customer.country ? (
+                  <InlineStack gap="100" blockAlign="center">
+                    <Text as="span">{customer.country}</Text>
+                    <Tooltip
+                      width="wide"
+                      content="The customer's country, detected from their default address (or storefront region on visit). Used to prefix their referral link with the matching market, e.g. /fr — so referred friends land on the right regional storefront."
+                    >
+                      <Icon source={InfoIcon} tone="subdued" />
+                    </Tooltip>
+                  </InlineStack>
+                ) : (
+                  ''
+                )}
               </Row>
             </BlockStack>
           )}
@@ -354,7 +361,7 @@ export function CustomerDetail() {
       next.statsByCurrency[code] = stats;
       const verb = type === 'credit' ? 'credited' : 'debited';
       next.activities = [
-        {day: 'Today', rows: [{text: `Admin ${verb} ${amount.toFixed(2)} ${code} store credit`, time: 'Just now'}]},
+        {day: 'Today', rows: [{text: `Admin ${verb} ${money(amount, code)} store credit`, time: 'Just now'}]},
         ...next.activities.filter((g) => g.day !== 'Today'),
       ];
       return next;
@@ -395,7 +402,7 @@ export function CustomerDetail() {
             ) : (
               <BalanceCard
                 customer={customer}
-                shopCurrency={STORE.currency}
+                shop={STORE}
                 modalOpen={modalOpen}
                 onOpenModal={openModal}
                 onCloseModal={closeModal}
