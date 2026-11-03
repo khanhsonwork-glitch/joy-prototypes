@@ -1,16 +1,11 @@
-// Screen states a reviewer can switch with the Prototype panel or ?state= in the URL (#/customer?state=browsed).
+// Screen states a reviewer can switch with the Prototype panel or ?state= in the URL (#/customer?state=same).
 // Hover and focus are the other two of the nine states: they come from the mouse and the keyboard.
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
-  {value: 'default', label: 'Most orders in SGD', help: '$20 USD credit, empty SGD account · suggestion from orders'},
-  {value: 'same', label: 'Pays in shop currency', help: 'Orders in USD · $20 USD credit'},
-  {value: 'browsed', label: 'Browsed in EUR', help: 'No orders · last visited the store in EUR'},
-  {value: 'address', label: 'Address in Singapore', help: 'No orders, never browsed · default address in Singapore'},
-  {value: 'noorders', label: 'Nothing to go on', help: 'No orders, no visits, no default address'},
-  {value: 'single', label: 'Shop sells only USD', help: 'One currency · Currency field locked'},
-  {value: 'error', label: 'Suggestion failed', help: "Couldn't work out the customer's currency"},
-  {value: 'loading', label: 'Working out the suggestion', help: 'Suggested currency not known yet'},
+  {value: 'default', label: 'Last order in SGD', help: '$20 USD credit, empty SGD account'},
+  {value: 'same', label: 'Last order in USD', help: 'Pays in the shop currency · $20 USD credit'},
+  {value: 'noorders', label: 'No orders', help: 'Signed up, never ordered'},
 ];
 const VALID = new Set(STATES.map((s) => s.value));
 function readState() {

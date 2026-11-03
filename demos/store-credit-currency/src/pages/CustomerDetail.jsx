@@ -347,7 +347,7 @@ export function CustomerDetail() {
   const {state} = useScenario();
   const route = useRoute();
   const {setTitle} = useAppTitle();
-  // ?state=loading is the page with Joy still working out the suggested currency (PRD B, C), not a page skeleton.
+  // Page data is loaded in every review scenario (the page skeleton is today's behaviour, not part of this fix).
   const loading = false;
   const scenario = CUSTOMERS[state] ? state : 'default';
   const shop = shopFor(scenario);
@@ -356,16 +356,6 @@ export function CustomerDetail() {
   const [modalOpen, setModalOpen] = useState(() => !loading && hashQuery().get('modal') === 'adjust');
   const [bannerOpen, setBannerOpen] = useState(true);
   const {notYet} = useShell();
-
-  // ?state=loading: the suggestion resolves when its slow source hits the 10-second limit (PRD A, C).
-  useEffect(() => {
-    if (!customer.suggestionPending || !customer.resolveAfterMs) return undefined;
-    const timer = window.setTimeout(
-      () => setCustomer((prev) => ({...prev, suggestionPending: false, ...prev.resolveWith})),
-      customer.resolveAfterMs
-    );
-    return () => window.clearTimeout(timer);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setTitle(loading ? '' : customer.name);

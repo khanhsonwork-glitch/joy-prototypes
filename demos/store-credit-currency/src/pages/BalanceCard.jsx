@@ -1,6 +1,6 @@
 // Right-column card of the customer page: tabs Points | Store credit (real: pages/Customer/Details/Point.js)
-// and the Adjust store credit modal (real: useAdjustStoreCreditModal.js). New here: currency codes on the tab,
-// the suggested currency and the line under the modal row — all read from data/currency.js so they always agree.
+// and the Adjust store credit modal (real: useAdjustStoreCreditModal.js). New here (small UI fix): currency codes on
+// every amount, Credit lists every shop currency and opens on the last order's currency, one line under the row.
 import React, {useEffect, useState} from 'react';
 import {
   BlockStack,
@@ -14,13 +14,12 @@ import {
   LegacyStack,
   Modal,
   Select,
-  Spinner,
   Tabs,
   Text,
   TextField,
 } from '@shopify/polaris';
 import {AlertTriangleIcon} from '@shopify/polaris-icons';
-import {currencyAfterTypeChange, defaultCurrency, modalView, money, tabView} from '../data/currency.js';
+import {currencyAfterTypeChange, defaultCurrency, modalView, money, tabRows} from '../data/currency.js';
 import {useShell} from '../shell/ShellContext.jsx';
 import {ExpirationDatePopover} from './ExpirationDatePopover.jsx';
 
@@ -134,45 +133,27 @@ const PRESETS = [
  * @param customer  live customer object (accounts change after Confirm)
  * @param onAdjusted ({code, signed}) → parent updates accounts, stats and activity
  */
-// Global store credit expiration setting of the fictional shop (Settings: off) → the modal prefills "No expiration".
-const GLOBAL_EXPIRES_AT = '';
-const freshForm = () => ({adjustmentType: 'credit', amount: '0', expiresAt: GLOBAL_EXPIRES_AT});
-
 export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModal, onAdjusted}) {
   const {notify} = useShell();
   const [tab, setTab] = useState(1); // the review link opens on Store credit
-  const [form, setForm] = useState(freshForm);
+  const [form, setForm] = useState({adjustmentType: 'credit', amount: '0', expiresAt: ''});
   const [code, setCode] = useState(() => defaultCurrency(customer, shop));
-  // True when Joy (not the merchant) picked the current currency on the way to Debit.
-  const [autoSwitched, setAutoSwitched] = useState(false);
   const [saving, setSaving] = useState(false);
-  const tabData = tabView(customer, shop);
+  const tabData = {rows: tabRows(customer, shop), note: null, stats: customer.statsByCurrency || {}};
   const view = modalView(customer, shop, form.adjustmentType, code);
   const set = (key, value) => setForm((f) => ({...f, [key]: value}));
 
-  // Every open, including right after a save: Credit, suggested currency, Amount 0, expiration = global default.
+  // Each open starts on Credit + the default currency (last order's currency, else today's rule).
+  // Amount and expiration keep today's behaviour.
   useEffect(() => {
     if (!modalOpen) return;
-    setForm(freshForm());
+    set('adjustmentType', 'credit');
     setCode(defaultCurrency(customer, shop));
-    setAutoSwitched(false);
   }, [modalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Suggestion resolved while the modal was open: Currency was locked, so it lands on the suggested currency.
-  const pending = !!customer.suggestionPending;
-  useEffect(() => {
-    if (!pending) setCode(defaultCurrency(customer, shop));
-  }, [pending]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const changeType = (type) => {
-    const next = currencyAfterTypeChange(customer, shop, type, code, autoSwitched);
-    setCode(next.code);
-    setAutoSwitched(next.auto);
+    setCode(currencyAfterTypeChange(customer, shop, type, code));
     set('adjustmentType', type);
-  };
-  const pickCurrency = (value) => {
-    setCode(value);
-    setAutoSwitched(false);
   };
 
   const confirm = () => {
@@ -213,7 +194,7 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
         open={modalOpen}
         onClose={() => !saving && onCloseModal()}
         title="Adjust store credit"
-        primaryAction={{content: 'Confirm', loading: saving, disabled: view.pending, onAction: confirm}}
+        primaryAction={{content: 'Confirm', loading: saving, onAction: confirm}}
         secondaryActions={[{content: 'Cancel', disabled: saving, onAction: onCloseModal}]}
       >
         <FormLayout>
@@ -223,13 +204,9 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
                 Current balance
               </Text>
               <span data-testid="current-balance">
-                {view.pending ? (
-                  <Spinner size="small" accessibilityLabel="Loading balance" />
-                ) : (
-                  <Text as="span" fontWeight="semibold">
-                    {money(view.balance, code)}
-                  </Text>
-                )}
+                <Text as="span" fontWeight="semibold">
+                  {money(view.balance, code)}
+                </Text>
               </span>
             </InlineStack>
           </Box>
@@ -244,18 +221,8 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
               value={form.adjustmentType}
               onChange={changeType}
             />
-            {view.pending ? (
-              <div data-testid="currency-loading">
-                <TextField
-                  label="Currency"
-                  value=""
-                  disabled
-                  autoComplete="off"
-                  suffix={<Spinner size="small" accessibilityLabel="Loading currency" />}
-                />
-              </div>
-            ) : view.options.length > 1 ? (
-              <Select label="Currency" options={view.options} value={code} onChange={pickCurrency} />
+            {view.options.length > 1 ? (
+              <Select label="Currency" options={view.options} value={code} onChange={setCode} />
             ) : (
               <TextField label="Currency" value={view.options[0]?.label || code} disabled autoComplete="off" />
             )}
@@ -264,28 +231,33 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
               type="number"
               value={form.amount}
               onChange={(val) => set('amount', val)}
-              suffix={view.pending ? undefined : code}
+              suffix={code}
               autoComplete="off"
               min="0"
             />
           </InlineGrid>
 
-          {view.line?.kind === 'warning' ? (
-            <div className="sc-warning" role="status" data-testid="currency-warning">
-              <span className="sc-warning__icon">
-                <Icon source={AlertTriangleIcon} tone="caution" />
-              </span>
-              <Text as="p" tone="caution">
-                {view.line.text}
-              </Text>
-            </div>
-          ) : null}
-          {view.line?.kind === 'reason' ? (
-            <div data-testid="currency-reason">
-              <Text as="p" tone="subdued">
-                {view.line.text}
-              </Text>
-            </div>
+          {view.lines.length ? (
+            <BlockStack gap="100">
+              {view.lines.map((line) =>
+                line.kind === 'warning' ? (
+                  <div key={line.kind} className="sc-warning" role="status" data-testid="currency-warning">
+                    <span className="sc-warning__icon">
+                      <Icon source={AlertTriangleIcon} tone="caution" />
+                    </span>
+                    <Text as="p" tone="caution">
+                      {line.text}
+                    </Text>
+                  </div>
+                ) : (
+                  <div key={line.kind} data-testid="currency-info">
+                    <Text as="p" tone="subdued">
+                      {line.text}
+                    </Text>
+                  </div>
+                )
+              )}
+            </BlockStack>
           ) : null}
 
           {form.adjustmentType === 'credit' ? (
