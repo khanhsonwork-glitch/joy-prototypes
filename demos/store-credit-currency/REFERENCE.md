@@ -6,10 +6,10 @@ Màn thật: trang chi tiết khách của Joy Loyalty, dựng theo code avada/m
 
 ## Thay đổi so với màn thật (PRD mục A–D, bản sau review QA 03/11/2026)
 
-- Ví gợi ý = bước đầu tiên ra kết quả, chỉ trong các tiền shop đang bán: (1) tiền khách trả nhiều đơn nhất trong 12 tháng (hoà → đơn gần nhất), (2) tiền khách xem storefront lần cuối, (3) tiền của market chứa địa chỉ mặc định, (4) tiền shop. Shop chỉ bán một loại tiền → luôn là loại đó.
+- Ví gợi ý = bước đầu tiên ra kết quả, chỉ trong các tiền shop đang bán: (1) tiền khách trả nhiều đơn nhất trong 12 tháng (hoà → đơn gần nhất), (2) tiền khách xem storefront lần cuối, (3) tiền của market chứa địa chỉ mặc định, (4) tiền shop. Shop chỉ bán một loại tiền → luôn là loại đó, coi như chắc chắn như bước 1. Nguồn nào lỗi hoặc quá 10 giây thì bỏ qua bước đó; vì lỗi mà rơi xuống bước 4 thì là "không tính được".
 - Tab Store credit: mọi số tiền có mã tiền đúng một lần ("$20.00 USD", "+$20.00 USD"), kể cả shop một loại tiền. Khách chưa có ví nào có số dư → một dòng 0 bằng ví gợi ý. Gợi ý từ bước 1–3 và có ví khác ví gợi ý còn số dư → một dòng chữ nhạt dưới số dư (một ví lệch / nhiều ví lệch), vẫn hiện sau khi đã cộng vào ví gợi ý. Bước 4 → không hiện.
-- Modal: mỗi lần mở (kể cả ngay sau khi lưu) về Credit, ví gợi ý, Amount 0, Expiration theo cài đặt chung. Đang tính ví gợi ý → ô Currency đang tải, ô Currency và Confirm khoá. Shop một loại tiền → ô Currency khoá, không dòng nào.
-- Modal, Credit: Currency = mọi tiền shop bán, ví gợi ý có "(suggested)". Đang chọn ví gợi ý → dòng nhạt nêu lý do (bước 1/2/3) hoặc câu trung tính (bước 4). Gợi ý từ bước 1–3 mà chọn tiền khác → dòng cảnh báo vàng, vẫn Confirm được; từ bước 4 → không dòng nào. Không tính được gợi ý → tiền shop + cảnh báo "We couldn't check…".
+- Modal: mỗi lần mở (kể cả ngay sau khi lưu) về Credit, ví gợi ý, Amount 0, Expiration theo cài đặt chung. Đang tính ví gợi ý → ô Currency đang tải, ô Currency và Confirm khoá, tối đa 10 giây. Shop một loại tiền → ô Currency khoá, không dòng nào.
+- Modal, Credit: Currency = mọi tiền shop bán, xếp ví gợi ý, tiền shop, rồi A–Z; ví gợi ý có "(suggested)". Đang chọn ví gợi ý → dòng nhạt nêu lý do (bước 1/2/3). Bước 4 → câu trung tính theo loại tiền đang chọn. Gợi ý từ bước 1–3 mà chọn tiền khác → dòng cảnh báo vàng, vẫn Confirm được. Không tính được gợi ý → tiền shop + cảnh báo "We couldn't check…".
 - Modal, Debit: chỉ các ví có số dư > 0 (tiền shop trước); ví đang chọn trống → Joy tự chọn ví có tiền đầu tiên; không dòng nào. Quay lại Credit: tiền do Joy tự đổi → về ví gợi ý; tiền merchant tự chọn → giữ nếu shop còn bán.
 - Activities: badge +/- và câu "Admin credited $10.00 SGD store credit" ghi mã tiền đúng một lần.
 - Phần còn lại của trang và modal giữ nguyên như màn thật.

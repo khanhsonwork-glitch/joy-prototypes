@@ -134,10 +134,12 @@ export const CUSTOMERS = {
     tags: [],
     activities: [{day: 'October 20, 2026', rows: [{text: 'Sign Up', time: '4:31 PM'}]}],
   },
-  // Same customer as default, but the suggestion could not be worked out.
-  error: {...MIA, suggestionFailed: true},
-  // Same customer as default while Joy is still working out the suggestion.
-  loading: {...MIA, suggestionPending: true},
+  // Same customer as default, but her orders and the shop's Markets could not be read and she never opened the widget:
+  // the chain falls to step 4 because of a failed source → "could not work out".
+  error: {...MIA, lastBrowsedCurrency: null, sourceErrors: ['orders', 'markets']},
+  // Same customer as default while Joy is still working out the suggestion. After the 10-second limit the order read
+  // is given up (skipped) and the chain resolves on the next step: last browsed in SGD (step 2).
+  loading: {...MIA, suggestionPending: true, resolveAfterMs: 10000, resolveWith: {sourceErrors: ['orders']}},
   // Shop that sells only USD: the Currency field stays locked, the tab only gains codes.
   single: {
     id: 'noah-williams',

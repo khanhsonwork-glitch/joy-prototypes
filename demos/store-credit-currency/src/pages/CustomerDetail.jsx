@@ -357,6 +357,16 @@ export function CustomerDetail() {
   const [bannerOpen, setBannerOpen] = useState(true);
   const {notYet} = useShell();
 
+  // ?state=loading: the suggestion resolves when its slow source hits the 10-second limit (PRD A, C).
+  useEffect(() => {
+    if (!customer.suggestionPending || !customer.resolveAfterMs) return undefined;
+    const timer = window.setTimeout(
+      () => setCustomer((prev) => ({...prev, suggestionPending: false, ...prev.resolveWith})),
+      customer.resolveAfterMs
+    );
+    return () => window.clearTimeout(timer);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     setTitle(loading ? '' : customer.name);
   }, [loading, customer.name, setTitle]);

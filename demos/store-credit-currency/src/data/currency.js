@@ -5,7 +5,8 @@
 //   3) currency of the market containing the customer's default address
 //   4) shop currency
 // Only currencies the shop still sells count; a step whose currency the shop no longer sells is skipped.
-// A shop that sells one currency skips the chain: the suggestion is always that currency.
+// A source that cannot be read (or takes over 10 s) is skipped; if that drops the result to step 4 it is "could not work out".
+// A shop that sells one currency skips the chain: the suggestion is always that currency, as certain as step 1.
 
 /**
  * "$20.00 USD": symbol, amount with the currency's own decimals, then the code exactly once.
@@ -26,16 +27,26 @@ export const shopMoney = (amount, code) =>
 export function suggestCurrency(customer, shop) {
   if (shop.currencies.length === 1) return {status: 'ok', code: shop.currencies[0], step: 'single'};
   if (customer.suggestionPending) return {status: 'pending'};
-  if (customer.suggestionFailed) return {status: 'failed'};
   const sells = new Set(shop.currencies);
-  const orders = (customer.orders12m || []).filter((o) => sells.has(o.currencyCode));
+  const failed = new Set(customer.sourceErrors || []); // 'orders' | 'storefront' | 'markets'
+  const orders = failed.has('orders') ? [] : (customer.orders12m || []).filter((o) => sells.has(o.currencyCode));
   if (orders.length) {
     const top = [...orders].sort((x, y) => y.count - x.count || y.lastOrderAt.localeCompare(x.lastOrderAt))[0];
     return {status: 'ok', code: top.currencyCode, step: 1};
   }
-  if (customer.lastBrowsedCurrency && sells.has(customer.lastBrowsedCurrency)) return {status: 'ok', code: customer.lastBrowsedCurrency, step: 2};
-  if (customer.addressMarketCurrency && sells.has(customer.addressMarketCurrency)) return {status: 'ok', code: customer.addressMarketCurrency, step: 3};
+  const browsed = failed.has('storefront') ? null : customer.lastBrowsedCurrency;
+  if (browsed && sells.has(browsed)) return {status: 'ok', code: browsed, step: 2};
+  const market = failed.has('markets') ? null : customer.addressMarketCurrency;
+  if (market && sells.has(market)) return {status: 'ok', code: market, step: 3};
+  // Down to step 4 because a source failed: the customer may have orders in another currency Joy couldn't read.
+  if (failed.size) return {status: 'failed'};
   return {status: 'ok', code: shop.currency, step: 4};
+}
+
+/** Credit list order: suggested currency, shop currency, then A–Z. */
+export function creditOrder(shop, suggestedCode) {
+  const rest = shop.currencies.filter((c) => c !== suggestedCode && c !== shop.currency).sort();
+  return [...new Set([suggestedCode, shop.currency, ...rest].filter((c) => c && shop.currencies.includes(c)))];
 }
 
 const shopFirst = (shop) => (a, b) =>
@@ -55,7 +66,7 @@ export function tabView(customer, shop) {
   const zeroCode = s.status === 'ok' ? s.code : shop.currency;
   const rows = shown.length ? shown : [{currencyCode: zeroCode, amount: 0}];
   let note = null;
-  if (s.status === 'ok' && [1, 2, 3].includes(s.step)) {
+  if (s.status === 'ok' && [1, 2, 3, 'single'].includes(s.step)) {
     const others = shown.filter((a) => Number(a.amount) > 0 && a.currencyCode !== s.code).map((a) => a.currencyCode);
     if (others.length === 1) note = `Store credit in ${others[0]} can only be spent on orders paid in ${others[0]}. Suggested currency for this customer: ${s.code}.`;
     if (others.length > 1) note = `Store credit in ${listAnd(others)} can only be spent on orders paid in the same currency. Suggested currency for this customer: ${s.code}.`;
@@ -87,6 +98,7 @@ const REASON = {
   1: (c) => `Suggested because most of this customer's orders are paid in ${c}.`,
   2: (c) => `Suggested because this customer last browsed your store in ${c}.`,
   3: (c) => `Suggested because this customer's default address is in a market that sells in ${c}.`,
+  // Step 4 names the currency the merchant has selected, so it follows a switch to EUR.
   4: (c) => `We don't know which currency this customer pays in yet. Store credit in ${c} can only be spent on orders paid in ${c}.`,
 };
 
@@ -96,7 +108,7 @@ export function modalView(customer, shop, type, selected) {
   if (s.status === 'pending') return {pending: true, options: [], balance: null, line: null};
   let options;
   if (type === 'credit') {
-    options = shop.currencies.map((c) => ({value: c, label: s.status === 'ok' && s.step !== 'single' && c === s.code ? `${c} (suggested)` : c}));
+    options = creditOrder(shop, s.status === 'ok' ? s.code : null).map((c) => ({value: c, label: s.status === 'ok' && s.step !== 'single' && c === s.code ? `${c} (suggested)` : c}));
   } else {
     options = fundedWallets(customer, shop).map((a) => ({value: a.currencyCode, label: a.currencyCode}));
     if (!options.some((o) => o.value === selected)) options = [{value: selected, label: selected}];
@@ -107,11 +119,13 @@ export function modalView(customer, shop, type, selected) {
   if (type === 'credit' && shop.currencies.length > 1) {
     if (s.status === 'failed') {
       line = {kind: 'warning', text: `We couldn't check which currency this customer pays in. Make sure ${selected} is right before adding credit.`};
+    } else if (s.step === 4) {
+      line = {kind: 'reason', text: REASON[4](selected)};
     } else if (selected === s.code) {
       line = {kind: 'reason', text: REASON[s.step](s.code)};
-    } else if ([1, 2, 3].includes(s.step)) {
+    } else {
       line = {kind: 'warning', text: `Store credit in ${selected} can only be spent on orders paid in ${selected}. Suggested currency for this customer: ${s.code}.`};
-    } // step 4 + another currency: no line
+    }
   }
   return {pending: false, options, balance, line};
 }

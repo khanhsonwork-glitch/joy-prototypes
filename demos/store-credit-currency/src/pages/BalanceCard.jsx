@@ -158,6 +158,12 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
     setAutoSwitched(false);
   }, [modalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Suggestion resolved while the modal was open: Currency was locked, so it lands on the suggested currency.
+  const pending = !!customer.suggestionPending;
+  useEffect(() => {
+    if (!pending) setCode(defaultCurrency(customer, shop));
+  }, [pending]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const changeType = (type) => {
     const next = currencyAfterTypeChange(customer, shop, type, code, autoSwitched);
     setCode(next.code);
