@@ -1054,6 +1054,31 @@
     },
     {
       "product": "loyalty",
+      "slug": "store-credit-currency",
+      "name": "Store credit currency: show codes, default to the last order's currency",
+      "area": "Customers",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-03",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-store-credit-currency.jpg",
+      "reviewUrl": "/loyalty/store-credit-currency/#/customer",
+      "kind": "prototype",
+      "aliases": [
+        "Adjust store credit",
+        "Store credit"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "sync-shopify-discounts",
       "name": "Sync Shopify discounts (My coupons)",
       "area": "On-site content",
