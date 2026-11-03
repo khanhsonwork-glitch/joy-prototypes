@@ -1,0 +1,303 @@
+/* Plans page, onboarding plan step and Dashboard banner: shapes read from the Joy Plans page styles on
+   avada/master (PricingPlan, StarterPlanCard, JoyAiCopilotBanner, PromotionalBackgroundBanner). */
+
+/* ---------------------------------------------------------------- page widths */
+.plans-page,
+.dash {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 20px 16px 0;
+}
+
+/* ---------------------------------------------------------------- app bar (Plans page) */
+.adm-appbar__crumbs {
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 450;
+}
+.adm-appbar__crumbs > span:last-child {font-weight: 600;}
+.adm-appbar__back {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--p-color-border);
+  margin-right: 4px;
+}
+.adm-appbar__sep {color: var(--p-color-text-secondary);}
+.adm-appbar__crumb {color: var(--p-color-text-secondary);}
+.adm-appbar__crumb:hover {text-decoration: underline;}
+.adm-appbar__actions {display: inline-flex; align-items: center; gap: 8px;}
+.adm-appbar__primary {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--p-color-bg-fill-brand) !important;
+  color: var(--p-color-text-brand-on-bg-fill) !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+}
+
+/* ---------------------------------------------------------------- calculator */
+.calc-slider {flex: 1 1 auto;}
+.calc-input {flex: 0 0 150px;}
+
+/* ---------------------------------------------------------------- inline banner (slot above the cards) */
+.bfcm-inline .Polaris-Box[style*='--p-color-bg-fill-warning'] {
+  --pc-box-background: var(--joy-plan-promo-amber-bg) !important;
+}
+.bfcm-inline .Polaris-Box[style*='--p-color-bg-fill-warning'] svg,
+.bfcm-inline .Polaris-Box[style*='--p-color-bg-fill-warning'] path {
+  fill: var(--joy-plan-promo-amber);
+}
+
+/* ---------------------------------------------------------------- plan cards */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+  padding-top: 24px; /* room for the "Recommended" tab */
+}
+.plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.plan-card__tab {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--p-space-200);
+  border-radius: 10px 10px 0 0;
+  background: var(--joy-plan-recommended);
+  color: var(--p-color-text-inverse);
+  font-size: 13px;
+  font-weight: 550;
+}
+.plan-card__inner {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-100);
+  overflow: hidden;
+}
+.plan-card--recommended .plan-card__inner {border-top-left-radius: 0;}
+.plan-card__header {
+  padding: var(--p-space-400) var(--p-space-400) calc(var(--p-space-400) + 12px);
+  min-height: 6.8rem;
+  box-sizing: border-box;
+}
+.plan-card__header--pink {background: linear-gradient(60deg, var(--joy-plan-header-pink) 15%, var(--p-color-bg-surface) 98%);}
+.plan-card__header--light {background: linear-gradient(210deg, var(--p-color-bg-surface) 1%, var(--joy-plan-header-pink) 107%);}
+.plan-card__header--dark {background: var(--joy-plan-header-dark);}
+.plan-card__header--dark .plan-card__name,
+.plan-card__header--dark .plan-card__desc {color: var(--p-color-text-inverse);}
+.plan-card__name {
+  margin: 0 0 8px;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+  color: var(--p-color-text);
+}
+.plan-card__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--p-color-text-secondary);
+}
+.plan-card__body {
+  flex: 1 1 auto;
+  margin-top: -12px;
+  padding: var(--p-space-400);
+  border-radius: 12px 12px 0 0;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--joy-plan-body-shadow);
+}
+
+@media (min-width: 901px) {
+  .plan-price--reserve {min-height: 92px;}
+}
+.plan-price__main {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--p-color-text);
+}
+.plan-price__suffix {
+  padding-bottom: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--p-color-text);
+}
+.plan-price__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: var(--joy-plan-promo-amber-bg);
+  color: var(--joy-plan-promo-amber);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+.plan-price__info {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--joy-plan-info-line);
+  color: var(--joy-plan-info-ink);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: help;
+}
+
+.plan-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 54px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--joy-plan-orders-line);
+  background: var(--joy-plan-orders-bg);
+  color: var(--p-color-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+.plan-orders strong {font-weight: 650;}
+
+.plan-feature {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 20px;
+}
+.plan-feature__check {flex: 0 0 20px;}
+.plan-feature__badge {margin-left: 6px;}
+
+/* ---------------------------------------------------------------- Starter */
+.starter-card {
+  border-radius: 12px;
+  background: var(--joy-plan-header-gray);
+  overflow: hidden;
+}
+.starter-card__header {padding: var(--p-space-400) var(--p-space-400) calc(var(--p-space-400) + 12px);}
+.starter-card__body {
+  margin-top: -12px;
+  padding: var(--p-space-400);
+  border-radius: 12px 12px 0 0;
+  background: var(--p-color-bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.starter-card__features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+}
+.starter-card__note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.starter-card__note .Polaris-Icon {margin: 0;}
+
+/* ---------------------------------------------------------------- onboarding */
+.onboarding__wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--p-space-400);
+  box-sizing: border-box;
+}
+.onboarding__progress {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+.onboarding__segment {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--p-color-bg-fill-tertiary);
+}
+.onboarding__segment.is-done {background: var(--joy-onboarding-progress);}
+
+/* ---------------------------------------------------------------- Dashboard */
+.dash-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--p-space-400);
+  align-items: start;
+}
+.promo-bg {
+  position: relative;
+  width: 100%;
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: var(--p-color-bg-fill-brand);
+  background-size: cover;
+  background-position: center;
+}
+.promo-bg__scrim {position: absolute; inset: 0; background: var(--joy-promo-banner-scrim);}
+.promo-bg__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 70%;
+}
+.promo-bg__content > .Polaris-Text--root,
+.promo-bg__desc .Polaris-Text--root {color: var(--p-color-text-inverse);}
+.promo-bg__desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.promo-bg__cta {margin-top: 4px;}
+.promo-bg__close {position: absolute; top: 8px; right: 8px; z-index: 2;}
+.promo-bg__close .Polaris-Icon {color: var(--p-color-text-inverse); fill: var(--p-color-text-inverse);}
+.promo-bg__close svg {fill: var(--p-color-text-inverse);}
+
+/* ---------------------------------------------------------------- prototype pill */
+.kit-proto__screens {display: flex; flex-direction: column; gap: 4px; margin-top: 4px;}
+.kit-proto__toggle.is-pulsing {animation: proto-pulse 1.6s ease-in-out infinite;}
+@keyframes proto-pulse {
+  0%, 100% {box-shadow: var(--p-shadow-300);}
+  50% {box-shadow: 0 0 0 6px var(--proto-amber-bg), var(--p-shadow-300);}
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-proto__toggle.is-pulsing {animation: none;}
+}
+
+/* ---------------------------------------------------------------- small screens */
+@media (max-width: 900px) {
+  .plan-grid {grid-template-columns: minmax(0, 1fr); gap: 34px;}
+  .dash-grid {grid-template-columns: minmax(0, 1fr);}
+}
+@media (max-width: 600px) {
+  .starter-card__features {grid-template-columns: minmax(0, 1fr);}
+  .calc-input {flex-basis: 120px;}
+  .promo-bg__content {max-width: 100%;}
+  .adm-appbar__crumbs .adm-appbar__crumb,
+  .adm-appbar__crumbs .adm-appbar__sep:first-of-type {display: none;}
+}
