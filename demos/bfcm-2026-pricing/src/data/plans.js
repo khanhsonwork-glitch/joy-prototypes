@@ -143,6 +143,51 @@ export function planView(plan, {shopPlan, campaign, interval}) {
   };
 }
 
+/**
+ * "What's in [plan]:" of the upgrade popup a locked feature opens. The popup keeps its own shorter lists (not the
+ * Plans card lists): these are the lists it shows a shop installed in 2025 or later.
+ */
+export const POPUP_FEATURES = {
+  essential: [
+    'All features in Starter plan',
+    'Up to 500 monthly free orders',
+    'On-brand loyalty page',
+    'Shopify Flow and 30+ integrations',
+    'Shopify Metafield integration',
+    'Analytics',
+    'Advanced widget design',
+    'Potential points on product page',
+    'Customizable notifications',
+    'Unlimited Points Rewards and Redeem Programs',
+  ],
+  advanced: [
+    'All features in Essential plan',
+    'Up to 2000 monthly free orders',
+    'POS fully integrated',
+    'Customer account blocks',
+    'Advanced Rule Engine',
+    'Member perks',
+    'Redeem in Cart',
+    'Milestone rewards',
+    'B2B loyalty program',
+    'VIP tiers and Points expiration',
+    'Auto-detect translation',
+    'Dedicated account manager',
+  ],
+  ultimate: [
+    'All features in Advanced plan',
+    'Up to 7000 monthly free orders',
+    'Dynamic point expiration',
+    'White-glove migration to Joy',
+    'Unlimited integration, APIs & Webhooks',
+    'Hydrogen - Headless support',
+    'POS Pro integration',
+    'Fully customizable',
+    'Checkout extensions',
+    'High-priority feature requests',
+  ],
+};
+
 /** Banner copy, one place for the Plans page, the onboarding step and the Dashboard banner. */
 export const BFCM_COPY = {
   title: 'Black Friday: 30% off Advanced & Ultimate',

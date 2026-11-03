@@ -110,7 +110,8 @@ const JOY_SUB = [
   {id: 'customers', label: 'Customers'},
   {id: 'rewards', label: 'Reward programs'},
   {id: 'membership', label: 'Membership'},
-  {id: 'onsite', label: 'On-site content'},
+  // On-site content › Unified widget opens the fullscreen Widget design editor (where the upgrade popup can open).
+  {id: 'onsite', label: 'On-site content', href: '#/upgrade-popup', routes: ['upgrade-popup']},
   {id: 'analytics', label: 'Analytics'},
   {id: 'integrations', label: 'Integrations'},
   // Plans live under Settings › Subscription › View plans in the real app.
