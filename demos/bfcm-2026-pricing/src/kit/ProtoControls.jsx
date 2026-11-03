@@ -1,5 +1,5 @@
 // Amber panel that is visibly NOT product UI: pick the shop, whether Black Friday still runs, annual billing,
-// and jump between the screens this prototype changes.
+// and jump between the three screens this prototype changes.
 import React, {useEffect, useRef, useState} from 'react';
 import {STATES, useScenario} from './scenario.jsx';
 import {CAMPAIGN, SHOPS} from '../data/plans.js';
@@ -9,7 +9,6 @@ const SCREENS = [
   {href: '#/plans', label: 'Plans page'},
   {href: '#/onboarding-plan', label: 'Onboarding · plan step'},
   {href: '#/dashboard', label: 'Dashboard banner'},
-  {href: '#/upgrade-popup', label: 'Upgrade popup · widget editor'},
 ];
 
 export function ProtoControls() {

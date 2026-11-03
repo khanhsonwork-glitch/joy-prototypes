@@ -27,29 +27,6 @@ function Feature({feature}) {
   );
 }
 
-/** The discount lines under a price: struck price, "-30% · 3 months" tag, ⓘ tooltip, "From month 4". Plan cards and the upgrade popup share it. */
-export function PromoLines({view}) {
-  if (!view.promo) return null;
-  return (
-    <>
-      <InlineStack gap="150" blockAlign="center">
-        <Text as="span" variant="bodyMd" tone="subdued" textDecorationLine="line-through">
-          ${view.originalPrice}
-        </Text>
-        <span className="plan-price__badge">{`-${view.promo.percent}% · ${view.promo.cycles} months`}</span>
-        <Tooltip content={BFCM_COPY.tooltip}>
-          <span className="plan-price__info" tabIndex={0} role="img" aria-label="About this discount">
-            i
-          </span>
-        </Tooltip>
-      </InlineStack>
-      <Text as="p" variant="bodySm" tone="subdued">
-        {`From month ${view.promo.cycles + 1}: $${view.originalPrice}/month`}
-      </Text>
-    </>
-  );
-}
-
 function Price({view, reserve}) {
   return (
     <div className={reserve ? 'plan-price plan-price--reserve' : 'plan-price'}>
@@ -58,7 +35,24 @@ function Price({view, reserve}) {
         <span className="plan-price__main">${view.price}</span>
         <span className="plan-price__suffix">/{view.suffix}</span>
       </InlineStack>
-      <PromoLines view={view} />
+      {view.promo ? (
+        <>
+          <InlineStack gap="150" blockAlign="center">
+            <Text as="span" variant="bodyMd" tone="subdued" textDecorationLine="line-through">
+              ${view.originalPrice}
+            </Text>
+            <span className="plan-price__badge">{`-${view.promo.percent}% · ${view.promo.cycles} months`}</span>
+            <Tooltip content={BFCM_COPY.tooltip}>
+              <span className="plan-price__info" tabIndex={0} role="img" aria-label="About this discount">
+                i
+              </span>
+            </Tooltip>
+          </InlineStack>
+          <Text as="p" variant="bodySm" tone="subdued">
+            {`From month ${view.promo.cycles + 1}: $${view.originalPrice}/month`}
+          </Text>
+        </>
+      ) : null}
     </BlockStack>
     </div>
   );

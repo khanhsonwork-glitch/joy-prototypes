@@ -12,13 +12,11 @@ import {PlansPage} from './pages/PlansPage.jsx';
 import {OnboardingPlanPage} from './pages/OnboardingPlanPage.jsx';
 import {DashboardPage} from './pages/DashboardPage.jsx';
 import {KitPage} from './pages/KitPage.jsx';
-import {UpgradePopupPage} from './pages/UpgradePopupPage.jsx';
 import {DEMO} from './demo.config.js';
 import './styles/pricing.css';
 
 // Routes: #/plans (Settings › Subscription › View plans) · #/onboarding-plan (Onboarding V2, plan step)
-// · #/dashboard (Home, promotional banner slot) · #/upgrade-popup (On-site content › Unified widget › Widget design,
-// Launcher, upgrade popup open) · #/kit (components).
+// · #/dashboard (Home, promotional banner slot) · #/kit (components).
 function NotFound() {
   return (
     <Page title="Page not found">
@@ -40,7 +38,6 @@ function Screen() {
   if (segments[0] === 'plans' && segments.length === 1) page = <PlansPage />;
   else if (segments[0] === 'onboarding-plan' && segments.length === 1) page = <OnboardingPlanPage />;
   else if (segments[0] === 'dashboard' && segments.length === 1) page = <DashboardPage />;
-  else if (segments[0] === 'upgrade-popup' && segments.length === 1) page = <UpgradePopupPage />;
   else if (segments[0] === 'kit' && segments.length === 1) page = <KitPage />;
   return <AdminChrome>{page}</AdminChrome>;
 }
