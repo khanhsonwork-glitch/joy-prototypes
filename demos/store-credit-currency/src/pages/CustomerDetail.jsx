@@ -14,6 +14,7 @@ import {
   InlineStack,
   Layout,
   LegacyCard,
+  List,
   LegacyTabs,
   Page,
   SkeletonBodyText,
@@ -23,7 +24,7 @@ import {
   Tooltip,
 } from '@shopify/polaris';
 import {EditIcon, InfoIcon, PersonFilledIcon, RefreshIcon} from '@shopify/polaris-icons';
-import {CUSTOMERS, STORE} from '../data/index.js';
+import {CUSTOMERS, STORE, shopFor} from '../data/index.js';
 import {money, shopMoney} from '../data/currency.js';
 import {useScenario} from '../kit/scenario.jsx';
 import {useRoute} from '../shell/router.jsx';
@@ -213,6 +214,25 @@ const ACTIVITY_TABS = ['All', 'Point activities', 'VIP tier changes', 'Order act
   (content, i) => ({id: `activity-${i}`, content})
 );
 
+/** One activity line. Store credit lines: +/- badge, then "Admin credited $20.00 USD store credit" (code once). */
+function ActivityContent({row}) {
+  if (!row.storeCredit) return <Text as="span">{row.text}</Text>;
+  const {amount, code} = row.storeCredit;
+  const value = money(Math.abs(amount), code);
+  return (
+    <span data-testid="activity-store-credit">
+      <BlockStack gap="100">
+        <div>
+          <Badge tone={amount >= 0 ? 'success' : 'warning'}>{`${amount >= 0 ? '+' : '-'} ${value}`}</Badge>
+        </div>
+        <Text variant="bodyMd" as="span">
+          {`Admin ${amount >= 0 ? 'credited' : 'debited'} ${value} store credit`}
+        </Text>
+      </BlockStack>
+    </span>
+  );
+}
+
 function Activities({customer, loading}) {
   const {notYet} = useShell();
   const [selected, setSelected] = useState(0);
@@ -241,14 +261,18 @@ function Activities({customer, loading}) {
               <Text tone="subdued" as="h3">
                 {group.day}
               </Text>
-              {group.rows.map((row, i) => (
-                <div key={i} className="cd-timeline__row">
-                  <Text as="span">{row.text}</Text>
-                  <Text variant="bodyMd" as="span" tone="subdued">
-                    {row.time}
-                  </Text>
-                </div>
-              ))}
+              <List type="bullet">
+                {group.rows.map((row, i) => (
+                  <List.Item key={i}>
+                    <div className="cd-timeline__row">
+                      <ActivityContent row={row} />
+                      <Text variant="bodyMd" as="span" tone="subdued">
+                        {row.time}
+                      </Text>
+                    </div>
+                  </List.Item>
+                ))}
+              </List>
             </div>
           ))
         )}
@@ -323,8 +347,10 @@ export function CustomerDetail() {
   const {state} = useScenario();
   const route = useRoute();
   const {setTitle} = useAppTitle();
-  const loading = state === 'loading';
+  // ?state=loading is the page with Joy still working out the suggested currency (PRD B, C), not a page skeleton.
+  const loading = false;
   const scenario = CUSTOMERS[state] ? state : 'default';
+  const shop = shopFor(scenario);
   // In-memory customer: Confirm in the modal changes its accounts until the page reloads.
   const [customer, setCustomer] = useState(() => clone(CUSTOMERS[scenario]));
   const [modalOpen, setModalOpen] = useState(() => !loading && hashQuery().get('modal') === 'adjust');
@@ -359,9 +385,8 @@ export function CustomerDetail() {
       if (type === 'credit') stats.totalAdded += amount;
       else stats.totalDeducted += amount;
       next.statsByCurrency[code] = stats;
-      const verb = type === 'credit' ? 'credited' : 'debited';
       next.activities = [
-        {day: 'Today', rows: [{text: `Admin ${verb} ${money(amount, code)} store credit`, time: 'Just now'}]},
+        {day: 'Today', rows: [{storeCredit: {amount: signed, code}, time: 'Just now'}, ...(next.activities.find((g) => g.day === 'Today')?.rows || [])]},
         ...next.activities.filter((g) => g.day !== 'Today'),
       ];
       return next;
@@ -402,7 +427,7 @@ export function CustomerDetail() {
             ) : (
               <BalanceCard
                 customer={customer}
-                shop={STORE}
+                shop={shop}
                 modalOpen={modalOpen}
                 onOpenModal={openModal}
                 onCloseModal={closeModal}

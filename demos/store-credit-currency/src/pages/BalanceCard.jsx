@@ -14,6 +14,7 @@ import {
   LegacyStack,
   Modal,
   Select,
+  Spinner,
   Tabs,
   Text,
   TextField,
@@ -133,26 +134,39 @@ const PRESETS = [
  * @param customer  live customer object (accounts change after Confirm)
  * @param onAdjusted ({code, signed}) → parent updates accounts, stats and activity
  */
+// Global store credit expiration setting of the fictional shop (Settings: off) → the modal prefills "No expiration".
+const GLOBAL_EXPIRES_AT = '';
+const freshForm = () => ({adjustmentType: 'credit', amount: '0', expiresAt: GLOBAL_EXPIRES_AT});
+
 export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModal, onAdjusted}) {
   const {notify} = useShell();
   const [tab, setTab] = useState(1); // the review link opens on Store credit
-  const [form, setForm] = useState({adjustmentType: 'credit', amount: '0', expiresAt: ''});
+  const [form, setForm] = useState(freshForm);
   const [code, setCode] = useState(() => defaultCurrency(customer, shop));
+  // True when Joy (not the merchant) picked the current currency on the way to Debit.
+  const [autoSwitched, setAutoSwitched] = useState(false);
   const [saving, setSaving] = useState(false);
   const tabData = tabView(customer, shop);
   const view = modalView(customer, shop, form.adjustmentType, code);
   const set = (key, value) => setForm((f) => ({...f, [key]: value}));
 
-  // Every time the modal opens it starts on Credit + the suggested currency.
+  // Every open, including right after a save: Credit, suggested currency, Amount 0, expiration = global default.
   useEffect(() => {
     if (!modalOpen) return;
-    setForm((f) => ({...f, adjustmentType: 'credit'}));
+    setForm(freshForm());
     setCode(defaultCurrency(customer, shop));
+    setAutoSwitched(false);
   }, [modalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changeType = (type) => {
-    setCode((current) => currencyAfterTypeChange(customer, shop, type, current));
+    const next = currencyAfterTypeChange(customer, shop, type, code, autoSwitched);
+    setCode(next.code);
+    setAutoSwitched(next.auto);
     set('adjustmentType', type);
+  };
+  const pickCurrency = (value) => {
+    setCode(value);
+    setAutoSwitched(false);
   };
 
   const confirm = () => {
@@ -193,7 +207,7 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
         open={modalOpen}
         onClose={() => !saving && onCloseModal()}
         title="Adjust store credit"
-        primaryAction={{content: 'Confirm', loading: saving, onAction: confirm}}
+        primaryAction={{content: 'Confirm', loading: saving, disabled: view.pending, onAction: confirm}}
         secondaryActions={[{content: 'Cancel', disabled: saving, onAction: onCloseModal}]}
       >
         <FormLayout>
@@ -203,9 +217,13 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
                 Current balance
               </Text>
               <span data-testid="current-balance">
-                <Text as="span" fontWeight="semibold">
-                  {money(view.balance, code)}
-                </Text>
+                {view.pending ? (
+                  <Spinner size="small" accessibilityLabel="Loading balance" />
+                ) : (
+                  <Text as="span" fontWeight="semibold">
+                    {money(view.balance, code)}
+                  </Text>
+                )}
               </span>
             </InlineStack>
           </Box>
@@ -220,8 +238,18 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
               value={form.adjustmentType}
               onChange={changeType}
             />
-            {view.options.length > 1 ? (
-              <Select label="Currency" options={view.options} value={code} onChange={setCode} />
+            {view.pending ? (
+              <div data-testid="currency-loading">
+                <TextField
+                  label="Currency"
+                  value=""
+                  disabled
+                  autoComplete="off"
+                  suffix={<Spinner size="small" accessibilityLabel="Loading currency" />}
+                />
+              </div>
+            ) : view.options.length > 1 ? (
+              <Select label="Currency" options={view.options} value={code} onChange={pickCurrency} />
             ) : (
               <TextField label="Currency" value={view.options[0]?.label || code} disabled autoComplete="off" />
             )}
@@ -230,7 +258,7 @@ export function BalanceCard({customer, shop, modalOpen, onOpenModal, onCloseModa
               type="number"
               value={form.amount}
               onChange={(val) => set('amount', val)}
-              suffix={code}
+              suffix={view.pending ? undefined : code}
               autoComplete="off"
               min="0"
             />

@@ -8,8 +8,9 @@ export const STATES = [
   {value: 'browsed', label: 'Browsed in EUR', help: 'No orders · last visited the store in EUR'},
   {value: 'address', label: 'Address in Singapore', help: 'No orders, never browsed · default address in Singapore'},
   {value: 'noorders', label: 'Nothing to go on', help: 'No orders, no visits, no default address'},
+  {value: 'single', label: 'Shop sells only USD', help: 'One currency · Currency field locked'},
   {value: 'error', label: 'Suggestion failed', help: "Couldn't work out the customer's currency"},
-  {value: 'loading', label: 'Loading', help: 'Customer details on their way'},
+  {value: 'loading', label: 'Working out the suggestion', help: 'Suggested currency not known yet'},
 ];
 const VALID = new Set(STATES.map((s) => s.value));
 function readState() {

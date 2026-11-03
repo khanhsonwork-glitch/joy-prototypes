@@ -46,7 +46,7 @@ const MIA = {
   points: POINTS,
   tags: ['Active subscriber', 'Login with Shop', 'newsletter', 'source:popup'],
   activities: [
-    {day: 'November 2, 2026', rows: [{text: 'Admin credited $20.00 USD store credit', time: '10:02 AM'}]},
+    {day: 'November 2, 2026', rows: [{storeCredit: {amount: 20, code: 'USD'}, time: '10:02 AM'}]},
     {day: 'October 20, 2026', rows: [{text: 'User placed order', time: '8:14 PM'}]},
   ],
 };
@@ -136,4 +136,32 @@ export const CUSTOMERS = {
   },
   // Same customer as default, but the suggestion could not be worked out.
   error: {...MIA, suggestionFailed: true},
+  // Same customer as default while Joy is still working out the suggestion.
+  loading: {...MIA, suggestionPending: true},
+  // Shop that sells only USD: the Currency field stays locked, the tab only gains codes.
+  single: {
+    id: 'noah-williams',
+    name: 'Noah Williams',
+    email: 'noah.williams@example.com',
+    phone: '+12025550119',
+    lastOrder: '3 weeks ago',
+    locale: 'English (United States) (en-US)',
+    since: '8 months ago',
+    country: 'United States (auto)',
+    stats: {aov: 47.5, ltv: 285, orders: 6, rfm: 'Active'},
+    orders12m: [{currencyCode: 'USD', count: 6, lastOrderAt: '2026-10-12'}],
+    lastBrowsedCurrency: 'USD',
+    addressMarketCurrency: 'USD',
+    accounts: [{currencyCode: 'USD', amount: 15}],
+    statsByCurrency: {USD: {totalAdded: 15, totalDeducted: 0}},
+    points: {...POINTS, point: 540, totalEarned: 540, totalRedeemed: 0},
+    tags: ['newsletter'],
+    activities: [
+      {day: 'October 14, 2026', rows: [{storeCredit: {amount: 15, code: 'USD'}, time: '3:20 PM'}]},
+      {day: 'October 12, 2026', rows: [{text: 'User placed order', time: '6:02 PM'}]},
+    ],
+  },
 };
+
+/** The shop each scenario runs in: the single-currency scenario sells only USD. */
+export const shopFor = (state) => (state === 'single' ? {...STORE, currencies: ['USD']} : STORE);
