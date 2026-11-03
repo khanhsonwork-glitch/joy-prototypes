@@ -35,12 +35,17 @@ export function ScenarioProvider({children}) {
   const setState = useCallback((next) => {
     if (!VALID.has(next)) return;
     setStateRaw(next);
-    // Keep the URL shareable: the current route plus ?state=<next> (default = no query).
-    const [path] = window.location.hash.replace(/^#/, '').split('?');
+    // Keep the URL shareable: the current route plus ?state=<next> (default = no state), and any other query in the hash
+    // (the version) stays, so the link still opens the version under review.
+    const [path, ...hashQuery] = window.location.hash.replace(/^#/, '').split('?');
+    const inHash = new URLSearchParams(hashQuery.join('?'));
+    inHash.delete('state');
+    if (next !== 'default') inHash.set('state', next);
+    const hashRest = inHash.toString();
     const search = new URLSearchParams(window.location.search);
     search.delete('state');
     const rest = search.toString();
-    window.history.replaceState(null, '', `${window.location.pathname}${rest ? `?${rest}` : ''}#${path || '/demo'}${next === 'default' ? '' : `?state=${next}`}`);
+    window.history.replaceState(null, '', `${window.location.pathname}${rest ? `?${rest}` : ''}#${path || '/demo'}${hashRest ? `?${hashRest}` : ''}`);
   }, []);
   const value = useMemo(() => ({state, setState}), [state, setState]);
   return <ScenarioContext.Provider value={value}>{children}</ScenarioContext.Provider>;

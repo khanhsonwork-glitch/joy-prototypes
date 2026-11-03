@@ -1,11 +1,12 @@
-// Add / edit one form field. Type, label, placeholder, required; options with a customer tag each for choice fields;
-// accepted format for the upload field. Validation shows under the field and Save focuses the first error.
-import React, {useEffect, useMemo, useState} from 'react';
+// Add / edit one form field. Type, label, placeholder, required; accepted format for the upload field. Phase 2 adds the
+// choice fields (options with a customer tag each), the number prefix, the email prefill and the locked type.
+// Validation shows under the field and Save focuses the first error.
+import React, {useLayoutEffect, useMemo, useState} from 'react';
 import {BlockStack, Banner, Box, Button, Checkbox, ChoiceList, InlineStack, List, Modal, Select, Text, TextField} from '@shopify/polaris';
 import {DeleteIcon, PlusIcon} from '@shopify/polaris-icons';
-import {FIELD_TYPES, MAX_OPTIONS, isChoice, newId} from '../data/form.js';
+import {FIELD_TYPES, MAX_OPTIONS, isChoice, newId, typesFor} from '../data/form.js';
 
-const blank = (type) => ({
+const blank = (type, phase2) => ({
   id: newId(),
   type,
   label: '',
@@ -13,7 +14,7 @@ const blank = (type) => ({
   required: false,
   ...(isChoice(type) ? {options: [{id: newId('o'), label: '', tag: ''}, {id: newId('o'), label: '', tag: ''}]} : {}),
   ...(type === 'upload' ? {format: 'image'} : {}),
-  ...(type === 'email' ? {prefill: true} : {}),
+  ...(type === 'email' && phase2 ? {prefill: true} : {}),
 });
 
 const RESTRICTIONS = {
@@ -22,24 +23,27 @@ const RESTRICTIONS = {
   both: ['Images: JPEG, JPG, PNG, max 10MB each', 'Video: MP4, MOV, max 50MB', 'Max 5 files per submission'],
 };
 
-/** field: the field being edited, or {type} for a new one. locked: customers already answered it (type can't change). */
-export function FieldModal({open, field, locked, hasUpload, otherLabels = [], onClose, onSave}) {
+/** field: the field being edited, or {type} for a new one. locked: customers already answered it (type can't change).
+ *  version: 'phase1' or 'phase2'. */
+export function FieldModal({open, version, field, locked, hasUpload, otherLabels = [], onClose, onSave}) {
+  const phase2 = version === 'phase2';
   const [f, setF] = useState(null);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
+  // Layout effect: reset to the chosen field before the browser paints, so the modal never flashes the previous field.
+  useLayoutEffect(() => {
     if (!open || !field) return;
-    setF(field.id ? JSON.parse(JSON.stringify(field)) : blank(field.type));
+    setF(field.id ? JSON.parse(JSON.stringify(field)) : blank(field.type, phase2));
     setErrors({});
   }, [open, field]);
 
   const typeOptions = useMemo(
-    () => FIELD_TYPES.map((t) => ({
+    () => typesFor(version).map((t) => ({
       label: t.label,
       value: t.value,
       disabled: t.value === 'upload' && hasUpload && field?.type !== 'upload',
     })),
-    [hasUpload, field],
+    [hasUpload, field, version],
   );
 
   if (!f || !field) return null;
@@ -50,7 +54,7 @@ export function FieldModal({open, field, locked, hasUpload, otherLabels = [], on
   const setOption = (id, patch) => set({options: f.options.map((o) => (o.id === id ? {...o, ...patch} : o))});
 
   const changeType = (type) => {
-    const next = {...blank(type), id: f.id, label: f.label, required: f.required};
+    const next = {...blank(type, phase2), id: f.id, label: f.label, required: f.required};
     if (isChoice(type) && isChoice(f.type)) next.options = f.options;
     setF(next);
   };
@@ -115,10 +119,10 @@ export function FieldModal({open, field, locked, hasUpload, otherLabels = [], on
           {['short', 'paragraph', 'number', 'email', 'link'].includes(f.type) ? (
             <TextField label="Placeholder" value={f.placeholder || ''} onChange={(v) => set({placeholder: v})} autoComplete="off" maxLength={120} helpText="Light example text inside the empty field." />
           ) : null}
-          {f.type === 'number' ? (
+          {f.type === 'number' && phase2 ? (
             <TextField label="Show before the number" value={f.prefix || ''} onChange={(v) => set({prefix: v.slice(0, 3)})} autoComplete="off" placeholder="$" helpText="Optional, like a currency sign. Customers can type decimals." />
           ) : null}
-          {f.type === 'email' ? (
+          {f.type === 'email' && phase2 ? (
             <Checkbox label="Fill in the email of a logged-in customer" checked={Boolean(f.prefill)} onChange={(v) => set({prefill: v})} helpText="Customers can still change it." />
           ) : null}
 

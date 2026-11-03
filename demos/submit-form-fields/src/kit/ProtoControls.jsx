@@ -32,7 +32,11 @@ export function ProtoControls() {
           <p className="kit-proto__title">Prototype · not part of the product</p>
           <fieldset className="kit-proto__states">
             <legend>Version</legend>
-            {[['today', 'Today', 'avada/master, 30/10/2026'], ['new', 'With form fields', 'Fields, required, tags']].map(([v, l, h]) => (
+            {[
+              ['today', 'Today', 'avada/master, 30/10/2026'],
+              ['phase1', 'Phase 1', 'Form fields in 4 types, customer tags'],
+              ['phase2', 'Phase 2', 'Phase 1 + 5 more types, choice tags, locked types'],
+            ].map(([v, l, h]) => (
               <label key={v} className="kit-proto__state">
                 <input type="radio" name="kit-proto-version" value={v} checked={version === v} onChange={() => setVersion(v)} />
                 <span>
@@ -67,7 +71,7 @@ export function ProtoControls() {
       >
         {/* Phones keep the word (Alex 20/10: an icon-only chip was unclear) and drop the state name; a dot marks a
             non-default state there, and screen readers still hear the full label. */}
-        Prototype{version === 'today' ? ' · Today' : ''}
+        Prototype{version === 'today' ? ' · Today' : version === 'phase2' ? ' · Phase 2' : ''}
         {state !== 'default' ? <span className="kit-proto__current">{` · ${STATES.find((s) => s.value === state).label}`}</span> : null}
         {state !== 'default' ? <span className="kit-proto__dot" aria-hidden="true" /> : null}
       </button>

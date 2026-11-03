@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {BlockStack, Card, InlineStack, Text} from '@shopify/polaris';
 import {ViewIcon} from '@shopify/polaris-icons';
 import {Icon} from '@shopify/polaris';
-import {TODAY} from '../data/form.js';
+import {PROGRAM_NAME, TODAY} from '../data/form.js';
 
 function Pills({field}) {
   const [picked, setPicked] = useState([]);
@@ -69,7 +69,7 @@ function Field({field}) {
   );
 }
 
-/** version 'today': one text box + upload. 'new': the field list. */
+/** version 'today': one text box + upload. 'phase1' / 'phase2': the field list. */
 export function FormPreview({version, fields}) {
   return (
     <Card>
@@ -80,7 +80,7 @@ export function FormPreview({version, fields}) {
         </InlineStack>
         <div className="sfp">
           <div className="sfp-head">
-            <strong>Bought elsewhere? Get points</strong>
+            <strong>{PROGRAM_NAME[version]}</strong>
             <span>Earn 200 points</span>
           </div>
           <form className="sfp-form" onSubmit={(e) => e.preventDefault()}>

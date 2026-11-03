@@ -1,7 +1,8 @@
 // Submit form program › Rule tab. "Today" = avada/master on 30/10/2026: quick-start templates, program information,
 // reward settings, customer eligibility, Submission requirements (upload settings), Approval settings, Instant reward.
-// "New" = Submission requirements starts with Form fields (add, reorder, required, tags per option) and Approval
-// settings gains the tags for the whole form. The preview on the right reads the same fields.
+// Phase 1 = Submission requirements becomes Form fields (4 types: add, reorder, required) and Approval settings gains
+// the tags for the whole form. Phase 2 adds 5 more types, a tag per option, number prefix, email prefill and locked
+// types. The preview on the right reads the same fields.
 import React, {useState} from 'react';
 import {
   Badge,
@@ -47,7 +48,7 @@ import {
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
-import {FIELD_TYPES, MAX_FIELDS, TEMPLATES, TODAY, isChoice, typeLabel} from '../data/form.js';
+import {MAX_FIELDS, MAX_FORM_TAGS, PROGRAM_NAME, TEMPLATES, TODAY, isChoice, isOldShape, typeLabel, typesFor} from '../data/form.js';
 import {useForm, useVersion} from '../state/form.jsx';
 import {FieldModal} from './FieldModal.jsx';
 import {FormPreview} from './FormPreview.jsx';
@@ -99,12 +100,12 @@ function TemplatePicker({version}) {
   );
 }
 
-function ProgramInfo() {
+function ProgramInfo({version}) {
   return (
     <Card>
       <BlockStack gap="400">
         <Text as="h2" variant="headingMd">Program information</Text>
-        <TextField label="Program name" value="Bought elsewhere? Get points" onChange={() => {}} autoComplete="off" />
+        <TextField label="Program name" value={PROGRAM_NAME[version]} onChange={() => {}} autoComplete="off" />
         <TextField label="Description" value="Earn {{earning_point_raw}} {{loyalty_point}}" disabled onChange={() => {}} autoComplete="off" helpText={<span>To edit this description text, please go to the <Button variant="plain" onClick={() => {}}>Translation</Button></span>} />
         <InlineStack gap="300" wrap={false}>
           <Box width="50%"><TextField label="Start date" type="date" value="2026-10-30" onChange={() => {}} autoComplete="off" /></Box>
@@ -179,15 +180,17 @@ function fieldSummary(f) {
   return f.placeholder ? `“${f.placeholder}”` : '';
 }
 
-function FormFields({disabled}) {
+function FormFields({disabled, version}) {
   const {fields, setFields, answered} = useForm();
   const [editing, setEditing] = useState(null);
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState(null);
   const {notify} = useShell();
+  const phase2 = version === 'phase2';
   const hasUpload = fields.some((f) => f.type === 'upload');
   const full = fields.length >= MAX_FIELDS;
 
+  const removeField = (f) => setFields((list) => list.filter((x) => x.id !== f.id));
   const move = (i, d) => setFields((list) => {
     const next = [...list];
     const [x] = next.splice(i, 1);
@@ -202,7 +205,7 @@ function FormFields({disabled}) {
       onClose={() => setAdding(false)}
     >
       <ActionList
-        items={FIELD_TYPES.map((t) => ({
+        items={typesFor(version).map((t) => ({
           content: t.label,
           helpText: t.value === 'upload' && hasUpload ? 'One upload field per form' : t.help,
           prefix: <Icon source={TYPE_ICON[t.value]} />,
@@ -222,6 +225,11 @@ function FormFields({disabled}) {
         </BlockStack>
         {addMenu}
       </InlineStack>
+      {isOldShape(fields) ? null : (
+        <Text as="p" variant="bodySm" tone="subdued">
+          With these fields, this program shows only on Widget V4 and Loyalty page V2. Older widgets, Loyalty page blocks and the Loyalty Hub hide it.
+        </Text>
+      )}
 
       {fields.length ? (
         <ol className="sf-fields" aria-label="Form fields">
@@ -242,7 +250,7 @@ function FormFields({disabled}) {
               <span className="sf-field__badge">{f.required ? <Badge>Required</Badge> : <Badge tone="info">Optional</Badge>}</span>
               <span className="sf-field__actions">
                 <Button icon={EditIcon} variant="tertiary" accessibilityLabel={`Edit ${f.label}`} disabled={disabled} onClick={() => setEditing(f)} />
-                <Button icon={DeleteIcon} variant="tertiary" tone="critical" accessibilityLabel={`Delete ${f.label}`} disabled={disabled} onClick={() => setRemoving(f)} />
+                <Button icon={DeleteIcon} variant="tertiary" tone="critical" accessibilityLabel={`Delete ${f.label}`} disabled={disabled} onClick={() => (phase2 ? setRemoving(f) : removeField(f))} />
               </span>
             </li>
           ))}
@@ -256,6 +264,7 @@ function FormFields({disabled}) {
       {full ? <Text as="p" variant="bodySm" tone="subdued">{`A form can have up to ${MAX_FIELDS} fields.`}</Text> : null}
 
       <FieldModal
+        version={version}
         open={Boolean(editing)}
         field={editing}
         locked={Boolean(editing?.id && answered.has(editing.id))}
@@ -267,35 +276,37 @@ function FormFields({disabled}) {
           setEditing(null);
         }}
       />
-      <Modal
-        open={Boolean(removing)}
-        onClose={() => setRemoving(null)}
-        title={removing ? `Delete “${removing.label}”?` : ''}
-        primaryAction={{
-          content: 'Delete field',
-          destructive: true,
-          onAction: () => {setFields((list) => list.filter((x) => x.id !== removing.id)); notify('Field deleted. Save to apply.'); setRemoving(null);},
-        }}
-        secondaryActions={[{content: 'Cancel', onAction: () => setRemoving(null)}]}
-      >
-        <Modal.Section>
-          <Text as="p">
-            {removing && answered.has(removing.id)
-              ? 'New customers won’t see this field. Forms already submitted keep their answer, and tags already added stay on the customer.'
-              : 'New customers won’t see this field.'}
-          </Text>
-        </Modal.Section>
-      </Modal>
+      {phase2 ? (
+        <Modal
+          open={Boolean(removing)}
+          onClose={() => setRemoving(null)}
+          title={removing ? `Delete “${removing.label}”?` : ''}
+          primaryAction={{
+            content: 'Delete field',
+            destructive: true,
+            onAction: () => {removeField(removing); notify('Field deleted. Save to apply.'); setRemoving(null);},
+          }}
+          secondaryActions={[{content: 'Cancel', onAction: () => setRemoving(null)}]}
+        >
+          <Modal.Section>
+            <Text as="p">
+              {removing && answered.has(removing.id)
+                ? 'New customers won’t see this field. Forms already submitted keep their answer, and tags already added stay on the customer.'
+                : 'New customers won’t see this field.'}
+            </Text>
+          </Modal.Section>
+        </Modal>
+      ) : null}
     </BlockStack>
   );
 }
 
-function SubmissionNew({disabled}) {
+function SubmissionNew({disabled, version}) {
   return (
     <Card>
       <BlockStack gap="400">
         <Text as="h2" variant="headingMd">Submission requirements</Text>
-        <FormFields disabled={disabled} />
+        <FormFields disabled={disabled} version={version} />
       </BlockStack>
     </Card>
   );
@@ -303,31 +314,21 @@ function SubmissionNew({disabled}) {
 
 /* ---------------------------------------------------------------- approval + tags */
 
-function tagLine(fields, formTags) {
-  const choice = fields.find((f) => isChoice(f.type) && f.options.some((o) => o.tag));
-  const example = choice?.options.find((o) => o.tag);
-  const parts = [];
-  if (formTags.length) parts.push(formTags.join(', '));
-  if (example) parts.push(`the tag of the answer they picked, like “${example.tag}” for ${example.label}`);
-  return parts.length ? parts.join(' + ') : null;
-}
-
 function Approval({version, disabled}) {
-  const {fields, formTags, setFormTags} = useForm();
+  const {formTags, setFormTags} = useForm();
   const [auto, setAuto] = useState(false);
   const [draft, setDraft] = useState('');
   const [err, setErr] = useState('');
   const addTag = () => {
     const v = draft.trim();
     if (!v) return;
-    if (v.includes(',')) return setErr('Add one tag at a time. Tags can’t contain commas.');
+    if (v.includes(',')) return setErr('Tags can’t contain commas.');
     if (formTags.some((t) => t.toLowerCase() === v.toLowerCase())) return setErr(`“${v}” is already added.`);
-    if (formTags.length >= 5) return setErr('A form can add up to 5 tags.');
+    if (formTags.length >= MAX_FORM_TAGS) return setErr(`A form can add up to ${MAX_FORM_TAGS} tags.`);
     setFormTags([...formTags, v]);
     setDraft('');
     setErr('');
   };
-  const line = tagLine(fields, formTags);
   return (
     <Card>
       <BlockStack gap="400">
@@ -338,7 +339,7 @@ function Approval({version, disabled}) {
           onChange={setAuto}
           helpText="When enabled, customers will earn points immediately upon submission without admin review. When disabled, admin must manually approve each submission."
         />
-        {version === 'new' ? (
+        {version !== 'today' ? (
           <>
             <Divider />
             <BlockStack gap="200">
@@ -363,11 +364,7 @@ function Approval({version, disabled}) {
                   {formTags.map((t) => <Tag key={t} onRemove={disabled ? undefined : () => setFormTags(formTags.filter((x) => x !== t))}>{t}</Tag>)}
                 </InlineStack>
               ) : null}
-              <Text as="p" variant="bodySm" tone="subdued">
-                {line
-                  ? `${auto ? 'As soon as a customer submits' : 'When you approve a submission'}, Joy adds to the customer in Shopify: ${line}. Disapproved forms add no tags.`
-                  : 'No tags yet. Add one here, or give the options of a choice field a tag.'}
-              </Text>
+              <Text as="p" variant="bodySm" tone="subdued">Joy adds these tags to the customer in Shopify when a submission is approved.</Text>
             </BlockStack>
           </>
         ) : null}
@@ -395,7 +392,7 @@ function Summary({version}) {
   return (
     <Card>
       <BlockStack gap="300">
-        <InlineStack align="space-between"><Text as="h2" variant="headingSm">Bought elsewhere? Get points</Text><Badge tone="success">Active</Badge></InlineStack>
+        <InlineStack align="space-between"><Text as="h2" variant="headingSm">{PROGRAM_NAME[version]}</Text><Badge tone="success">Active</Badge></InlineStack>
         <Text as="p" variant="bodySm">Period: Oct 30, 2026 - No end date</Text>
         <Divider />
         <Text as="h3" variant="headingSm">Basic info</Text>
@@ -403,8 +400,8 @@ function Summary({version}) {
           <List.Item>For: Form submissions</List.Item>
           <List.Item>Reward: 200 points per submission</List.Item>
           <List.Item>Approval: Manual approval required</List.Item>
-          {version === 'new' ? <List.Item>{`Form: ${fields.length} fields, ${fields.filter((f) => f.required).length} required`}</List.Item> : null}
-          {version === 'new' && (formTags.length || tagged) ? (
+          {version !== 'today' ? <List.Item>{`Form: ${fields.length} fields, ${fields.filter((f) => f.required).length} required`}</List.Item> : null}
+          {version !== 'today' && (formTags.length || tagged) ? (
             <List.Item>{`Tags: ${[formTags.length ? formTags.join(', ') : null, tagged ? 'by answer' : null].filter(Boolean).join(' + ')}`}</List.Item>
           ) : null}
         </List>
@@ -476,7 +473,7 @@ export function SubmitFormEdit() {
           message="Unsaved changes"
           saveAction={{
             onAction: () => {
-              if (version === 'new' && !fields.length) return notify('Add at least one field before saving', {error: true});
+              if (version !== 'today' && !fields.length) return notify('Add at least one field before saving', {error: true});
               save();
               notify('Program saved');
             },
@@ -487,7 +484,9 @@ export function SubmitFormEdit() {
       <BlockStack gap="400">
         {disabled ? (
           <Banner tone="warning" title="Customers have answered this form">
-            You can rename, reorder, add and delete fields. The type of a field that already has answers can’t change, so old answers stay readable.
+            {version === 'phase2'
+              ? 'You can rename, reorder, add and delete fields. The type of a field that already has answers can’t change, so old answers stay readable.'
+              : 'You can rename, reorder, add and delete fields.'}
           </Banner>
         ) : null}
         <Tabs tabs={[{id: 'rule', content: 'Rule'}, {id: 'design', content: 'Design'}]} selected={tab} onSelect={setTab} />
@@ -496,10 +495,10 @@ export function SubmitFormEdit() {
             {tab === 0 ? (
               <BlockStack gap="400">
                 <TemplatePicker version={version} />
-                <ProgramInfo />
+                <ProgramInfo version={version} />
                 <RewardSettings />
                 <Eligibility />
-                {version === 'today' ? <SubmissionToday /> : <SubmissionNew disabled={false} />}
+                {version === 'today' ? <SubmissionToday /> : <SubmissionNew disabled={false} version={version} />}
                 <Approval version={version} disabled={false} />
                 <InstantReward />
               </BlockStack>

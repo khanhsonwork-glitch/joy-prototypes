@@ -1,36 +1,41 @@
-// Customers › Activities › Submit Form Activities (avada/master). Today: one "Content" text per submission.
-// New: the answers by field, a side panel with every answer + the tags approval adds, and Export (one column per field).
+// Customers › Activities › Submit Form Activities (avada/master). The Content column of master shows one text per
+// submission with the full text on hover and a copy button. Phases 1 and 2 keep that cell: the first answer as
+// "Label: value", every answer on hover, and a copy button for all of them. A submission made before the feature
+// keeps its single Content text. Search is by email, as on master.
 import React, {useMemo, useState} from 'react';
-import {Badge, BlockStack, Button, Card, Icon, IndexTable, InlineStack, Modal, Page, Popover, ActionList, Tabs, Tag, Text, TextField, useIndexResourceState} from '@shopify/polaris';
-import {SearchIcon} from '@shopify/polaris-icons';
-import {ExportIcon} from '@shopify/polaris-icons';
+import {BlockStack, Button, Card, Icon, IndexTable, InlineStack, Modal, Page, Popover, ActionList, Tabs, Text, TextField, Tooltip, useIndexResourceState} from '@shopify/polaris';
+import {ClipboardIcon, SearchIcon} from '@shopify/polaris-icons';
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
-import {Drawer} from '../kit/Drawer.jsx';
 import {EmptyView, ErrorView, LoadingView} from '../kit/StateView.jsx';
-import {OVERFLOW_SUBMISSION, SUBMISSIONS} from '../data/form.js';
+import {overflowSubmission, submissionsFor} from '../data/form.js';
 import {useForm, useVersion} from '../state/form.jsx';
 
 const ACTIVITY_TABS = ['All activities', 'Tier Activities', 'Environmental impact', 'Referral Activities', 'Google Reviews', 'Review Activities', 'Submitted receipts', 'Submit Form Activities', 'Launch tier'];
 const STATUS = {pending: {label: 'Pending', tone: 'attention'}, approved: {label: 'Approved', tone: 'success'}, disapproved: {label: 'Disapproved', tone: 'critical'}};
 
-// tagsAdded = tags Joy actually wrote to the customer (set on the first approval, kept after a later Disapprove).
-// Option tags are a snapshot taken at submit; the form's own tags are read from the saved program when approving.
-const withTags = (list, formTags) => list.map((x) => ({...x, tagsAdded: x.status === 'approved' ? [...formTags, ...x.optionTags] : []}));
-const FILE_URL = (name) => `https://files.example/${name}`;
-
-function seed(state, formTags) {
+function seed(state, version) {
   if (state === 'empty') return [];
-  if (state === 'overflow' || state === 'worst') {
-    const rows = withTags([OVERFLOW_SUBMISSION, ...SUBMISSIONS, ...SUBMISSIONS.map((s) => ({...s, id: `${s.id}b`}))], formTags);
-    if (state === 'worst') {
-      // 250-tag cap reached part way, and a Shopify write that failed: the two tag problems a reviewer must see.
-      rows[0] = {...rows[0], status: 'approved', tagsAdded: formTags, tagsSkipped: rows[0].optionTags};
-      rows[3] = {...rows[3], tagsAdded: [], tagError: true};
-    }
-    return rows;
+  const rows = submissionsFor(version);
+  if (state === 'overflow' || state === 'worst') return [overflowSubmission(version), ...rows, ...rows.map((s) => ({...s, id: `${s.id}b`}))];
+  return rows;
+}
+
+// "Label: value", one per line. Files are not here: the file sits in the Image column.
+const answerLines = (row) => row.answers.map(([label, value]) => `${label}: ${value}`);
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const box = Object.assign(document.createElement('textarea'), {value: text});
+    document.body.appendChild(box);
+    box.select();
+    const done = document.execCommand('copy');
+    box.remove();
+    return done;
   }
-  return withTags(SUBMISSIONS, formTags);
 }
 
 function Proof({name}) {
@@ -53,58 +58,62 @@ function StatusMenu({row, onChange}) {
       activator={<Button size="slim" disclosure onClick={(e) => {e?.stopPropagation?.(); setOpen((v) => !v);}}><Text as="span" tone={STATUS[row.status].tone === 'attention' ? 'caution' : STATUS[row.status].tone}>{STATUS[row.status].label}</Text></Button>}
       onClose={() => setOpen(false)}
     >
-      <ActionList items={[{content: 'Approved', onAction: () => {onChange('approved'); setOpen(false);}}, {content: 'Disapproved', onAction: () => {onChange('disapproved'); setOpen(false);}}]} />
+      {/* The popover renders in a portal, but React still bubbles its clicks to the table row and would select the row. */}
+      <div onClick={(e) => e.stopPropagation()}>
+        <ActionList items={[{content: 'Approved', onAction: () => {onChange('approved'); setOpen(false);}}, {content: 'Disapproved', onAction: () => {onChange('disapproved'); setOpen(false);}}]} />
+      </div>
     </Popover>
   );
 }
 
-function toCsv(rows) {
-  const labels = [];
-  rows.forEach((r) => r.answers.forEach(([l]) => !labels.includes(l) && labels.push(l)));
-  const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const head = ['Submitted at', 'Program', 'Customer name', 'Email', 'Status', ...labels, 'Tags'];
-  const cell = (l, v) => (l === 'Order screenshot' && v ? FILE_URL(v) : v ?? '');
-  const body = rows.map((r) => [r.at, r.program, r.name, r.email, STATUS[r.status].label, ...labels.map((l) => cell(l, r.answers.find(([x]) => x === l)?.[1])), r.tagsAdded.join(', ')]);
-  return [head, ...body].map((line) => line.map(esc).join(',')).join('\n');
+/** The Content cell: first answer, every answer on hover, copy button, and a note when Joy could not add the tags. */
+function AnswersCell({row, onCopy}) {
+  const lines = answerLines(row);
+  return (
+    <div className="sa-cell">
+      <Tooltip width="wide" activatorWrapper="div" content={<div className="sa-tip">{lines.map((line) => <div key={line}>{line}</div>)}</div>}>
+        <div className="sa-content">
+          <span className="sa-clip sa-clip--wide">{lines[0]}</span>
+          <Button icon={ClipboardIcon} variant="plain" accessibilityLabel={`Copy all answers of ${row.name}`} onClick={(e) => {e?.stopPropagation?.(); onCopy(row);}} />
+        </div>
+      </Tooltip>
+      {row.tagIssue === 'failed' ? <Text as="p" variant="bodySm" tone="critical">Tags not added</Text> : null}
+      {row.tagIssue === 'cap' ? <Text as="p" variant="bodySm" tone="caution">Some tags not added: this customer already has 250 tags in Shopify</Text> : null}
+    </div>
+  );
 }
 
 export function Activities() {
   const {state} = useScenario();
   const [version] = useVersion();
   const {savedFormTags} = useForm();
-  const tagsFor = (r) => [...savedFormTags, ...r.optionTags];
   const {notify, notYet} = useShell();
-  const [rows, setRows] = useState(() => seed(state, savedFormTags));
+  const [rows, setRows] = useState(() => seed(state, version));
   const [filter, setFilter] = useState(0);
-  const [open, setOpen] = useState(null);
   const [query, setQuery] = useState('');
   const [file, setFile] = useState(null); // the submission whose file is open
-  React.useEffect(() => setRows(seed(state, savedFormTags)), [state, savedFormTags]);
+  React.useEffect(() => setRows(seed(state, version)), [state, version]);
 
   const filters = ['all', 'pending', 'approved', 'disapproved'];
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return rows
-      .filter((r) => filter === 0 || r.status === filters[filter])
-      .filter((r) => !q || [r.name, r.email, r.program, ...r.answers.map(([, v]) => v)].some((v) => String(v).toLowerCase().includes(q)));
+    return rows.filter((r) => filter === 0 || r.status === filters[filter]).filter((r) => !q || r.email.toLowerCase().includes(q));
   }, [rows, filter, query]);
   const {selectedResources, allResourcesSelected, handleSelectionChange, clearSelection} = useIndexResourceState(shown);
+
+  // Tags Joy adds on approval: the form's saved tags, plus the tag of the option the customer picked (phase 2).
+  const tagsFor = (r) => [...savedFormTags, ...(r.optionTags || [])];
   const setStatus = (ids, status) => {
     const list = Array.isArray(ids) ? ids : [ids];
-    setRows((all) => all.map((r) => (list.includes(r.id) ? {...r, status, tagsAdded: status === 'approved' && version === 'new' && !r.tagsAdded.length && !r.tagError ? tagsFor(r) : r.tagsAdded} : r)));
+    setRows((all) => all.map((r) => (list.includes(r.id) ? {...r, status} : r)));
     const one = rows.find((x) => x.id === list[0]);
-    notify(list.length > 1 ? `${list.length} submissions marked ${STATUS[status].label.toLowerCase()}`
-      : status === 'approved' && version === 'new' ? `Approved. ${one.name} gets 200 points and tags: ${tagsFor(one).join(', ')}` : `Marked ${STATUS[status].label.toLowerCase()}`);
+    if (list.length > 1) notify(`${list.length} submissions marked ${STATUS[status].label.toLowerCase()}`);
+    else if (status === 'approved' && version !== 'today') notify(`Approved. ${one.name} gets 200 points${tagsFor(one).length ? ` and tags: ${tagsFor(one).join(', ')}` : ''}`);
+    else notify(`Marked ${STATUS[status].label.toLowerCase()}`);
   };
-  const current = rows.find((r) => r.id === open);
-
-  const exportCsv = () => {
-    const blob = new Blob([toCsv(shown)], {type: 'text/csv'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'submitted-forms.csv';
-    a.click();
-    notify(`Exported ${shown.length} submissions`);
+  const copyAnswers = async (row) => {
+    if (await copyText(answerLines(row).join('\n'))) notify('Copied');
+    else notify('Couldn’t copy. Select the text and copy it.', {error: true});
   };
 
   let table;
@@ -122,7 +131,7 @@ export function Activities() {
           {content: 'Approved', onAction: () => {setStatus(selectedResources, 'approved'); clearSelection();}},
           {content: 'Disapproved', onAction: () => {setStatus(selectedResources, 'disapproved'); clearSelection();}},
         ]}
-        headings={[{title: 'Submitted at'}, {title: 'Program'}, {title: 'Customer name'}, {title: 'Email'}, {title: version === 'new' ? 'Answers' : 'Content'}, {title: 'Image'}, {title: 'Status', alignment: 'center'}]}
+        headings={[{title: 'Submitted at'}, {title: 'Program'}, {title: 'Customer name'}, {title: 'Email'}, {title: 'Content'}, {title: 'Image'}, {title: 'Status', alignment: 'center'}]}
       >
         {shown.map((r, i) => (
           <IndexTable.Row id={r.id} key={r.id} position={i} selected={selectedResources.includes(r.id)}>
@@ -131,18 +140,15 @@ export function Activities() {
             <IndexTable.Cell><span className="sa-clip">{r.name}</span></IndexTable.Cell>
             <IndexTable.Cell><span className="sa-clip">{r.email}</span></IndexTable.Cell>
             <IndexTable.Cell>
-              {version === 'new' ? (
-                <div className="sa-answers">
-                  {r.answers.filter(([l]) => l !== 'Order screenshot').slice(0, 3).map(([l, v]) => (
-                    <div key={l} className="sa-answer"><span>{l}</span><strong>{v}</strong></div>
-                  ))}
-                  <Button variant="plain" onClick={(e) => {e?.stopPropagation?.(); setOpen(r.id);}}>{`View all ${r.answers.length} answers`}</Button>
-                </div>
+              {r.answers ? <AnswersCell row={r} onCopy={copyAnswers} /> : <span className="sa-clip sa-clip--wide">{r.content}</span>}
+            </IndexTable.Cell>
+            <IndexTable.Cell>
+              {version === 'today' ? (
+                <Proof name={r.file} />
               ) : (
-                <span className="sa-clip sa-clip--wide">{r.today}</span>
+                <button type="button" className="sa-proofbtn" aria-label={`Open ${r.file}`} onClick={(e) => {e.stopPropagation(); setFile(r);}}><Proof name={r.file} /></button>
               )}
             </IndexTable.Cell>
-            <IndexTable.Cell><Proof name={r.answers.find(([l]) => l === 'Order screenshot')?.[1]} /></IndexTable.Cell>
             <IndexTable.Cell><InlineStack align="center"><StatusMenu row={r} onChange={(s) => setStatus(r.id, s)} /></InlineStack></IndexTable.Cell>
           </IndexTable.Row>
         ))}
@@ -163,54 +169,25 @@ export function Activities() {
         <Card padding="0">
           <div className="sa-head">
             <Text as="h2" variant="headingSm">Submit Form Activities</Text>
-            {version === 'new' ? <Button icon={ExportIcon} onClick={exportCsv} disabled={!shown.length || state === 'loading' || state === 'error'}>Export</Button> : null}
           </div>
           <Tabs tabs={['All', 'Pending', 'Approved', 'Disapproved'].map((t) => ({id: t, content: t}))} selected={filter} onSelect={setFilter} />
-          <div className="sa-search"><TextField label="Search submissions" labelHidden prefix={<Icon source={SearchIcon} />} placeholder="Search by customer, email or answer" value={query} onChange={setQuery} clearButton onClearButtonClick={() => setQuery('')} autoComplete="off" /></div>
+          <div className="sa-search"><TextField label="Search submissions" labelHidden prefix={<Icon source={SearchIcon} />} placeholder="Search by email" value={query} onChange={setQuery} clearButton onClearButtonClick={() => setQuery('')} autoComplete="off" /></div>
           {table}
         </Card>
       </BlockStack>
 
-      <Drawer
-        open={Boolean(current)}
-        onClose={() => setOpen(null)}
-        title={current ? `${current.name} · ${current.at}` : ''}
-        primaryAction={current && current.status === 'pending' ? {content: 'Approve', onAction: () => {setStatus(current.id, 'approved'); setOpen(null);}} : undefined}
-      >
-        {current ? (
-          <BlockStack gap="400">
-            <InlineStack gap="200" blockAlign="center"><Badge tone={STATUS[current.status].tone}>{STATUS[current.status].label}</Badge><Text as="span" tone="subdued">{current.program}</Text></InlineStack>
-            <dl className="sa-dl">
-              {current.answers.map(([l, v]) => (
-                <div key={l}><dt>{l}</dt><dd>{l === 'Order screenshot' ? <Button variant="plain" onClick={() => setFile(current)}><span className="sa-file"><Proof name={v} /> {v}</span></Button> : v}</dd></div>
-              ))}
-            </dl>
-            <BlockStack gap="200">
-              <Text as="h3" variant="headingSm">{current.tagsAdded.length ? 'Tags added to this customer' : current.status === 'pending' ? 'Tags added when you approve' : 'No tags added'}</Text>
-              {current.tagsAdded.length || current.status === 'pending' ? <InlineStack gap="200">{(current.tagsAdded.length ? current.tagsAdded : tagsFor(current)).map((t) => <Tag key={t}>{t}</Tag>)}</InlineStack> : null}
-              {current.tagsSkipped?.length ? <Text as="p" variant="bodySm" tone="caution">{`Some tags weren’t added: this customer already has 250 tags in Shopify. Not added: ${current.tagsSkipped.join(', ')}`}</Text> : null}
-              {current.tagError ? (
-                <InlineStack gap="200" blockAlign="center">
-                  <Text as="p" variant="bodySm" tone="critical">Tags not added yet. Shopify didn’t accept the change.</Text>
-                  <Button size="slim" onClick={() => {setRows((all) => all.map((x) => (x.id === current.id ? {...x, tagError: false, tagsAdded: tagsFor(x)} : x))); notify('Tags added. Points were not added again.');}}>Try again</Button>
-                </InlineStack>
-              ) : null}
-              {current.tagsAdded.length && current.status === 'disapproved' ? <Text as="p" variant="bodySm" tone="subdued">Added when this form was approved. Disapproving later doesn’t remove tags.</Text> : null}
-            </BlockStack>
-            {current.status === 'pending' ? (
-              <Button tone="critical" onClick={() => {setStatus(current.id, 'disapproved'); setOpen(null);}}>Disapprove</Button>
-            ) : null}
-          </BlockStack>
-        ) : null}
-      </Drawer>
-      <Modal open={Boolean(file)} onClose={() => setFile(null)} title={file ? file.answers.find(([l]) => l === 'Order screenshot')?.[1] : ''} secondaryActions={[{content: 'Close', onAction: () => setFile(null)}]}>
+      <Modal open={Boolean(file)} onClose={() => setFile(null)} title={file ? file.file : ''} secondaryActions={[{content: 'Close', onAction: () => setFile(null)}]}>
         <Modal.Section><div className="sa-filebig">{file ? (
           <div className="sa-order" aria-label="Uploaded order screenshot">
             <strong>Order details</strong>
-            <span>{`Order # ${file.answers[0][1]}`}</span>
-            <span>{`Sold by Pomelo Park · ${file.answers[1][1]}`}</span>
-            <span>Placed on Oct 28, 2026</span>
-            <span className="sa-order__total">{`Item(s) subtotal: ${file.answers[2][1]}`}</span>
+            {file.answers ? (
+              <>
+                <span>{`Order # ${file.answers.find(([l]) => l === 'Order ID')?.[1]}`}</span>
+                <span>Sold by Pomelo Park</span>
+                <span>Placed on Oct 28, 2026</span>
+                <span className="sa-order__total">{`Item(s) subtotal: ${file.answers.find(([l]) => l === 'Order total before tax')?.[1]}`}</span>
+              </>
+            ) : <span>{file.content}</span>}
           </div>
         ) : null}</div></Modal.Section>
       </Modal>

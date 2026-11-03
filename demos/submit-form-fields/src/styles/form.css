@@ -72,16 +72,14 @@
 .sa-head { display: flex; align-items: center; justify-content: space-between; gap: var(--p-space-200); padding: var(--p-space-300) var(--p-space-400) 0; }
 .sa-clip { display: inline-block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .sa-clip--wide { max-width: 260px; }
-.sa-answers { display: flex; flex-direction: column; gap: var(--p-space-050); max-width: 280px; white-space: normal; }
-.sa-answer { display: flex; gap: var(--p-space-150); font-size: var(--p-font-size-300); }
-.sa-answer span { color: var(--p-color-text-secondary); flex: none; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sa-answer strong { font-weight: var(--p-font-weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sa-cell { display: flex; flex-direction: column; gap: var(--p-space-050); max-width: 320px; white-space: normal; }
+.sa-content { display: inline-flex; align-items: center; gap: var(--p-space-200); max-width: 100%; }
+.sa-tip { display: flex; flex-direction: column; gap: var(--p-space-050); overflow-wrap: anywhere; }
+/* Polaris caps a wide tooltip at 275px, which wraps "Email used for the order: …"; allow one answer per line. */
+.Polaris-Tooltip-TooltipOverlay__Content:has(.sa-tip) { max-width: 440px; }
+.sa-proofbtn { display: inline-flex; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--p-border-radius-150); }
+.sa-proofbtn:focus-visible { outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: var(--p-space-050); }
 .sa-proof { display: inline-flex; padding: var(--p-space-050); border-radius: var(--p-border-radius-150); background: var(--p-color-bg-surface-secondary); }
-.sa-dl { margin: 0; display: flex; flex-direction: column; gap: var(--p-space-300); }
-.sa-dl div { display: flex; flex-direction: column; gap: var(--p-space-050); }
-.sa-dl dt { font-size: var(--p-font-size-300); color: var(--p-color-text-secondary); }
-.sa-dl dd { margin: 0; font-weight: var(--p-font-weight-medium); overflow-wrap: anywhere; }
-.sa-file { display: inline-flex; align-items: center; gap: var(--p-space-200); }
 .sa-search { padding: var(--p-space-200) var(--p-space-400); }
 .sa-filebig { display: flex; justify-content: center; padding: var(--p-space-400); background: var(--p-color-bg-surface-secondary); border-radius: var(--p-border-radius-200); }
 .sa-order { display: flex; flex-direction: column; gap: var(--p-space-150); width: min(360px, 100%); padding: var(--p-space-400); background: var(--p-color-bg-surface); border: var(--p-border-width-025) solid var(--p-color-border); border-radius: var(--p-border-radius-200); font-size: var(--p-font-size-325); }
