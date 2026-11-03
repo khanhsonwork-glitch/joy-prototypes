@@ -4,7 +4,7 @@
 import React, {useLayoutEffect, useMemo, useState} from 'react';
 import {BlockStack, Banner, Box, Button, Checkbox, ChoiceList, InlineStack, List, Modal, Select, Text, TextField} from '@shopify/polaris';
 import {DeleteIcon, PlusIcon} from '@shopify/polaris-icons';
-import {FIELD_TYPES, MAX_OPTIONS, MAX_PARAGRAPH, RESERVED_TAG_ERROR, isChoice, isReservedTag, newId, typesFor} from '../data/form.js';
+import {FIELD_TYPES, MAX_OPTIONS, MAX_PARAGRAPH, RESERVED_TAG_ERROR, ROOT_LABEL, isChoice, isReservedTag, newId, typesFor} from '../data/form.js';
 
 const blank = (type, phase2) => ({
   id: newId(),
@@ -60,8 +60,10 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
 
   const validate = () => {
     const e = {};
-    if (!f.label.trim()) e.label = 'Enter a label customers will see.';
-    else if (otherLabels.includes(f.label.trim().toLowerCase())) e.label = 'Another field already uses this label. Each field needs its own label.';
+    // The root Paragraph may have no label (customers then see "Your answer"); every other field needs its own.
+    if (!f.label.trim()) {
+      if (!f.root) e.label = 'Enter a label customers will see.';
+    } else if (otherLabels.includes(f.label.trim().toLowerCase())) e.label = 'Another field already uses this label. Each field needs its own label.';
     if (isChoice(f.type)) {
       const filled = f.options.filter((o) => o.label.trim());
       if (filled.length < 2) e.options = 'Add at least two options.';
@@ -93,7 +95,9 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
   };
 
   const isNew = !field.id;
-  const typeHelp = locked
+  const typeHelp = f.root
+    ? 'This is the main text field of the program, so its type can’t change.'
+    : locked
     ? 'Customers have already answered this field, so its type is fixed. Add a new field to ask in another way.'
     : f.type === 'paragraph'
       ? `${FIELD_TYPES.find((t) => t.value === f.type).help}. Customers can type up to ${MAX_PARAGRAPH.toLocaleString('en-US')} characters.`
@@ -109,7 +113,7 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
     >
       <Modal.Section>
         <BlockStack gap="400">
-          <Select label="Field type" options={typeOptions} value={f.type} onChange={changeType} disabled={locked} helpText={typeHelp} error={errors.type} />
+          <Select label="Field type" options={typeOptions} value={f.type} onChange={changeType} disabled={locked || Boolean(f.root)} helpText={typeHelp} error={errors.type} />
           <TextField
             id="field-label"
             label="Label"
@@ -117,6 +121,7 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
             onChange={(v) => set({label: v})}
             autoComplete="off"
             maxLength={120}
+            placeholder={f.root ? ROOT_LABEL : undefined}
             error={errors.label}
             helpText="Customers see this above the field."
           />

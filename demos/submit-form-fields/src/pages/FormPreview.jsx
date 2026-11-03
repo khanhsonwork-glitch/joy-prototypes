@@ -4,7 +4,8 @@ import React, {useState} from 'react';
 import {BlockStack, Card, InlineStack, Text} from '@shopify/polaris';
 import {ViewIcon} from '@shopify/polaris-icons';
 import {Icon} from '@shopify/polaris';
-import {MAX_PARAGRAPH, PROGRAM_NAME, TODAY} from '../data/form.js';
+import {useProgramMode} from '../state/form.jsx';
+import {MAX_PARAGRAPH, NEW_PROGRAM_NAME, PROGRAM_NAME, ROOT_LABEL, TODAY} from '../data/form.js';
 
 function Pills({field}) {
   const [picked, setPicked] = useState([]);
@@ -38,7 +39,7 @@ function Upload({label, format}) {
 function Field({field}) {
   const label = (
     <span className="sfp-label">
-      {field.label || 'Untitled field'}
+      {field.label || (field.root ? ROOT_LABEL : 'Untitled field')}
       {field.required ? <span className="sfp-req" aria-label="required"> *</span> : null}
     </span>
   );
@@ -71,6 +72,7 @@ function Field({field}) {
 
 /** version 'today': one text box + upload. 'phase1' / 'phase2': the field list. */
 export function FormPreview({version, fields}) {
+  const [isNew] = useProgramMode();
   return (
     <Card>
       <BlockStack gap="300">
@@ -80,7 +82,7 @@ export function FormPreview({version, fields}) {
         </InlineStack>
         <div className="sfp">
           <div className="sfp-head">
-            <strong>{PROGRAM_NAME[version]}</strong>
+            <strong>{isNew ? NEW_PROGRAM_NAME : PROGRAM_NAME[version]}</strong>
             <span>Earn 200 points</span>
           </div>
           <form className="sfp-form" onSubmit={(e) => e.preventDefault()}>

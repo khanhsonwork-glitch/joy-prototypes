@@ -48,8 +48,8 @@ import {
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
-import {MAX_FIELDS, MAX_FORM_TAGS, PROGRAM_NAME, RESERVED_TAG_ERROR, TEMPLATES, TODAY, isChoice, isOldShape, isReservedTag, typeLabel, typesFor} from '../data/form.js';
-import {useForm, useShopV4, useVersion} from '../state/form.jsx';
+import {MAX_FIELDS, MAX_FORM_TAGS, NEW_PROGRAM_NAME, PROGRAM_NAME, RESERVED_TAG_ERROR, ROOT_LABEL, TEMPLATES, TODAY, isChoice, isOldShape, isReservedTag, typeLabel, typesFor} from '../data/form.js';
+import {useForm, useProgramMode, useShopV4, useVersion} from '../state/form.jsx';
 import {FieldModal} from './FieldModal.jsx';
 import {FormPreview} from './FormPreview.jsx';
 
@@ -60,7 +60,8 @@ const TYPE_ICON = {
 
 function TemplatePicker({version}) {
   const {template, applyTemplate} = useForm();
-  const [applied, setApplied] = useState(false);
+  const [isNew] = useProgramMode();
+  const [applied, setApplied] = useState(null); // null, or {full} once a template was applied
   return (
     <Card>
       <BlockStack gap="300">
@@ -71,7 +72,9 @@ function TemplatePicker({version}) {
         <Text as="p" tone="subdued">
           {version === 'today'
             ? 'Pick a use-case to auto-fill the default copy in the Design tab. You can still edit each field afterwards.'
-            : 'Pick a use-case to fill in the form fields and the default copy. You can still edit each field afterwards.'}
+            : isNew
+              ? 'Pick a use-case to fill in the form fields and the default copy. You can still edit each field afterwards.'
+              : 'Pick a use-case to auto-fill the default copy and the labels of your text field and file upload. Your other fields and settings stay as they are.'}
         </Text>
         <div className="sf-templates">
           {TEMPLATES.map((t) => (
@@ -80,7 +83,7 @@ function TemplatePicker({version}) {
               type="button"
               className={`sf-template${template === t.key ? ' is-on' : ''}`}
               aria-pressed={template === t.key}
-              onClick={() => {applyTemplate(t.key); setApplied(true);}}
+              onClick={() => setApplied(applyTemplate(t.key))}
             >
               <span className="sf-template__emoji" aria-hidden="true">{t.emoji}</span>
               <span className="sf-template__label">{t.label}</span>
@@ -92,7 +95,9 @@ function TemplatePicker({version}) {
           <Banner tone="info">
             {version === 'today'
               ? '✨ Template applied — loaded into the Design tab. Edit anything you want.'
-              : '✨ Template applied — form fields and Design copy filled in. Edit anything you want.'}
+              : isNew
+                ? '✨ Template applied — form fields and Design copy filled in. Edit anything you want.'
+                : `✨ Template applied — field labels and Design copy filled in.${applied.full ? ' The form already has 10 fields, so the text field was not added.' : ''} Edit anything you want.`}
           </Banner>
         ) : null}
       </BlockStack>
@@ -101,11 +106,12 @@ function TemplatePicker({version}) {
 }
 
 function ProgramInfo({version}) {
+  const [isNew] = useProgramMode();
   return (
     <Card>
       <BlockStack gap="400">
         <Text as="h2" variant="headingMd">Program information</Text>
-        <TextField label="Program name" value={PROGRAM_NAME[version]} onChange={() => {}} autoComplete="off" />
+        <TextField label="Program name" value={isNew ? '' : PROGRAM_NAME[version]} onChange={() => {}} autoComplete="off" />
         <TextField label="Description" value="Earn {{earning_point_raw}} {{loyalty_point}}" disabled onChange={() => {}} autoComplete="off" helpText={<span>To edit this description text, please go to the <Button variant="plain" onClick={() => {}}>Translation</Button></span>} />
         <InlineStack gap="300" wrap={false}>
           <Box width="50%"><TextField label="Start date" type="date" value="2026-10-30" onChange={() => {}} autoComplete="off" /></Box>
@@ -220,7 +226,7 @@ function FormFields({disabled, version}) {
   return (
     <BlockStack gap="300">
       {!v4 && !isOldShape(fields) ? (
-        <Banner tone="warning">Your store doesn’t use Widget V4 yet. With these fields, customers can only see this program on Loyalty page V2.</Banner>
+        <Banner tone="warning">Your store doesn’t use Widget V4 yet. With these fields, customers can’t see this program unless you use Loyalty page V2.</Banner>
       ) : null}
       <InlineStack align="space-between" blockAlign="center" gap="200">
         <BlockStack gap="050">
@@ -243,12 +249,13 @@ function FormFields({disabled, version}) {
           {fields.map((f, i) => (
             <li key={f.id} className="sf-field">
               <span className="sf-field__move">
-                <Button icon={ArrowUpIcon} variant="tertiary" size="slim" accessibilityLabel={`Move ${f.label} up`} disabled={disabled || i === 0} onClick={() => move(i, -1)} />
-                <Button icon={ArrowDownIcon} variant="tertiary" size="slim" accessibilityLabel={`Move ${f.label} down`} disabled={disabled || i === fields.length - 1} onClick={() => move(i, 1)} />
+                <Button icon={ArrowUpIcon} variant="tertiary" size="slim" accessibilityLabel={`Move ${f.label || ROOT_LABEL} up`} disabled={disabled || i === 0} onClick={() => move(i, -1)} />
+                <Button icon={ArrowDownIcon} variant="tertiary" size="slim" accessibilityLabel={`Move ${f.label || ROOT_LABEL} down`} disabled={disabled || i === fields.length - 1} onClick={() => move(i, 1)} />
               </span>
               <span className="sf-field__icon"><Icon source={TYPE_ICON[f.type]} tone="subdued" /></span>
               <span className="sf-field__body">
-                <span className="sf-field__label">{f.label}</span>
+                {/* The root Paragraph may have no label: customers then see "Your answer", shown here in grey. */}
+                <span className="sf-field__label">{f.label || <span className="sf-field__label--empty">{ROOT_LABEL}</span>}</span>
                 <span className="sf-field__meta">
                   <span>{typeLabel(f.type)}</span>
                   {fieldSummary(f) ? <span className="sf-field__sum">{fieldSummary(f)}</span> : null}
@@ -256,8 +263,8 @@ function FormFields({disabled, version}) {
               </span>
               <span className="sf-field__badge">{f.required ? <Badge>Required</Badge> : <Badge tone="info">Optional</Badge>}</span>
               <span className="sf-field__actions">
-                <Button icon={EditIcon} variant="tertiary" accessibilityLabel={`Edit ${f.label}`} disabled={disabled} onClick={() => setEditing(f)} />
-                <Button icon={DeleteIcon} variant="tertiary" tone="critical" accessibilityLabel={`Delete ${f.label}`} disabled={disabled} onClick={() => (phase2 ? setRemoving(f) : removeField(f))} />
+                <Button icon={EditIcon} variant="tertiary" accessibilityLabel={`Edit ${f.label || ROOT_LABEL}`} disabled={disabled} onClick={() => setEditing(f)} />
+                <Button icon={DeleteIcon} variant="tertiary" tone="critical" accessibilityLabel={`Delete ${f.label || ROOT_LABEL}`} disabled={disabled} onClick={() => (phase2 ? setRemoving(f) : removeField(f))} />
               </span>
             </li>
           ))}
@@ -275,7 +282,7 @@ function FormFields({disabled, version}) {
         field={editing}
         locked={Boolean(editing?.id && answered.has(editing.id))}
         hasUpload={hasUpload}
-        otherLabels={fields.filter((x) => x.id !== editing?.id).map((x) => x.label.trim().toLowerCase())}
+        otherLabels={fields.filter((x) => x.id !== editing?.id && x.label.trim()).map((x) => x.label.trim().toLowerCase())}
         onClose={() => setEditing(null)}
         onSave={(f) => {
           setFields((list) => (list.some((x) => x.id === f.id) ? list.map((x) => (x.id === f.id ? f : x)) : [...list, f]));
@@ -286,7 +293,7 @@ function FormFields({disabled, version}) {
         <Modal
           open={Boolean(removing)}
           onClose={() => setRemoving(null)}
-          title={removing ? `Delete “${removing.label}”?` : ''}
+          title={removing ? `Delete “${removing.label || ROOT_LABEL}”?` : ''}
           primaryAction={{
             content: 'Delete field',
             destructive: true,
@@ -395,11 +402,12 @@ function InstantReward() {
 
 function Summary({version}) {
   const {fields, formTags} = useForm();
+  const [isNew] = useProgramMode();
   const tagged = fields.filter((f) => isChoice(f.type) && f.options.some((o) => o.tag)).length;
   return (
     <Card>
       <BlockStack gap="300">
-        <InlineStack align="space-between"><Text as="h2" variant="headingSm">{PROGRAM_NAME[version]}</Text><Badge tone="success">Active</Badge></InlineStack>
+        <InlineStack align="space-between"><Text as="h2" variant="headingSm">{isNew ? NEW_PROGRAM_NAME : PROGRAM_NAME[version]}</Text><Badge tone={isNew ? undefined : 'success'}>{isNew ? 'Draft' : 'Active'}</Badge></InlineStack>
         <Text as="p" variant="bodySm">Period: Oct 30, 2026 - No end date</Text>
         <Divider />
         <Text as="h3" variant="headingSm">Basic info</Text>

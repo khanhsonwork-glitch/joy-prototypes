@@ -15,10 +15,10 @@ function readHash() {
 // The reviewer's screen state (?state=… after the #) travels with in-app links, so opening a row in the
 // Worst case list shows that row instead of falling back to the Default data ("Reward not found").
 function carryState(target) {
-  // Carry the screen state, the version (?version=phase2; the old ?v=today too) and the Widget V4 switch (?v4=off) to the next screen.
+  // Carry the screen state, the version (?version=phase2; the old ?v=today too), the Widget V4 switch (?v4=off) and the program (?program=new) to the next screen.
   const now = new URLSearchParams(window.location.hash.split('?').slice(1).join('?'));
   let out = target;
-  for (const key of ['state', 'version', 'v4', 'v']) {
+  for (const key of ['state', 'version', 'v4', 'program', 'v']) {
     if (new RegExp(`[?&]${key}=`).test(out)) continue;
     if (key === 'v' && /[?&]version=/.test(out)) continue;
     const current = now.get(key);

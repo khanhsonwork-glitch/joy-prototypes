@@ -1,12 +1,13 @@
 // Amber panel that is visibly NOT product UI: switch the screen state, open the component sheet.
 import React, {useEffect, useRef, useState} from 'react';
 import {STATES, useScenario} from './scenario.jsx';
-import {useShopV4, useVersion} from '../state/form.jsx';
+import {useProgramMode, useShopV4, useVersion} from '../state/form.jsx';
 
 export function ProtoControls() {
   const {state, setState} = useScenario();
   const [version, setVersion] = useVersion();
   const [v4, setV4] = useShopV4();
+  const [isNew, setNew] = useProgramMode();
   const [open, setOpen] = useState(false);
   const toggle = useRef(null);
   const panel = useRef(null);
@@ -47,6 +48,20 @@ export function ProtoControls() {
               </label>
             ))}
           </fieldset>
+          {version !== 'today' ? (
+            <fieldset className="kit-proto__states">
+              <legend>Program</legend>
+              {[[false, 'Demo program', 'Already live: a template only changes text'], [true, 'New program', 'Not saved yet: a template gives 2 fields']].map(([n, l, h]) => (
+                <label key={l} className="kit-proto__state">
+                  <input type="radio" name="kit-proto-program" value={n ? 'new' : 'demo'} checked={isNew === n} onChange={() => setNew(n)} />
+                  <span>
+                    <strong>{l}</strong>
+                    <small>{h}</small>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+          ) : null}
           {version !== 'today' ? (
             <fieldset className="kit-proto__states">
               <legend>Shop</legend>

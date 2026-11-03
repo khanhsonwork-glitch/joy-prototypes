@@ -45,6 +45,8 @@ const opt = (label, tag = label) => ({id: newId('o'), label, tag});
 /** The program's name: the sample program of phases 1 and 2 is new; "today" keeps the program shown on master. */
 export const LEGACY_PROGRAM = 'Bought elsewhere? Get points';
 export const PROGRAM_NAME = {today: LEGACY_PROGRAM, phase1: 'Submit Amazon order', phase2: 'Submit Amazon order'};
+/** A program that is not saved yet has no name until the merchant types one. */
+export const NEW_PROGRAM_NAME = 'Untitled program';
 
 /** Sample form of a version. Phase 2 adds a choice field, a "$" before the total and the email prefill. */
 export function sampleFields(version) {
@@ -73,18 +75,37 @@ export const TEMPLATE_COPY = {
   custom: {inputLabel: 'Your answer', inputPlaceholder: 'Enter your proof here...', uploadLabel: 'Upload Image'},
 };
 
+/** What the root Paragraph shows when its label is empty: the label of the default template. */
+export const ROOT_LABEL = 'Your answer';
+
 /**
- * What a template fills in: exactly 2 fields, like production today. One required Paragraph with the template's text
- * box label + placeholder, and one File upload with its upload label. The upload keeps the format and "required" of the
- * form's current File upload field (production templates leave those settings alone); with none, image and required.
+ * The root field: the program's main text field, a Paragraph that can't change type. It is what the single text box of
+ * today's form becomes, and what old callers (API, headless, old widgets) write their one text into.
  */
-export function templateFields(key, current = []) {
+const rootField = (copy) => ({id: newId(), root: true, type: 'paragraph', label: copy.inputLabel, placeholder: copy.inputPlaceholder, required: true});
+
+/**
+ * A template on a NEW program: exactly 2 fields, the required root Paragraph (the template's text box label +
+ * placeholder) and a File upload that is NOT required, Image only (the production default), with the template's upload label.
+ */
+export const newProgramFields = (key) => [
+  rootField(TEMPLATE_COPY[key]),
+  {id: newId(), type: 'upload', label: TEMPLATE_COPY[key].uploadLabel, format: 'image', required: false},
+];
+
+/**
+ * A template on an EXISTING program only changes text, like production today: the root Paragraph's label and placeholder
+ * and the upload label. The field list, Required flags and upload settings stay. A deleted root is added back at the top
+ * (required) unless the form already has 10 fields.
+ */
+export function withTemplateCopy(key, fields) {
   const copy = TEMPLATE_COPY[key];
-  const upload = current.find((f) => f.type === 'upload');
-  return [
-    {id: newId(), type: 'paragraph', label: copy.inputLabel, placeholder: copy.inputPlaceholder, required: true},
-    {id: newId(), type: 'upload', label: copy.uploadLabel, format: upload?.format ?? 'image', required: upload?.required ?? true},
-  ];
+  const out = fields.map((f) => {
+    if (f.root) return {...f, label: copy.inputLabel, placeholder: copy.inputPlaceholder};
+    if (f.type === 'upload') return {...f, label: copy.uploadLabel};
+    return f;
+  });
+  return out.some((f) => f.root) || out.length >= MAX_FIELDS ? out : [rootField(copy), ...out];
 }
 
 export const TEMPLATES = [
@@ -101,13 +122,13 @@ export const TODAY = {inputLabel: TEMPLATE_COPY.receipt.inputLabel, inputPlaceho
 export const FORM_TAGS = ['Amazon'];
 
 /**
- * The "old shape" of a form: exactly one required Paragraph, optionally followed by one File upload (what the single
- * text box of today's form becomes). Only this shape shows on every widget and on the Loyalty Hub; any other shape shows
- * on Widget V4 and Loyalty page V2 only.
+ * The "old shape" of a form: the root Paragraph is the only text field, it is required, and at most one File upload
+ * follows it. Only this shape shows on every widget and on the Loyalty Hub; any other shape (including a form whose root
+ * was deleted) shows on Widget V4 and Loyalty page V2 only.
  */
 export function isOldShape(fields) {
   if (fields.length < 1 || fields.length > 2) return false;
-  if (fields[0].type !== 'paragraph' || !fields[0].required) return false;
+  if (!fields[0].root || fields[0].type !== 'paragraph' || !fields[0].required) return false;
   return fields.length === 1 || fields[1].type === 'upload';
 }
 

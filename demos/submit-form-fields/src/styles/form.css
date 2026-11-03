@@ -25,6 +25,7 @@
 .sf-field__label { font-weight: var(--p-font-weight-semibold); overflow-wrap: anywhere; }
 .sf-field__meta { display: flex; flex-wrap: wrap; gap: var(--p-space-100) var(--p-space-200); font-size: var(--p-font-size-300); color: var(--p-color-text-secondary); }
 .sf-field__sum { overflow-wrap: anywhere; }
+.sf-field__label--empty { font-weight: var(--p-font-weight-regular); color: var(--p-color-text-secondary); }
 .sf-field__badge, .sf-field__actions { flex: none; display: flex; gap: var(--p-space-100); }
 .sf-fields-empty { padding: var(--p-space-500); border: var(--p-border-width-025) dashed var(--p-color-border); border-radius: var(--p-border-radius-300); text-align: center; }
 @media (max-width: 600px) {
