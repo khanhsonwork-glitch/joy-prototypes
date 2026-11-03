@@ -1,0 +1,12 @@
+/* Shop now links demo: small layout helpers on top of Polaris tokens. */
+.sl-now { color: var(--p-color-text); font-weight: var(--p-font-weight-medium); }
+.sl-search { padding: var(--p-space-300); }
+.sl-ico { display: inline-flex; width: 20px; height: 20px; color: var(--p-color-icon-secondary); }
+.sl-ico svg { width: 20px; height: 20px; fill: currentColor; }
+.sl-anchor { scroll-margin-top: var(--p-space-400); }
+.sl-sticky { position: sticky; top: var(--p-space-400); }
+.sl-acc { display: grid; grid-template-columns: auto 1fr auto; gap: var(--p-space-300); align-items: center; padding: var(--p-space-300); border: var(--p-border-width-025) solid var(--p-color-border); border-radius: var(--p-border-radius-200); }
+.sl-acc__drag { display: inline-flex; }
+.sl-row { display: grid; grid-template-columns: auto 1fr auto; gap: var(--p-space-300); align-items: center; padding-block: var(--p-space-200); }
+.sl-row__icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--p-border-radius-200); background: var(--p-color-bg-surface-secondary); }
+@media (max-width: 600px) { .sl-acc { grid-template-columns: 1fr auto; } .sl-acc__drag { display: none; } }
