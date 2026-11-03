@@ -4,7 +4,7 @@
 import React, {useLayoutEffect, useMemo, useState} from 'react';
 import {BlockStack, Banner, Box, Button, Checkbox, ChoiceList, InlineStack, List, Modal, Select, Text, TextField} from '@shopify/polaris';
 import {DeleteIcon, PlusIcon} from '@shopify/polaris-icons';
-import {FIELD_TYPES, MAX_OPTIONS, isChoice, newId, typesFor} from '../data/form.js';
+import {FIELD_TYPES, MAX_OPTIONS, RESERVED_TAG_ERROR, isChoice, isReservedTag, newId, typesFor} from '../data/form.js';
 
 const blank = (type, phase2) => ({
   id: newId(),
@@ -72,7 +72,10 @@ export function FieldModal({open, version, field, locked, hasUpload, otherLabels
         if (seen.has(k)) e.options = `“${o.label.trim()}” is listed twice. Each option needs its own name.`;
         seen.add(k);
       }
-      for (const o of f.options) if (o.tag.includes(',')) e[`tag-${o.id}`] = 'Tags can’t contain commas. Use one tag per option.';
+      for (const o of f.options) {
+        if (o.tag.includes(',')) e[`tag-${o.id}`] = 'Tags can’t contain commas. Use one tag per option.';
+        else if (isReservedTag(o.tag)) e[`tag-${o.id}`] = RESERVED_TAG_ERROR;
+      }
     }
     return e;
   };

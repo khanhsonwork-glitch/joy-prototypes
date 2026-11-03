@@ -48,7 +48,7 @@ import {
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
-import {MAX_FIELDS, MAX_FORM_TAGS, PROGRAM_NAME, TEMPLATES, TODAY, isChoice, isOldShape, typeLabel, typesFor} from '../data/form.js';
+import {MAX_FIELDS, MAX_FORM_TAGS, PROGRAM_NAME, RESERVED_TAG_ERROR, TEMPLATES, TODAY, isChoice, isOldShape, isReservedTag, typeLabel, typesFor} from '../data/form.js';
 import {useForm, useVersion} from '../state/form.jsx';
 import {FieldModal} from './FieldModal.jsx';
 import {FormPreview} from './FormPreview.jsx';
@@ -323,6 +323,7 @@ function Approval({version, disabled}) {
     const v = draft.trim();
     if (!v) return;
     if (v.includes(',')) return setErr('Tags can’t contain commas.');
+    if (isReservedTag(v)) return setErr(RESERVED_TAG_ERROR);
     if (formTags.some((t) => t.toLowerCase() === v.toLowerCase())) return setErr(`“${v}” is already added.`);
     if (formTags.length >= MAX_FORM_TAGS) return setErr(`A form can add up to ${MAX_FORM_TAGS} tags.`);
     setFormTags([...formTags, v]);

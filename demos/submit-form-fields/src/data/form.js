@@ -27,6 +27,15 @@ export const MAX_FIELDS = 10;
 export const MAX_OPTIONS = 20;
 export const MAX_FORM_TAGS = 5;
 
+// Joy's own tags: "Joy: Add 100" style tags trigger Magic Tags (they change points), and the member tags are removed by
+// the auto-tag sync. A merchant tag may not start with "Joy:" or "Joy ", or equal one of the default member tags.
+const JOY_MEMBER_TAGS = ['joy member', 'joy non-member', 'joy active redeemer', 'joy non-redeemer'];
+export const RESERVED_TAG_ERROR = 'This tag is reserved for Joy’s automatic tags. Use another name.';
+export const isReservedTag = (tag) => {
+  const t = tag.trim().toLowerCase();
+  return t.startsWith('joy:') || t.startsWith('joy ') || JOY_MEMBER_TAGS.includes(t);
+};
+
 let seq = 0;
 export const newId = (prefix = 'f') => `${prefix}${Date.now().toString(36)}${(seq += 1)}`;
 
