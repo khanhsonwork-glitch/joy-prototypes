@@ -3,7 +3,7 @@
 import React from 'react';
 import {Badge, BlockStack, Button, ButtonGroup, Card, Icon, InlineGrid, InlineStack, Text, Tooltip} from '@shopify/polaris';
 import {CheckIcon, InfoIcon} from '@shopify/polaris-icons';
-import {PLANS, planView} from '../data/plans.js';
+import {BFCM_COPY, PLANS, planView} from '../data/plans.js';
 import {useProto} from '../state/proto.jsx';
 import {useShell} from '../shell/ShellContext.jsx';
 
@@ -42,9 +42,7 @@ function Price({view, reserve}) {
               ${view.originalPrice}
             </Text>
             <span className="plan-price__badge">{`-${view.promo.percent}% · ${view.promo.cycles} months`}</span>
-            <Tooltip
-              content={`${view.promo.percent}% off for your first ${view.promo.cycles} months on Joy. If you change plans during the promo, your discount continues at the new plan's rate.`}
-            >
+            <Tooltip content={BFCM_COPY.tooltip}>
               <span className="plan-price__info" tabIndex={0} role="img" aria-label="About this discount">
                 i
               </span>

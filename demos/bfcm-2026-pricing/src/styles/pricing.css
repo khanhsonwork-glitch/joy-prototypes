@@ -301,3 +301,64 @@
   .adm-appbar__crumbs .adm-appbar__crumb,
   .adm-appbar__crumbs .adm-appbar__sep:first-of-type {display: none;}
 }
+
+/* Dashboard FAQ rows */
+.dash-faq {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--p-color-border);
+  border-radius: 8px;
+  background: var(--p-color-bg-surface);
+  font: 600 13px/20px var(--p-font-family-sans);
+  color: var(--p-color-text);
+  text-align: left;
+  cursor: pointer;
+}
+.dash-faq .Polaris-Icon {margin: 0; flex: 0 0 20px;}
+
+/* Dashboard: feature illustration (drawn, no asset) and program health ring */
+.dash-feature-art {
+  min-height: 128px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--joy-plan-recommended), var(--joy-plan-header-pink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dash-feature-art__cart {
+  width: 64%;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-300);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dash-feature-art__line {height: 6px; border-radius: 3px; background: var(--p-color-border);}
+.dash-feature-art__line--short {width: 60%;}
+.dash-feature-art__btn {height: 14px; border-radius: 4px; background: var(--p-color-bg-fill-info);}
+.dash-ring {
+  width: 72px;
+  height: 72px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: conic-gradient(var(--p-color-bg-fill-info) var(--ring), var(--p-color-bg-fill-tertiary) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dash-ring span {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--p-color-bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 650 16px/1 var(--p-font-family-sans);
+}

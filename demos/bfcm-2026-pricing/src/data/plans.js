@@ -146,5 +146,6 @@ export function planView(plan, {shopPlan, campaign, interval}) {
 /** Banner copy, one place for the Plans page, the onboarding step and the Dashboard banner. */
 export const BFCM_COPY = {
   title: 'Black Friday: 30% off Advanced & Ultimate',
-  line: `30% off your first 3 monthly charges when you upgrade by ${PROMO.lastDay}. Applied automatically — no code needed.`,
+  line: `Your first 3 monthly charges, when you upgrade by ${PROMO.lastDay}. Applied automatically — no code needed.`,
+  tooltip: '30% off your first 3 monthly charges. If you switch between Advanced and Ultimate during these 3 charges, the discount continues on the new plan.',
 };

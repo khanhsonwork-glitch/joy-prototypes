@@ -15,4 +15,5 @@ Màn thật: Plans page and Home captured from production admin (Alex's dev stor
 
 - Card prices stay at the base fee when the order slider moves (the real card adds the per-order fee).
 - Paid cards sit in a 3-column grid; the real page uses a carousel that shows 3 cards at this width.
-- Dashboard keeps only Overview, program status and Helpdesk around the banner; the real Home has more cards above it.
+- Dashboard: the shop-specific "needs attention" alert and the activity/program cards are left out; opening #/dashboard scrolls to the banner.
+- Shopify admin shell is the hub's shared starter shell (grey sidebar); today's admin has a dark sidebar with search on the left. Same for every hub demo.
