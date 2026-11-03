@@ -1,0 +1,91 @@
+/* Inter, the Shopify admin / Polaris font, self-hosted (SIL OFL 1.1, src/fonts/OFL.txt): no request leaves the prototype. */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Colours that are NOT Polaris tokens live here, as variables. Everything else uses var(--p-…). */
+:root {
+  /* Shopify admin chrome, sampled from refs/membership.png */
+  --chrome-topbar: #0a0a0a;
+  --chrome-topbar-field: #282828;
+  --chrome-topbar-field-border: #3a3a3a;
+  --chrome-topbar-pill: #3a3a3a;
+  --chrome-topbar-muted: #a8a8a8;
+  --chrome-nav-bg: #ebebeb;
+  --chrome-nav-hover: #e3e3e3;
+  --chrome-nav-selected: #fafafa;
+  --chrome-nav-text: #303030;
+  --chrome-nav-sub: #616161;
+  --chrome-nav-icon: #4a4a4a;
+  --chrome-tree: #a8a8a8;
+  --chrome-joy-red: #e53935;
+  --chrome-avatar: #9474ff;
+  --chrome-topbar-height: 56px;
+  --chrome-nav-width: 240px;
+  --chrome-radius: 12px;
+
+  /* Prototype controls: visibly not product UI */
+  --proto-amber-bg: #fff4d6;
+  --proto-amber-border: #c98a00;
+  --proto-amber-text: #5a3d00;
+
+  /* Pomelo Park storefront (fictional merchant), sampled from the product photography */
+  --pp-cream: #fef8ea;
+  --pp-paper: #fffdf7;
+  --pp-ink: #3b1f2b;
+  --pp-ink-soft: #6b4a58;
+  --pp-line: #ecdcc7;
+  --pp-yellow: #fae13f;
+  --pp-yellow-soft: #fdf0a6;
+  --pp-pink: #fbcac3;
+  --pp-pink-soft: #fde6e1;
+  --pp-pomelo: #f19ea6;
+  --pp-sage: #5b7a4a;
+  --pp-red: #b5303f;
+  --pp-font-head: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --pp-font-body: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--p-font-family-sans);
+  background: var(--p-color-bg);
+  color: var(--p-color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Polaris <Frame> is only the host for Toast and ContextualSaveBar here (the admin chrome is ours): drop its 1px right border. */
+.Polaris-Frame__Main {
+  border-inline-end: 0;
+}
+
+/* Joy Plans page colours that Polaris has no token for (read from the Plans page styles on avada/master). */
+:root {
+  --joy-plan-header-pink: #ffdedc;
+  --joy-plan-header-gray: #e3e3e3;
+  --joy-plan-header-dark: #303030;
+  --joy-plan-recommended: #e53935;
+  --joy-plan-promo-amber: #b45309;
+  --joy-plan-promo-amber-bg: rgba(180, 83, 9, 0.1);
+  --joy-plan-info-ink: #8a8b94;
+  --joy-plan-info-line: #c9cace;
+  --joy-plan-orders-bg: rgba(48, 48, 48, 0.06);
+  --joy-plan-orders-line: #e8e8e9;
+  --joy-plan-body-shadow: 0 -1px 16px rgba(48, 48, 48, 0.1);
+  --joy-onboarding-progress: #303030;
+  --joy-promo-banner-scrim: linear-gradient(90deg, rgba(20, 16, 40, 0.7) 0%, rgba(20, 16, 40, 0.4) 55%, rgba(20, 16, 40, 0.15) 100%);
+}

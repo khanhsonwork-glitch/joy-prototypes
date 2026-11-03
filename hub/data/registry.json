@@ -88,6 +88,28 @@
     },
     {
       "product": "loyalty",
+      "slug": "bfcm-2026-pricing",
+      "name": "BFCM 2026 — 30% off Advanced & Ultimate",
+      "area": "Pricing",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-03",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-bfcm-2026-pricing.jpg",
+      "reviewUrl": "/loyalty/bfcm-2026-pricing/#/plans",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "cross-app-menu",
       "name": "Cross-app menu",
       "area": "Navigation",
