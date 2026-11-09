@@ -1,13 +1,20 @@
-// Settings panel of the new "Milestones" block, in the same shape as the real section panels
+// Settings panel of the new "Milestone rewards" block, in the same shape as the real section panels
 // (SectionContentDetail: shared card first, then collapsible SectionSettingCards, then the Edit text card).
+// Programs card copies Ways to earn's ProgramsManagerCard (DraggableList + eye + edit).
 import React, {useState} from 'react';
-import {Banner, BlockStack, Button, Card, Checkbox, Collapsible, Icon, InlineStack, Select, Text} from '@shopify/polaris';
+import {Badge, Banner, BlockStack, Button, Card, Checkbox, Collapsible, Icon, InlineStack, Select, Text} from '@shopify/polaris';
 import {ChevronDownIcon, ChevronUpIcon, DragHandleIcon, EditIcon, HideIcon, InfoIcon, ViewIcon, CashDollarIcon, OrderIcon, PersonAddIcon} from '@shopify/polaris-icons';
 import {EmptyView, ErrorView} from '../kit/StateView.jsx';
 import {amount} from '../data/milestones.js';
 import {useShell} from '../shell/ShellContext.jsx';
 
 const PROGRAM_ICON = {referral: PersonAddIcon, orders: OrderIcon, spend: CashDollarIcon};
+
+export const LAYOUTS = [
+  {label: 'One under another', value: 'stacked', help: 'Every program open, one under another. Shoppers see every step without clicking.'},
+  {label: 'Collapsible', value: 'accordion', help: 'One row per program with its progress and an arrow. The first program opens when the page loads; shoppers open the others.'},
+  {label: 'Tabs', value: 'tabs', help: 'One tab per program, in the order above. Shows one program at a time and keeps the page shortest.'},
+];
 
 /** Same behaviour as the real SectionSettingCard: a heading button that opens and closes the group. */
 export function SettingCard({title, id, defaultOpen = false, badge, children}) {
@@ -59,12 +66,29 @@ function ProgramRows({settings, programs, onChange}) {
     <ul className="lpe-prog-list">
       {rows.map((row, index) => {
         const program = programs.find((p) => p.id === row.id);
-        if (!program) return null;
+        if (!program) {
+          // Chosen, then deleted in Reward programs: keep a row from the saved id so the merchant can remove it.
+          return (
+            <li key={row.id} data-row={row.id} className="lpe-prog is-hidden is-deleted">
+              <span className="lpe-prog__handle" aria-hidden="true" />
+              <span className="lpe-prog__thumb" aria-hidden="true"><Icon source={HideIcon} tone="subdued" /></span>
+              <span className="lpe-prog__text">
+                <InlineStack gap="150" blockAlign="center">
+                  <Text as="span" variant="bodyMd" fontWeight="semibold">{row.name || 'Deleted program'}</Text>
+                  <Badge tone="critical">Deleted</Badge>
+                </InlineStack>
+                <Text as="span" variant="bodySm" tone="subdued">Shoppers don’t see it. Remove it from this block.</Text>
+              </span>
+              <Button variant="tertiary" tone="critical" onClick={() => onChange({programs: rows.filter((r) => r.id !== row.id)})} accessibilityLabel={`Remove ${row.name || 'deleted program'} from this block`}>Remove</Button>
+            </li>
+          );
+        }
         const steps = program.steps.map((s) => (program.unit ? s.at.toLocaleString('en-US') : amount(program, s.at))).join(', ');
         return (
           <li
             key={row.id}
-            className={`lpe-prog${row.shown ? '' : ' is-hidden'}${drag === index ? ' is-dragging' : ''}`}
+            data-row={row.id}
+            className={`lpe-prog${row.shown && !program.inactive ? '' : ' is-hidden'}${drag === index ? ' is-dragging' : ''}`}
             draggable
             onDragStart={() => setDrag(index)}
             onDragOver={(e) => e.preventDefault()}
@@ -74,13 +98,18 @@ function ProgramRows({settings, programs, onChange}) {
             <span className="lpe-prog__handle" aria-hidden="true"><Icon source={DragHandleIcon} tone="subdued" /></span>
             <span className="lpe-prog__thumb" aria-hidden="true"><Icon source={PROGRAM_ICON[program.kind]} /></span>
             <span className="lpe-prog__text">
-              <Text as="span" variant="bodyMd" fontWeight="semibold" truncate>{program.name}</Text>
-              <Text as="span" variant="bodySm" tone="subdued" truncate>Steps at {steps}{program.unit ? ` ${program.unit[1]}` : ' spent'}</Text>
+              <InlineStack gap="150" wrap={false} blockAlign="center">
+                <Text as="span" variant="bodyMd" fontWeight="semibold" truncate>{program.name}</Text>
+                {program.inactive ? <Badge tone="warning">Inactive</Badge> : null}
+              </InlineStack>
+              <Text as="span" variant="bodySm" tone="subdued" truncate>
+                {program.inactive ? 'Not shown until you turn it back on' : `Steps at ${steps}${program.unit ? ` ${program.unit[1]}` : ' spent'}`}
+              </Text>
             </span>
             <Button
               variant="tertiary"
               icon={row.shown ? ViewIcon : HideIcon}
-              accessibilityLabel={row.shown ? `Hide ${program.name} from the loyalty page` : `Show ${program.name} on the loyalty page`}
+              accessibilityLabel={row.shown ? `Hide ${program.name} in this block` : `Show ${program.name} in this block`}
               onClick={() => onChange({programs: rows.map((r) => (r.id === row.id ? {...r, shown: !r.shown} : r))})}
             />
             <Button variant="tertiary" icon={EditIcon} accessibilityLabel={`Edit ${program.name}`} onClick={() => notify('Opens Reward programs › Milestones › Edit in the app')} />
@@ -94,10 +123,15 @@ function ProgramRows({settings, programs, onChange}) {
 export function MilestonePanel({settings, onChange, programs, state, onRetry, onEditText}) {
   const {notify} = useShell();
   const noPrograms = state === 'empty';
-  const allHidden = !noPrograms && settings.programs.every((r) => !r.shown);
+  const usable = settings.programs.filter((r) => {
+    const p = programs.find((x) => x.id === r.id);
+    return r.shown && p && !p.inactive;
+  });
+  const allHidden = !noPrograms && usable.length === 0;
+  const layout = LAYOUTS.find((l) => l.value === settings.layout) || LAYOUTS[0];
   return (
     <BlockStack gap="400">
-      <Text as="h2" variant="headingMd">Milestones</Text>
+      <Text as="h2" variant="headingMd">Milestone rewards</Text>
 
       <Card>
         <BlockStack gap="300">
@@ -116,7 +150,6 @@ export function MilestonePanel({settings, onChange, programs, state, onRetry, on
             ]}
             value={settings.audience}
             onChange={(v) => onChange({audience: v})}
-            helpText="Guests see every step and reward with a Join button. Members see their own progress."
           />
         </BlockStack>
       </Card>
@@ -129,7 +162,7 @@ export function MilestonePanel({settings, onChange, programs, state, onRetry, on
         ) : null}
         {state === 'error' ? (
           <ErrorView title="Couldn’t load your milestone programs" onRetry={onRetry}>
-            Your block settings are kept. Try again to see the programs.
+            Your saved programs and order are kept. Try again to edit them.
           </ErrorView>
         ) : null}
         {noPrograms ? (
@@ -139,9 +172,9 @@ export function MilestonePanel({settings, onChange, programs, state, onRetry, on
         ) : null}
         {state !== 'loading' && state !== 'error' && !noPrograms ? (
           <>
-            <Text as="p" variant="bodySm" tone="subdued">Drag to reorder. Click the eye to show or hide a program in this block.</Text>
+            <Text as="p" variant="bodySm" tone="subdued">Drag to set the order shoppers see. Click the eye to show or hide a program in this block.</Text>
             <ProgramRows settings={settings} programs={programs} onChange={onChange} />
-            {allHidden ? <Banner tone="warning">Every program is hidden, so this block shows nothing on the storefront.</Banner> : null}
+            {allHidden ? <Banner tone="warning">No program is shown, so this block stays off the storefront.</Banner> : null}
           </>
         ) : null}
       </SettingCard>
@@ -149,35 +182,10 @@ export function MilestonePanel({settings, onChange, programs, state, onRetry, on
       <SettingCard title="Layout" id="ms-layout" defaultOpen>
         <Select
           label="Layout"
-          options={[
-            {label: 'Roadmap · next reward and every step', value: 'roadmap'},
-            {label: 'Progress bar only', value: 'compact'},
-          ]}
-          value={settings.layout}
+          options={LAYOUTS.map(({label, value}) => ({label, value}))}
+          value={layout.value}
           onChange={(v) => onChange({layout: v})}
-          helpText={settings.layout === 'roadmap' ? 'Shows what to do for the next reward, then each step with its reward.' : 'One slim bar per program. Takes the least space on a long page.'}
-        />
-        <Select
-          label="More than one program"
-          options={[
-            {label: 'Tabs', value: 'tabs'},
-            {label: 'One under another', value: 'stacked'},
-          ]}
-          value={settings.multi}
-          onChange={(v) => onChange({multi: v})}
-          helpText={settings.multi === 'tabs' ? 'One program at a time. Keeps the page short.' : 'Every program at once. The page gets longer with each one.'}
-        />
-        <Checkbox
-          label="Show rewards of steps not reached yet"
-          helpText="Off: steps the customer has not reached show “Mystery reward”."
-          checked={settings.showLocked}
-          onChange={(v) => onChange({showLocked: v})}
-        />
-        <Checkbox
-          label="Also list milestones in Ways to earn"
-          helpText="Off: milestone programs leave Ways to earn while this block is on the page, so customers don’t see them twice."
-          checked={settings.alsoInEarn}
-          onChange={(v) => onChange({alsoInEarn: v})}
+          helpText={usable.length === 1 ? 'With one program shown, the block shows it directly, without tabs or a collapsible row.' : layout.help}
         />
       </SettingCard>
 

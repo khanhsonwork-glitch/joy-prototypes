@@ -3,12 +3,15 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
-  {value: 'default', label: 'Default', help: 'Member part way: 2 of 5 friends, 4 orders, $320 spent'},
-  {value: 'complete', label: 'All unlocked', help: 'Member has reached every step'},
-  {value: 'empty', label: 'Empty', help: 'No milestone program yet'},
+  {value: 'default', label: 'Default', help: 'Member part way: 2 of 5 friends (1 reward ready), 4 orders, $320 spent'},
+  {value: 'complete', label: 'All claimed', help: 'Member has claimed every step'},
+  {value: 'claimfail', label: 'Claim fails', help: 'Claim returns an error; nothing is added'},
+  {value: 'inactive', label: 'Program turned off', help: 'Order milestones was chosen, then made inactive'},
+  {value: 'deleted', label: 'Program deleted', help: 'Order milestones was chosen, then deleted in Reward programs'},
+  {value: 'empty', label: 'No programs', help: 'Shop has no milestone program yet'},
   {value: 'loading', label: 'Loading', help: 'Data on its way'},
-  {value: 'error', label: 'Error', help: 'Loading failed'},
-  {value: 'disabled', label: 'Disabled', help: 'Free plan: drafts only, publish needs Essential'},
+  {value: 'error', label: 'Error', help: 'Programs and progress failed to load'},
+  {value: 'disabled', label: 'Plan lock', help: 'Shop is below Advanced: Milestone not included'},
   {value: 'overflow', label: 'Overflow', help: 'Longest names, biggest numbers'},
   {value: 'worst', label: 'Worst case', help: 'Overflow, many rows and a failed sync'},
 ];

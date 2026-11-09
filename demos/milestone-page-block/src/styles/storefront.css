@@ -98,13 +98,90 @@
 .sf-faq { display: grid; gap: 8px; }
 .sf-faq__row { display: flex; justify-content: space-between; padding: 14px 18px; border-radius: 12px; background: var(--pp-cream); }
 
-/* ---------------------------------------------------------------- the Milestones block */
+/* ---------------------------------------------------------------- the Milestone rewards block
+   Body follows the merchant-approved custom block: progress card (Your progress · big number · what is left ·
+   action · track with each step) + one card per step (title, After …, badge, Choose 1 reward, Claim). */
+.sf-ms-eyebrow { margin: 0 0 4px; font-size: 13px; color: var(--pp-ink-soft); }
+.sf-ms-body { display: grid; gap: 16px; }
+.sf-ms-progress { padding: 22px 26px 26px; border-radius: 16px; background: var(--pp-paper); box-shadow: inset 0 0 0 1px var(--pp-line); }
+.sf-ms-progress__top { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+.sf-ms-progress__text { min-width: 0; }
+.sf-ms-progress__big { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 700; overflow-wrap: anywhere; }
+.sf-ms-progress__big span { font-size: 16px; font-weight: 400; }
+.sf-ms-progress__big--guest { font-size: 22px; }
+.sf-ms-progress__sub { margin: 6px 0 0; color: var(--pp-ink-soft); font-size: 14px; overflow-wrap: anywhere; }
+.sf-ms-progress__actions { display: flex; gap: 8px; flex: none; }
+.sf-ms-track { position: relative; height: 6px; margin: 34px 12px 30px; border-radius: 999px; background: var(--pp-line); }
+.sf-ms-track__fill { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--pp-ink); }
+.sf-ms-mark { position: absolute; top: -9px; transform: translateX(-50%); display: grid; justify-items: center; gap: 6px; }
+.sf-ms-mark i { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--pp-paper); box-shadow: inset 0 0 0 2px var(--pp-line); }
+.sf-ms-mark i .Polaris-Icon { width: 14px; height: 14px; --p-color-icon: var(--pp-paper); }
+.sf-ms-mark.is-done i { background: var(--pp-ink); box-shadow: none; }
+.sf-ms-mark b { font-size: 12px; font-weight: 700; color: var(--pp-ink-soft); white-space: nowrap; }
+
+.sf-ms-cards { display: grid; grid-template-columns: repeat(var(--steps, 3), minmax(0, 1fr)); gap: 14px; }
+.sf-ms-card { display: flex; flex-direction: column; min-width: 0; padding: 18px; border-radius: 16px; background: var(--pp-paper); box-shadow: inset 0 0 0 1px var(--pp-line); }
+.sf-ms-card.is-ready { box-shadow: inset 0 0 0 2px var(--pp-ink); }
+.sf-ms-card__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.sf-ms-card__title { margin: 0; font-size: 16px; line-height: 1.25; font-weight: 700; overflow-wrap: anywhere; }
+.sf-ms-card__sub { margin: 3px 0 0; font-size: 13px; color: var(--pp-ink-soft); }
+.sf-ms-card__label { margin: 16px 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--pp-ink-soft); }
+.sf-ms-card__error { display: flex; gap: 6px; align-items: flex-start; margin: 10px 0 0; font-size: 13px; color: var(--pp-red); }
+.sf-ms-card__error .Polaris-Icon { width: 18px; height: 18px; margin: 0; flex: none; --p-color-icon: var(--pp-red); }
+.sf-ms-card__done { margin: 10px 0 0; font-size: 13px; color: var(--pp-sage); font-weight: 600; }
+.sf-ms-card .sf-btn--block { margin-top: auto; }
+.sf-ms-card .sf-ms-rewards + .sf-btn--block, .sf-ms-card__error + .sf-btn--block { margin-top: 12px; }
+.sf-btn:disabled { opacity: 0.45; cursor: default; }
+
+.sf-ms-badge { display: inline-flex; align-items: center; gap: 3px; flex: none; padding: 3px 9px; border-radius: 999px; background: var(--pp-cream); color: var(--pp-ink-soft); font-size: 11px; font-weight: 600; white-space: nowrap; }
+.sf-ms-badge .Polaris-Icon { width: 13px; height: 13px; margin: 0; --p-color-icon: currentColor; }
+.sf-ms-badge--ready { background: var(--pp-ink); color: var(--pp-paper); }
+.sf-ms-badge--current { background: var(--pp-yellow-soft); color: var(--pp-ink); }
+.sf-ms-badge--claimed { background: var(--pp-sage); color: var(--pp-paper); }
+
+.sf-ms-rewards { display: grid; gap: 8px; }
+.sf-ms-reward { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; padding: 9px 10px; border: 0; border-radius: 10px; background: var(--pp-cream); font: inherit; color: var(--pp-ink); text-align: left; }
+.sf-ms-reward.is-selectable { cursor: pointer; }
+.sf-ms-reward.is-selectable:hover { box-shadow: inset 0 0 0 1px var(--pp-ink-soft); }
+.sf-ms-reward.is-picked { box-shadow: inset 0 0 0 2px var(--pp-ink); background: var(--pp-paper); }
+.sf-ms-reward:focus-visible { outline: 2px solid var(--p-color-border-focus); outline-offset: 2px; }
+.sf-ms-reward__icon { width: 36px; height: 36px; flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--pp-paper); }
+.sf-ms-reward__icon .Polaris-Icon { --p-color-icon: var(--pp-ink); }
+.sf-ms-reward__text { display: grid; min-width: 0; flex: 1; }
+.sf-ms-reward__text strong { font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+.sf-ms-reward__text small { font-size: 12px; color: var(--pp-ink-soft); }
+.sf-ms-radio { width: 18px; height: 18px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--pp-ink-soft); }
+.sf-ms-radio.is-on { box-shadow: inset 0 0 0 5px var(--pp-ink); }
+
+/* One under another */
+.sf-ms-stack { display: grid; gap: 36px; }
+
+/* Collapsible: the head keeps name, progress, "reward ready" and the arrow even when closed */
+.sf-ms-acc { display: grid; gap: 12px; }
+.sf-ms-acc__item { border-radius: 16px; background: var(--pp-paper); box-shadow: inset 0 0 0 1px var(--pp-line); }
+.sf-ms-acc__h { margin: 0; }
+.sf-ms-acc__head { display: flex; align-items: center; gap: 14px; width: 100%; padding: 16px 20px; border: 0; border-radius: 16px; background: transparent; font: inherit; color: var(--pp-ink); text-align: left; cursor: pointer; }
+.sf-ms-acc__head:hover { background: var(--pp-cream); }
+.sf-ms-acc__head:focus-visible { outline: 2px solid var(--p-color-border-focus); outline-offset: 2px; }
+.sf-ms-acc__icon { width: 36px; height: 36px; flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--pp-cream); }
+.sf-ms-acc__icon .Polaris-Icon { --p-color-icon: var(--pp-ink); }
+.sf-ms-acc__text { display: grid; flex: 1; min-width: 0; }
+.sf-ms-acc__text strong { font-size: 17px; line-height: 1.25; overflow-wrap: anywhere; }
+.sf-ms-acc__text small { font-size: 13px; color: var(--pp-ink-soft); }
+.sf-ms-pill { flex: none; padding: 4px 10px; border-radius: 999px; background: var(--pp-ink); color: var(--pp-paper); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.sf-ms-acc__count { flex: none; font-size: 12px; color: var(--pp-ink-soft); white-space: nowrap; }
+.sf-ms-acc__arrow { flex: none; display: inline-flex; transition: transform 0.18s ease; }
+.sf-ms-acc__arrow .Polaris-Icon { --p-color-icon: var(--pp-ink); }
+.sf-ms-acc__item.is-open .sf-ms-acc__arrow { transform: rotate(180deg); }
+.sf-ms-acc__panel { padding: 0 20px 20px; }
+
+/* Tabs: saved order, one program at a time */
 .sf-ms-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .sf-ms-tab {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 42px;
   max-width: 100%;
   padding: 0 16px;
   border: 1px solid var(--pp-line);
@@ -118,81 +195,13 @@
 }
 .sf-ms-tab .Polaris-Icon { width: 18px; height: 18px; margin: 0; flex: none; }
 .sf-ms-tab__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sf-ms-tab__count { padding: 1px 8px; border-radius: 999px; background: var(--pp-cream); font-size: 12px; }
+.sf-ms-tab__ready { min-width: 20px; height: 20px; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--pp-pomelo); color: var(--pp-ink); font-size: 12px; }
 .sf-ms-tab.is-active { background: var(--pp-ink); border-color: var(--pp-ink); color: var(--pp-paper); }
 .sf-ms-tab.is-active .Polaris-Icon { --p-color-icon: var(--pp-paper); }
-.sf-ms-tab.is-active .sf-ms-tab__count { background: var(--pp-ink-soft); color: var(--pp-paper); }
 
-.sf-ms-list { display: grid; gap: 28px; }
-.sf-ms-grid { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 16px; align-items: stretch; }
-.sf-ms-next {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 22px;
-  border-radius: 16px;
-  background: var(--pp-paper);
-  box-shadow: inset 0 0 0 1px var(--pp-line);
-  text-align: center;
-}
-.sf-ms-next__head { margin: 0 0 14px; font-size: 24px; line-height: 1.2; font-weight: 700; overflow-wrap: anywhere; }
-.sf-ms-next__sub { margin: -6px 0 14px; color: var(--pp-ink-soft); font-size: 14px; overflow-wrap: anywhere; }
-.sf-ms-next__actions { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; }
-.sf-ms-bar { position: relative; height: 8px; border-radius: 999px; background: var(--pp-line); overflow: hidden; }
-.sf-ms-bar span { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--pp-sage); }
-.sf-ms-bar__ends { display: flex; justify-content: space-between; margin-top: 6px; font-size: 12px; color: var(--pp-ink-soft); }
-
-.sf-ms-road { padding: 18px; border-radius: 16px; background: var(--pp-paper); box-shadow: inset 0 0 0 1px var(--pp-line); min-width: 0; }
-.sf-ms-road__top { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.sf-ms-road__title { font-weight: 700; }
-.sf-ms-road__count { font-size: 13px; color: var(--pp-ink-soft); white-space: nowrap; }
-.sf-ms-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--steps), minmax(120px, 1fr)); gap: 10px; overflow-x: auto; }
-.sf-ms-step { position: relative; display: grid; justify-items: center; gap: 10px; }
-.sf-ms-step__dot {
-  position: relative;
-  z-index: 1;
-  width: 22px;
-  height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--pp-paper);
-  box-shadow: inset 0 0 0 2px var(--pp-line);
-}
-.sf-ms-step__dot .Polaris-Icon { width: 14px; height: 14px; --p-color-icon: var(--pp-paper); }
-.sf-ms-step.is-done .sf-ms-step__dot { background: var(--pp-sage); box-shadow: none; }
-.sf-ms-step.is-next .sf-ms-step__dot { box-shadow: inset 0 0 0 2px var(--pp-ink), inset 0 0 0 6px var(--pp-paper), inset 0 0 0 11px var(--pp-ink); }
-.sf-ms-step__line { position: absolute; top: 10px; left: calc(50% + 11px); width: calc(100% - 12px); height: 2px; background: var(--pp-line); }
-.sf-ms-step__line.is-done { background: var(--pp-sage); }
-.sf-ms-step__card {
-  display: grid;
-  justify-items: center;
-  align-content: start;
-  gap: 4px;
-  width: 100%;
-  height: 100%;
-  padding: 14px 10px;
-  border-radius: 12px;
-  background: var(--pp-cream);
-  text-align: center;
-}
-.sf-ms-step.is-next .sf-ms-step__card { box-shadow: inset 0 0 0 2px var(--pp-ink); background: var(--pp-paper); }
-.sf-ms-step__icon { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--pp-paper); }
-.sf-ms-step__reward { font-size: 14px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
-.sf-ms-step__at { font-size: 12px; color: var(--pp-ink-soft); }
-.sf-chip { margin-top: 6px; padding: 3px 10px; border-radius: 999px; background: var(--pp-paper); font-size: 12px; font-weight: 600; color: var(--pp-ink-soft); }
-.sf-chip--done { background: var(--pp-sage); color: var(--pp-paper); }
-.sf-chip--next { background: var(--pp-ink); color: var(--pp-paper); }
-
-.sf-ms-compact { padding: 18px 20px; border-radius: 16px; background: var(--pp-paper); box-shadow: inset 0 0 0 1px var(--pp-line); }
-.sf-ms-compact__top { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.sf-ms-compact__name { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
-.sf-ms-compact__track { position: relative; }
-.sf-ms-compact__mark { position: absolute; top: -3px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--pp-paper); box-shadow: inset 0 0 0 2px var(--pp-line); }
-.sf-ms-compact__mark:last-child { margin-left: -14px; }
-.sf-ms-compact__mark.is-done { background: var(--pp-sage); box-shadow: none; }
-.sf-ms-compact__label { margin: 12px 0 0; font-size: 14px; color: var(--pp-ink-soft); }
+.sf-ms-error { display: grid; justify-items: center; gap: 10px; padding: 28px; border-radius: 16px; background: var(--pp-paper); box-shadow: inset 0 0 0 1px var(--pp-line); text-align: center; }
+.sf-ms-error p { margin: 0; }
+.sf-ms-error .Polaris-Icon { --p-color-icon: var(--pp-red); }
 
 .sf-skel { display: block; border-radius: 12px; background: var(--pp-line); margin-inline: auto; max-width: 100%; }
 
@@ -205,21 +214,25 @@
 .sf--mobile .sf-h2 { font-size: 22px; }
 .sf--mobile .sf-cards { grid-template-columns: 1fr 1fr; gap: 10px; }
 .sf--mobile .sf-refer { grid-template-columns: 1fr; padding: 20px; }
-.sf--mobile .sf-ms-grid { grid-template-columns: 1fr; }
-.sf--mobile .sf-ms-tabs { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; padding-bottom: 4px; }
-.sf--mobile .sf-ms-tab { flex: none; max-width: 220px; }
-.sf--mobile .sf-ms-steps { grid-template-columns: repeat(var(--steps), 118px); padding-bottom: 6px; }
-.sf--mobile .sf-ms-next__head { font-size: 21px; }
 
 /* The preview is narrower than a real browser: lay the page out by the preview's own width, not the window's. */
 .sf { container-type: inline-size; container-name: sf; }
 @container sf (max-width: 820px) {
-  .sf-ms-grid { grid-template-columns: minmax(0, 1fr); }
-  .sf-ms-next { padding: 18px; }
   .sf-refer { grid-template-columns: 1fr; }
+  .sf-ms-cards { grid-template-columns: minmax(0, 1fr); }
 }
-@container sf (max-width: 420px) {
+@container sf (max-width: 560px) {
   .sf-cards { grid-template-columns: 1fr 1fr; }
-  .sf-ms-tabs { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; }
+  .sf-ms-progress { padding: 18px 16px 22px; }
+  .sf-ms-progress__top { display: block; }
+  .sf-ms-progress__actions { margin-top: 14px; }
+  .sf-ms-progress__big { font-size: 26px; }
+  .sf-ms-tabs { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; padding-bottom: 4px; margin-right: -16px; }
+  .sf-ms-tab { flex: none; max-width: 230px; }
+  .sf-ms-acc__head { padding: 14px; gap: 10px; }
+  .sf-ms-acc__icon { display: none; }
+  .sf-ms-acc__text strong { font-size: 15px; }
+  .sf-ms-acc__panel { padding: 0 12px 14px; }
+  .sf-ms-pill, .sf-ms-acc__count { font-size: 11px; }
 }
 .sf-refer > * { min-width: 0; }

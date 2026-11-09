@@ -1,7 +1,7 @@
 // Loyalty page editor (On-site content › New loyalty page), Sections tab, with the new "Milestones" block.
 // Shape copied from the real editor: tab bar + section list | settings column | preview with "Preview as".
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ActionList, Banner, BlockStack, Button, ContextualSaveBar, Icon, Popover, Text, TextField, Tooltip} from '@shopify/polaris';
+import {ActionList, Banner, BlockStack, Button, Checkbox, ContextualSaveBar, Icon, Popover, Text, TextField, Tooltip} from '@shopify/polaris';
 import {
   ChevronDownIcon,
   DesktopIcon,
@@ -38,7 +38,7 @@ const LABEL = {
   inlineBanner: 'Sign-up banner',
   howItWorks: 'How it works',
   earn: 'Ways to earn',
-  milestones: 'Milestones',
+  milestones: 'Milestone rewards',
   redeem: 'Ways to redeem',
   tiers: 'VIP tiers',
   referral: 'Refer a friend',
@@ -62,16 +62,36 @@ const DRAWN = new Set(['hero', 'howItWorks', 'earn', 'milestones', 'redeem', 're
 const PAGE_START = ['hero', 'howItWorks', 'earn', 'redeem', 'referral', 'faq'];
 const MORE_START = ['inlineBanner', 'tiers', 'redeemProgram', 'myRewards', 'activity', 'accountDashboard', 'referralManagement', 'walletPass', 'linkAccounts', 'milestones'];
 
-/** Defaults a merchant gets the moment the block is added. */
+/**
+ * Defaults a merchant gets the moment the block is added. PROPOSAL, not yet approved by Alex:
+ * every active program shown in the Programs order, layout Collapsible (first program open).
+ */
 export const DEFAULT_SETTINGS = {
   fullWidth: false,
   audience: 'everyone',
-  layout: 'roadmap',
-  multi: 'tabs',
-  showLocked: true,
-  alsoInEarn: false,
+  layout: 'accordion',
   programs: PROGRAMS.map((p) => ({id: p.id, shown: true})),
 };
+const LAYOUT_VALUES = new Set(['stacked', 'accordion', 'tabs']);
+
+// Save stands in for the real save: what was saved comes back after a reload (this browser only).
+// Open the prototype with ?fresh=1 to start again from the defaults.
+const SAVED_KEY = 'joy-proto:milestone-page-block:saved:v1';
+function readSaved() {
+  try {
+    if (new URLSearchParams(window.location.hash.split('?').slice(1).join('?')).get('fresh') === '1') {
+      window.localStorage.removeItem(SAVED_KEY);
+      return null;
+    }
+    const v = JSON.parse(window.localStorage.getItem(SAVED_KEY) || 'null');
+    return v && v.sections && v.settings && Array.isArray(v.settings.programs) ? v : null;
+  } catch {
+    return null;
+  }
+}
+function writeSaved(value) {
+  try { window.localStorage.setItem(SAVED_KEY, JSON.stringify(value)); } catch { /* storage blocked: Save still works for this visit */ }
+}
 
 function initialSections(withBlock) {
   const page = withBlock ? ['hero', 'howItWorks', 'earn', 'milestones', 'redeem', 'referral', 'faq'] : PAGE_START;
@@ -190,7 +210,7 @@ function SectionsList({sections, setSections, selectedId, onSelect}) {
   );
 }
 
-function PreviewAs({device, viewer, onDevice, onViewer}) {
+function PreviewAs({device, viewer, onDevice, onViewer, onViewStore}) {
   const [open, setOpen] = useState(false);
   const {notify} = useShell();
   const activator = (
@@ -221,7 +241,7 @@ function PreviewAs({device, viewer, onDevice, onViewer}) {
           ]}
         />
       </Popover>
-      <button type="button" className="lpe-link" onClick={() => notify('Opens your loyalty page on the storefront')}>View on store</button>
+      <button type="button" className="lpe-link" onClick={onViewStore}>View on store</button>
     </div>
   );
 }
@@ -233,7 +253,12 @@ export function LoyaltyPageEditor() {
   const {state, setState} = useScenario();
   const deepBlock = route.segments[1] === 'milestones';
 
-  const [saved, setSaved] = useState(() => ({sections: initialSections(deepBlock), settings: DEFAULT_SETTINGS}));
+  const [saved, setSaved] = useState(() => {
+    const stored = readSaved();
+    if (stored) return stored;
+    const l = route.query.get('layout');
+    return {sections: initialSections(deepBlock), settings: LAYOUT_VALUES.has(l) ? {...DEFAULT_SETTINGS, layout: l} : DEFAULT_SETTINGS};
+  });
   const [sections, setSections] = useState(saved.sections);
   const [settings, setSettings] = useState(saved.settings);
   const [selectedId, setSelectedId] = useState(deepBlock ? 'milestones' : null);
@@ -241,6 +266,10 @@ export function LoyaltyPageEditor() {
   const [device, setDevice] = useState(q.get('device') === 'mobile' ? 'mobile' : 'desktop');
   const [viewer, setViewer] = useState(q.get('as') === 'guest' ? 'guest' : 'member');
   const previewRef = useRef(null);
+  // "View on store": the live page shows what was SAVED, and only when the shop has both accesses.
+  const [liveStore, setLiveStore] = useState(q.get('view') === 'store');
+  const [access, setAccess] = useState({v2: true, milestone: state !== 'disabled'});
+  useEffect(() => { setAccess((a) => ({...a, milestone: state !== 'disabled'})); }, [state]);
 
   // Keep the address in step with what is open, so the link can be shared.
   useEffect(() => {
@@ -248,11 +277,12 @@ export function LoyaltyPageEditor() {
     if (device === 'mobile') params.set('device', 'mobile');
     if (viewer === 'guest') params.set('as', 'guest');
     if (state !== 'default') params.set('state', state);
+    if (liveStore) params.set('view', 'store');
     const path = selectedId === 'milestones' ? '/loyalty-page-editor/milestones' : '/loyalty-page-editor';
     const target = `${path}${params.toString() ? `?${params}` : ''}`;
     const now = window.location.hash.replace(/^#/, '');
     if (now !== target) window.history.replaceState(null, '', `${window.location.search}#${target}`);
-  }, [selectedId, device, viewer, state]);
+  }, [selectedId, device, viewer, state, liveStore]);
 
   const dirty = JSON.stringify({sections, settings}) !== JSON.stringify(saved);
   const select = useCallback((id) => setSelectedId(id), []);
@@ -273,13 +303,20 @@ export function LoyaltyPageEditor() {
     return () => cancelAnimationFrame(id);
   }, [selectedId, device, sections, scrollPreviewTo]);
 
-  const programs = state === 'overflow' || state === 'worst' ? OVERFLOW_PROGRAMS : PROGRAMS;
+  const basePrograms = state === 'overflow' || state === 'worst' ? OVERFLOW_PROGRAMS : PROGRAMS;
+  // "Program turned off": the merchant chose Order milestones, then made it inactive in Reward programs.
+  // "Program deleted": the saved list still holds Order milestones, but the program no longer exists.
+  const programs = state === 'inactive'
+    ? basePrograms.map((p) => (p.id === 'orders' ? {...p, inactive: true} : p))
+    : state === 'deleted' ? basePrograms.filter((p) => p.id !== 'orders') : basePrograms;
   const progress = state === 'complete' ? PROGRESS.done : state === 'overflow' || state === 'worst' ? PROGRESS.overflow : PROGRESS.member;
   const panelState = state === 'worst' ? 'error' : state;
   const visiblePrograms = state === 'empty' ? {...settings, programs: []} : settings;
+  const liveSettings = state === 'empty' ? {...saved.settings, programs: []} : saved.settings;
+  const entitled = access.v2 && access.milestone;
 
   const onCta = (what) => {
-    const text = {invite: 'Scrolls to Refer a friend on the page', shop: 'Opens the shop’s Continue shopping URL', join: 'Opens sign-up', signin: 'Opens sign-in'}[what];
+    const text = {invite: 'Scrolls to Refer a friend on the page', shop: 'Opens the loyalty page’s current shop link (/collections/all)', join: 'Opens sign-up', signin: 'Opens sign-in'}[what];
     notify(text);
     if (what === 'invite') scrollPreviewTo('referral');
   };
@@ -324,16 +361,36 @@ export function LoyaltyPageEditor() {
       selectedId={selectedId}
       onSelect={select}
       loading={state === 'loading'}
+      loadError={state === 'error' || state === 'worst'}
+      failClaims={state === 'claimfail'}
+      onRetry={() => setState('default')}
       onCta={onCta}
     />
   );
+  const livePage = (
+    <StorefrontPage
+      sections={saved.sections.page.filter((s) => DRAWN.has(s.id))}
+      settings={liveSettings}
+      programs={programs}
+      progress={progress}
+      viewer={viewer}
+      device={device}
+      loading={state === 'loading'}
+      loadError={state === 'error' || state === 'worst'}
+      failClaims={state === 'claimfail'}
+      onRetry={() => setState('default')}
+      onCta={onCta}
+      entitled={entitled}
+    />
+  );
+  const shown = liveStore ? livePage : page;
 
   return (
     <div className="lpe">
       {dirty ? (
         <ContextualSaveBar
           message="Unsaved changes"
-          saveAction={{content: 'Save', onAction: () => { setSaved({sections, settings}); notify(state === 'disabled' ? 'Draft saved' : 'Saved and published'); }}}
+          saveAction={{content: 'Save', onAction: () => { setSaved({sections, settings}); writeSaved({sections, settings}); notify(state === 'disabled' ? 'Draft saved' : 'Saved and published'); }}}
           discardAction={{content: 'Discard', onAction: () => { setSections(saved.sections); setSettings(saved.settings); }}}
         />
       ) : null}
@@ -346,20 +403,38 @@ export function LoyaltyPageEditor() {
       </div>
       <div className="lpe-settings">
         <BlockStack gap="400">
-          {state === 'disabled' ? <Banner tone="info"><Text as="p">Edit and save drafts on Free. Publish with Essential.</Text></Banner> : null}
+          {state === 'disabled' && selectedId === 'milestones' ? (
+            <Banner tone="info">
+              <BlockStack gap="200">
+                <Text as="p">Milestone rewards is available on Advanced and higher. You can set up this block now; it shows on your loyalty page after you upgrade.</Text>
+                <div><Button variant="primary" onClick={() => notify('Opens the pricing modal at Advanced')}>Upgrade to unlock</Button></div>
+              </BlockStack>
+            </Banner>
+          ) : null}
           {panel}
         </BlockStack>
       </div>
       <div className="lpe-preview">
-        <PreviewAs device={device} viewer={viewer} onDevice={setDevice} onViewer={setViewer} />
+        <PreviewAs device={device} viewer={viewer} onDevice={setDevice} onViewer={setViewer} onViewStore={() => setLiveStore(true)} />
+        {liveStore ? (
+          <div className="lpe-livebar" data-live-store="on">
+            <Text as="span" variant="bodySm" fontWeight="semibold">Live store · shows the last saved version</Text>
+            <span className="lpe-livebar__access" aria-label="Prototype: shop access">
+              <Checkbox label="Loyalty Page V2" checked={access.v2} onChange={(v) => setAccess((a) => ({...a, v2: v}))} />
+              <Checkbox label="Milestone (Advanced+)" checked={access.milestone} onChange={(v) => setAccess((a) => ({...a, milestone: v}))} />
+            </span>
+            {!entitled ? <Text as="span" variant="bodySm" tone="subdued">Shop lacks one access, so the Milestone rewards block is left out of the page.</Text> : null}
+            <Button size="slim" onClick={() => setLiveStore(false)}>Back to editor preview</Button>
+          </div>
+        ) : null}
         <div className="lpe-preview__stage" ref={previewRef}>
           {device === 'desktop' ? (
             <div className="lpe-browser">
               <div className="lpe-browser__bar"><span className="lpe-dots" aria-hidden="true"><i /><i /><i /></span><span className="lpe-browser__url">pomelopark.com/pages/rewards</span></div>
-              {page}
+              {shown}
             </div>
           ) : (
-            <div className="lpe-phone"><div className="lpe-phone__screen">{page}</div></div>
+            <div className="lpe-phone"><div className="lpe-phone__screen">{shown}</div></div>
           )}
         </div>
       </div>
