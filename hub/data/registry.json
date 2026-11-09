@@ -525,6 +525,29 @@
     },
     {
       "product": "loyalty",
+      "slug": "milestone-page-block",
+      "name": "Milestone block on Loyalty page",
+      "area": "Loyalty page",
+      "surfaces": [
+        "Admin",
+        "Storefront"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-05",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-milestone-page-block.jpg",
+      "reviewUrl": "/loyalty/milestone-page-block/#/loyalty-page-editor/milestones",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "milestones-by-market",
       "name": "Milestones by market",
       "area": "Programs",
