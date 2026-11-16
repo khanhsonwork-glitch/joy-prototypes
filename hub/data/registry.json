@@ -356,7 +356,7 @@
       "prd": null,
       "migrated": true,
       "shot": "/shots/loyalty-joy-limit-reward-codes.jpg",
-      "reviewUrl": "/loyalty/joy-limit-reward-codes/#/settings?state=on",
+      "reviewUrl": "/loyalty/joy-limit-reward-codes/#/settings?type=additional-features&state=on",
       "kind": "prototype",
       "aliases": [
         "One reward code per order",

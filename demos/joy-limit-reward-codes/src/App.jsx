@@ -13,7 +13,7 @@ import {Checkout} from './pages/Checkout.jsx';
 import {KitPage} from './pages/KitPage.jsx';
 import {DEMO} from './demo.config.js';
 
-// Routes: #/settings (Settings › General › Redemption behavior) · #/checkout (Shopify checkout) · #/kit (components).
+// Routes: #/settings (Settings › Additional features, new card; ?type=general for General) · #/checkout (Shopify checkout) · #/kit.
 // The Checkout state (#/settings?state=checkout) shows the checkout too, so every state has a link on #/settings.
 function NotFound() {
   return (

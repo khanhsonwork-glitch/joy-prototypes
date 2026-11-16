@@ -113,7 +113,7 @@ const JOY_SUB = [
   {id: 'onsite', label: 'On-site content'},
   {id: 'analytics', label: 'Analytics'},
   {id: 'integrations', label: 'Integrations'},
-  {id: 'settings', label: 'Settings', href: '#/settings', routes: ['settings']},
+  {id: 'settings', label: 'Settings', href: '#/settings?type=general', routes: ['settings']},
 ];
 const APP_NAME = DEMO.product === 'wishlist' ? 'Joy: Wishlist' : 'Joy: Loyalty Program';
 
@@ -190,13 +190,16 @@ function Navigation({open, onClose}) {
 
 /* ---------------------------------------------------------------- app title bar */
 
-// Settings pages show "Joy / General" with a back arrow in the real admin title bar.
-const PAGE_TITLES = {settings: 'General'};
+// Settings pages show "Joy / <section>" with a back arrow in the real admin title bar (General, Additional features…).
+function pageTitle(route) {
+  if (route.segments[0] !== 'settings') return null;
+  return route.query.get('type') === 'general' ? 'General' : 'Additional features';
+}
 
 function AppTitleBar() {
   const {notYet} = useShell();
   const route = useRoute();
-  const page = PAGE_TITLES[route.segments[0]];
+  const page = pageTitle(route);
   return (
     <div className="adm-appbar">
       <div className="adm-appbar__title">

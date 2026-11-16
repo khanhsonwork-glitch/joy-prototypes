@@ -49,6 +49,9 @@
   --pp-font-head: 'Fraunces', Georgia, 'Times New Roman', serif;
   --pp-font-body: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
 
+  /* Polaris switch (s-switch) when off: dark grey track, sampled from the Joy admin 16/11/2026 */
+  --lc-switch-off: #5c5c5c;
+
   /* Shopify checkout (default look, same on every store without checkout branding) */
   --co-bg: #ffffff;
   --co-summary-bg: #f5f5f5;

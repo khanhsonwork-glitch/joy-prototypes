@@ -1,45 +1,27 @@
-// "Limit Joy reward codes per order": the switch, its two fields, and — once on — what Joy counts as a Joy code,
-// the check against the shop's own codes, and a box to test any code with the same rule the checkout uses.
+// "Limit Joy reward codes per order": its own card in Settings › Additional features, built like the "Limit customer
+// earning" card (GlobalEarningLimit.js): SettingToggle + subdued subtitle, and when on a divider then sub-sections with a
+// heading each — the two fields, what Joy counts as a Joy code, the check against the shop's own codes, and a code tester.
 import React, {useState} from 'react';
-import {Banner, BlockStack, Box, Button, Icon, InlineStack, Select, Spinner, Text, TextField} from '@shopify/polaris';
+import {Banner, BlockStack, Button, Card, Divider, Icon, InlineStack, Select, Spinner, Text, TextField} from '@shopify/polaris';
 import {CheckCircleIcon, XCircleIcon} from '@shopify/polaris-icons';
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
+import {SettingToggle} from './SettingToggle.jsx';
 import {
   CHECKED, CLASHES, EMPTY_FORMATS, EXACT, FORMATS, MESSAGE_MAX, NO_PREFIX, OVERFLOW_FORMATS, WORST_CLASHES, num, testCode,
 } from '../data/codes.js';
 
 const HELP = 'Applies to every discount code issued by Joy, including codes your customers already have and free shipping codes. Your own Shopify discount codes are not affected, unless they have exactly the same format as your Joy codes (same prefix and same length).';
 
-/** Same look as the Polaris switch the Joy admin uses (components/Toggle → s-switch). */
-export function Switch({checked, onChange, disabled, label}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      disabled={disabled}
-      className={`lc-switch${checked ? ' is-on' : ''}`}
-      onClick={() => onChange(!checked)}
-    >
-      <span className="lc-switch__knob" />
-    </button>
-  );
-}
-
+/** A sub-section of the card: <s-heading> + optional subdued line, like "Time period" in Limit customer earning. */
 function Inset({id, title, subtitle, children}) {
   return (
-    <div id={id}>
-    <Box borderWidth="025" borderColor="border" borderRadius="200" padding="400">
-      <BlockStack gap="300">
-        <BlockStack gap="100">
-          <Text as="h4" variant="headingSm">{title}</Text>
-          {subtitle ? <Text as="p" tone="subdued">{subtitle}</Text> : null}
-        </BlockStack>
+    <div id={id} className="lc-anchor">
+      <BlockStack gap="200">
+        <Text as="h3" variant="headingSm">{title}</Text>
+        {subtitle ? <Text as="p" tone="subdued">{subtitle}</Text> : null}
         {children}
       </BlockStack>
-    </Box>
     </div>
   );
 }
@@ -242,80 +224,91 @@ export function CodeLimit({form, set, saved, failed, onDismissFailed, messageErr
   const undo = (code) => set({excluded: form.excluded.filter((c) => c !== code)});
 
   return (
-    <div id="code-limit" className="lc-anchor">
-      <BlockStack gap="300">
-        <InlineStack align="space-between" blockAlign="center" gap="400" wrap={false}>
-          <Text as="h3" variant="headingSm">Limit Joy reward codes per order</Text>
-          <Switch
-            label="Limit Joy reward codes per order"
-            checked={form.enabled}
-            disabled={disabled}
-            onChange={(on) => {
-              if (on) onDismissFailed();
-              set({enabled: on});
-            }}
-          />
-        </InlineStack>
-        <Text as="p" tone="subdued">{HELP}</Text>
-
-        {disabled ? (
-          <Banner tone="warning" title="You can view this setting but not change it">
-            <p>Changing Settings needs the Settings permission in Joy. Ask the store owner to give you access.</p>
-          </Banner>
-        ) : null}
-        {failed ? (
-          <Banner tone="critical" title="Couldn’t turn on the limit" onDismiss={onDismissFailed} action={{content: 'Open Shopify discounts', onAction: notYet}}>
-            <p>Shopify allows up to 25 active automatic discounts. Deactivate one in Shopify, then try again.</p>
-          </Banner>
-        ) : null}
-        {state === 'empty-prefix' ? (
-          <Banner tone="warning" action={{content: 'Set a prefix', onAction: notYet}}>
-            <BlockStack gap="100">
-              <p>Some Joy rewards have no prefix, so their codes are just 12 random characters. Any of your own codes that are exactly 12 letters or numbers will be counted as Joy codes. Add a prefix to those rewards before turning this on.</p>
-              <p>No prefix: Free shipping (Redeeming programs).</p>
-            </BlockStack>
-          </Banner>
-        ) : null}
-
-        {form.enabled ? (
-          <BlockStack gap="400">
-            <div className="lc-fields">
-              <Select
-                label="Maximum Joy codes per order"
-                options={['1', '2', '3', '4']}
-                value={form.max}
-                onChange={(v) => set({max: v})}
-                disabled={disabled}
-                helpText="Your own Shopify discount codes don’t count toward this number."
-              />
-            </div>
-            <TextField
-              id="code-limit-message"
-              label="Message when a code is removed"
-              autoComplete="off"
-              value={form.message}
-              onChange={(v) => set({message: v})}
-              maxLength={MESSAGE_MAX}
-              showCharacterCount
-              multiline
+    <div id="limit-reward-codes" className="lc-anchor">
+      <Card>
+        <BlockStack gap="400">
+          <BlockStack gap="100">
+            <SettingToggle
+              title="Limit Joy reward codes per order"
+              status={form.enabled}
               disabled={disabled}
-              error={messageError}
-              helpText="Shown at checkout under the discount code field. {code} becomes the removed code and {max} the number above."
+              onToggle={(on) => {
+                if (on) onDismissFailed();
+                set({enabled: on});
+              }}
             />
-            <Formats formats={data.formats} exact={data.exact} empty={state === 'empty'} />
-            <Check
-              data={data}
-              excluded={form.excluded}
-              onExclude={exclude}
-              onUndo={undo}
-              onChangePrefix={onChangePrefix}
-              disabled={disabled}
-              empty={state === 'empty'}
-            />
-            <Tester key={`${state}-${saved.excluded.join()}`} data={data} excluded={form.excluded} disabled={disabled} preset={state === 'test'} />
+            <Text as="p" tone="subdued">{HELP}</Text>
           </BlockStack>
-        ) : null}
-      </BlockStack>
+
+          {disabled ? (
+            <Banner tone="warning" title="You can view this setting but not change it">
+              <p>Changing Settings needs the Settings permission in Joy. Ask the store owner to give you access.</p>
+            </Banner>
+          ) : null}
+          {failed ? (
+            <Banner tone="critical" title="Couldn’t turn on the limit" onDismiss={onDismissFailed} action={{content: 'Open Shopify discounts', onAction: notYet}}>
+              <p>Shopify allows up to 25 active automatic discounts. Deactivate one in Shopify, then try again.</p>
+            </Banner>
+          ) : null}
+          {state === 'empty-prefix' ? (
+            <Banner tone="warning" action={{content: 'Set a prefix', onAction: notYet}}>
+              <BlockStack gap="100">
+                <p>Some Joy rewards have no prefix, so their codes are just 12 random characters. Any of your own codes that are exactly 12 letters or numbers will be counted as Joy codes. Add a prefix to those rewards before turning this on.</p>
+                <p>No prefix: Free shipping (Redeeming programs).</p>
+              </BlockStack>
+            </Banner>
+          ) : null}
+
+          {form.enabled ? (
+            <BlockStack gap="400">
+              <Divider />
+              <Inset id="max-codes" title="Maximum Joy codes per order">
+                <div className="lc-fields">
+                  <Select
+                    label="Maximum Joy codes per order"
+                    labelHidden
+                    options={['1', '2', '3', '4']}
+                    value={form.max}
+                    onChange={(v) => set({max: v})}
+                    disabled={disabled}
+                    helpText="Your own Shopify discount codes don’t count toward this number."
+                  />
+                </div>
+              </Inset>
+              <Inset id="removal-message" title="Message when a code is removed">
+                <TextField
+                  id="code-limit-message"
+                  label="Message when a code is removed"
+                  labelHidden
+                  autoComplete="off"
+                  value={form.message}
+                  onChange={(v) => set({message: v})}
+                  maxLength={MESSAGE_MAX}
+                  showCharacterCount
+                  multiline
+                  disabled={disabled}
+                  error={messageError}
+                  helpText="Shown at checkout under the discount code field. {code} becomes the removed code and {max} the number above."
+                />
+              </Inset>
+              <Divider />
+              <Formats formats={data.formats} exact={data.exact} empty={state === 'empty'} />
+              <Divider />
+              <Check
+                data={data}
+                excluded={form.excluded}
+                onExclude={exclude}
+                onUndo={undo}
+                onChangePrefix={onChangePrefix}
+                disabled={disabled}
+                empty={state === 'empty'}
+              />
+              <Divider />
+              <Tester key={`${state}-${saved.excluded.join()}`} data={data} excluded={form.excluded} disabled={disabled} preset={state === 'test'} />
+            </BlockStack>
+          ) : null}
+        </BlockStack>
+      </Card>
     </div>
   );
 }

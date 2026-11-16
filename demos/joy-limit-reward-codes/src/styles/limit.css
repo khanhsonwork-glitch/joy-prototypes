@@ -5,6 +5,9 @@
 .lc-ico svg { width: 20px; height: 20px; fill: currentColor; }
 .lc-sticky { position: sticky; top: calc(var(--chrome-topbar-height) + 56px + var(--p-space-400)); }
 .lc-anchor { scroll-margin-top: calc(var(--chrome-topbar-height) + 56px + var(--p-space-400)); }
+/* With the reviewer panel the content area itself scrolls (chrome.css) and already pads 16px: no extra offset there */
+body:has(.kit-proto) .lc-sticky { top: var(--p-space-400); }
+body:has(.kit-proto) .lc-anchor { scroll-margin-top: 0; }
 .lc-fields { max-width: 360px; }
 /* The settings list stays in view next to a long card, like the admin's left rail */
 .lc-page .Polaris-Layout { align-items: stretch; }
@@ -19,7 +22,7 @@
   padding: 0;
   border: 0;
   border-radius: var(--p-border-radius-full);
-  background: var(--p-color-border-hover);
+  background: var(--lc-switch-off);
   cursor: pointer;
   transition: background 120ms ease;
 }
@@ -39,6 +42,11 @@
 }
 .lc-switch.is-on .lc-switch__knob { transform: translateX(12px); }
 @media (prefers-reduced-motion: reduce) { .lc-switch, .lc-switch__knob { transition: none; } }
+
+/* SettingToggle header: heading + On/Off badge, switch with its "Turn on" word on the right (title row only) */
+.lc-toggle { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--p-space-300); align-items: start; }
+.lc-toggle__control { display: inline-flex; align-items: center; gap: var(--p-space-200); cursor: pointer; white-space: nowrap; }
+.lc-toggle__control .lc-switch:disabled + span { color: var(--p-color-text-disabled); }
 
 /* Codes are read character by character: monospace, never broken mid-word unless they are too long for the line */
 .lc-code { font-family: var(--p-font-family-mono); font-size: var(--p-font-size-325); font-weight: var(--p-font-weight-medium); overflow-wrap: anywhere; }
