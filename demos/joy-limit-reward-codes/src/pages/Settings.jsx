@@ -244,12 +244,14 @@ export function Settings() {
   const {saved, save} = useLimit();
   const [form, setForm] = useState(saved);
   const [failed, setFailed] = useState(state === 'limit-error');
+  const [saveFailed, setSaveFailed] = useState(state === 'save-error');
   const [prefixNote, setPrefixNote] = useState(scrollTo === 'prefix-discount');
   useEffect(() => {
     setForm(saved);
   }, [saved]);
   useEffect(() => {
     setFailed(state === 'limit-error');
+    setSaveFailed(state === 'save-error');
   }, [state]);
   useEffect(() => {
     setPrefixNote(scrollTo === 'prefix-discount');
@@ -262,7 +264,9 @@ export function Settings() {
   // Deep links land on the new card; General with ?scroll=prefix-discount lands on the prefix card (as in General.js).
   useEffect(() => {
     if (state === 'loading' || state === 'error') return undefined;
-    const target = type === 'additional-features' ? 'limit-reward-codes' : scrollTo === 'prefix-discount' ? 'prefix-discount' : null;
+    // conflict / test land on the block they show; every other state on the card itself.
+    const cardTarget = {conflict: 'own-code-check', test: 'test-a-code'}[state] || 'limit-reward-codes';
+    const target = type === 'additional-features' ? cardTarget : scrollTo === 'prefix-discount' ? 'prefix-discount' : null;
     if (!target) return undefined;
     const t = window.setTimeout(() => {
       document.getElementById(target)?.scrollIntoView({block: 'start'});
@@ -288,8 +292,16 @@ export function Settings() {
       notify('Couldn’t turn on the limit', {error: true});
       return;
     }
+    // Any other failure creating or updating Joy's discount (spec E): the switch keeps its value from before Save.
+    if (state === 'save-error') {
+      setForm((f) => ({...f, enabled: saved.enabled}));
+      setSaveFailed(true);
+      notify('Couldn’t save', {error: true});
+      return;
+    }
     save(form);
     setFailed(false);
+    setSaveFailed(false);
     notify('Settings saved');
   };
 
@@ -303,7 +315,7 @@ export function Settings() {
     navigate('/settings?type=general&scroll=prefix-discount');
   };
 
-  const limitProps = {form, set, saved, failed, onDismissFailed: () => setFailed(false), messageError, onChangePrefix: goToPrefix};
+  const limitProps = {form, set, saved, failed, onDismissFailed: () => setFailed(false), saveFailed, onDismissSaveFailed: () => setSaveFailed(false), messageError, onChangePrefix: goToPrefix};
   let right;
   if (state === 'loading') right = <LoadingView rows={8} />;
   else if (state === 'error') {

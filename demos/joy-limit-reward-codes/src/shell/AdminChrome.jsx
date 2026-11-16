@@ -112,8 +112,8 @@ const JOY_SUB = [
   {id: 'membership', label: 'Membership'},
   {id: 'onsite', label: 'On-site content'},
   {id: 'analytics', label: 'Analytics'},
-  {id: 'integrations', label: 'Integrations'},
   {id: 'settings', label: 'Settings', href: '#/settings?type=general', routes: ['settings']},
+  {id: 'more', label: 'View more'},
 ];
 const APP_NAME = DEMO.product === 'wishlist' ? 'Joy: Wishlist' : 'Joy: Loyalty Program';
 

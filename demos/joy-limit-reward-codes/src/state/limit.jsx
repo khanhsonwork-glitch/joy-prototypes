@@ -7,7 +7,7 @@ import {DEFAULT_MESSAGE} from '../data/codes.js';
 const LONG_MESSAGE = '{code} can’t be used with the reward code that is already in your cart. Only {max} reward code(s) can be used per order. Remove one, then try again.';
 
 export function initialLimit(state) {
-  const on = !['default', 'empty-prefix', 'limit-error'].includes(state);
+  const on = !['default', 'empty-prefix', 'limit-error', 'auto-off'].includes(state);
   const long = state === 'overflow' || state === 'worst';
   return {enabled: on, max: '1', message: long ? LONG_MESSAGE : DEFAULT_MESSAGE, excluded: [], prefix: 'NB-'};
 }

@@ -95,3 +95,16 @@ body {
 .Polaris-Frame__Main {
   border-inline-end: 0;
 }
+
+/* The Joy admin's current info tone is cyan (banner #d2f6fe, badge #8ce1f8, text #01596f), sampled from the real
+   Settings screens 16/11/2026; Polaris 12 React ships a blue one. Same tokens, real values. */
+:root,
+.p-theme-light {
+  --p-color-bg-surface-info: #d2f6fe;
+  --p-color-bg-fill-info: #8ce1f8;
+  --p-color-bg-fill-info-secondary: #8ce1f8;
+  --p-color-border-info: #a6e9fa;
+  --p-color-text-info: #01596f;
+  --p-color-text-info-secondary: #01596f;
+  --p-color-icon-info: #00b0de;
+}

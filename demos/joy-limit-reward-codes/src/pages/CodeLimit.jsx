@@ -2,7 +2,7 @@
 // earning" card (GlobalEarningLimit.js): SettingToggle + subdued subtitle, and when on a divider then sub-sections with a
 // heading each — the two fields, what Joy counts as a Joy code, the check against the shop's own codes, and a code tester.
 import React, {useState} from 'react';
-import {Banner, BlockStack, Button, Card, Divider, Icon, InlineStack, Select, Spinner, Text, TextField} from '@shopify/polaris';
+import {Badge, Banner, BlockStack, Button, Card, Divider, Icon, InlineStack, Select, Spinner, Text, TextField} from '@shopify/polaris';
 import {CheckCircleIcon, XCircleIcon} from '@shopify/polaris-icons';
 import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
@@ -58,6 +58,7 @@ function Formats({formats, exact, empty}) {
             <span role="cell" className="lc-table__format">
               <Text as="span" fontWeight="medium">{f.label}</Text>
               <span className="lc-code lc-code--subdued">{f.example}</span>
+              {f.added ? <span><Badge tone="info">{`Added automatically on ${f.added}`}</Badge></span> : null}
             </span>
             <span role="cell" className="lc-table__from">
               <span className="lc-table__label" aria-hidden="true">Comes from</span>
@@ -84,18 +85,27 @@ function Formats({formats, exact, empty}) {
 function Check({data, excluded, onExclude, onUndo, onChangePrefix, disabled, empty}) {
   const {notify} = useShell();
   const [checking, setChecking] = useState(false);
+  // Worst case: the check itself failed (spec E). No partial results; Try again runs it again and here it succeeds.
+  const [failed, setFailed] = useState(data.checkFailed);
   const open = data.clashes.filter((c) => !excluded.includes(c.code));
   const out = data.clashes.filter((c) => excluded.includes(c.code));
   const again = () => {
     setChecking(true);
     window.setTimeout(() => {
       setChecking(false);
+      setFailed(false);
       notify('Check finished');
     }, 700);
   };
 
   let result;
-  if (empty) {
+  if (failed) {
+    result = (
+      <Banner tone="critical" action={{content: 'Try again', onAction: again, loading: checking}}>
+        <p>We couldn't check your codes right now.</p>
+      </Banner>
+    );
+  } else if (empty) {
     result = (
       <Banner tone="info">
         <p>No discount codes were used in your orders in the last 90 days yet. Joy checks again every day.</p>
@@ -135,13 +145,8 @@ function Check({data, excluded, onExclude, onUndo, onChangePrefix, disabled, emp
 
   return (
     <Inset id="own-code-check" title="Check against your own codes" subtitle="Joy runs the discount codes used in your orders through the formats above, now and every day.">
-      {data.checkFailed ? (
-        <Banner tone="critical" title="The last check didn’t finish" action={{content: 'Check again', onAction: again, loading: checking}}>
-          <p>68,504 codes from orders before Aug 30 weren’t checked. The results below cover the rest. Nothing in your settings changed.</p>
-        </Banner>
-      ) : null}
       {result}
-      {out.length ? (
+      {!failed && out.length ? (
         <BlockStack gap="200">
           <Text as="h5" variant="headingXs">Excluded codes</Text>
           <div className="lc-clash">
@@ -157,7 +162,7 @@ function Check({data, excluded, onExclude, onUndo, onChangePrefix, disabled, emp
           </div>
         </BlockStack>
       ) : null}
-      {!data.checkFailed ? (
+      {!failed ? (
         <InlineStack gap="200" blockAlign="center">
           <Text as="span" tone="subdued" variant="bodySm">Last checked today at 6:00 AM</Text>
           {checking ? <Spinner size="small" accessibilityLabel="Checking" /> : <Button variant="plain" onClick={again} disabled={disabled}>Check again</Button>}
@@ -167,7 +172,7 @@ function Check({data, excluded, onExclude, onUndo, onChangePrefix, disabled, emp
   );
 }
 
-/* ---------------------------------------------------------------- test a code */
+/* ---------------------------------------------------------------- is this a Joy code? */
 
 function Tester({data, excluded, disabled, preset}) {
   const [value, setValue] = useState(preset ? 'NB-O8QY6BW9J3FC' : '');
@@ -179,7 +184,7 @@ function Tester({data, excluded, disabled, preset}) {
     setResults((list) => [...list.filter((x) => x.code !== r.code), r].slice(-5));
   };
   return (
-    <Inset id="test-a-code" title="Test a code" subtitle="Type any discount code to see whether Joy counts it as a Joy code, and why.">
+    <Inset id="test-a-code" title="Is this a Joy code?" subtitle="Type any discount code to see whether Joy counts it as a Joy code, and why.">
       <form
         className="lc-test"
         onSubmit={(e) => {
@@ -190,7 +195,7 @@ function Tester({data, excluded, disabled, preset}) {
         <div className="lc-test__field">
           <TextField label="Discount code" labelHidden autoComplete="off" placeholder="e.g. NB-O8QY6BW9J3FC" value={value} onChange={setValue} disabled={disabled} />
         </div>
-        <Button submit disabled={disabled || !value.trim()}>Test</Button>
+        <Button submit disabled={disabled || !value.trim()}>Check</Button>
       </form>
       <div className="lc-results" aria-live="polite">
         {results.length ? (
@@ -215,18 +220,25 @@ function Tester({data, excluded, disabled, preset}) {
 
 /* ---------------------------------------------------------------- the block */
 
-export function CodeLimit({form, set, saved, failed, onDismissFailed, messageError, onChangePrefix}) {
+export function CodeLimit({form, set, saved, failed, onDismissFailed, saveFailed, onDismissSaveFailed, messageError, onChangePrefix}) {
   const {notYet} = useShell();
   const {state} = useScenario();
   const data = scenarioData(state);
   const disabled = state === 'disabled';
   const exclude = (code) => set({excluded: [...form.excluded, code]});
   const undo = (code) => set({excluded: form.excluded.filter((c) => c !== code)});
+  // Joy switched the limit off itself (daily check found its Shopify discount deactivated or deleted): say so on top.
+  const [autoOff, setAutoOff] = useState(state === 'auto-off');
 
   return (
     <div id="limit-reward-codes" className="lc-anchor">
       <Card>
         <BlockStack gap="400">
+          {autoOff && !form.enabled ? (
+            <Banner tone="warning" onDismiss={() => setAutoOff(false)}>
+              <p>The reward code limit was turned off because its discount was deactivated or deleted in Shopify.</p>
+            </Banner>
+          ) : null}
           <BlockStack gap="100">
             <SettingToggle
               title="Limit Joy reward codes per order"
@@ -248,6 +260,11 @@ export function CodeLimit({form, set, saved, failed, onDismissFailed, messageErr
           {failed ? (
             <Banner tone="critical" title="Couldn’t turn on the limit" onDismiss={onDismissFailed} action={{content: 'Open Shopify discounts', onAction: notYet}}>
               <p>Shopify allows up to 25 active automatic discounts. Deactivate one in Shopify, then try again.</p>
+            </Banner>
+          ) : null}
+          {saveFailed ? (
+            <Banner tone="critical" onDismiss={onDismissSaveFailed}>
+              <p>Couldn't update the reward code limit. Please try again.</p>
             </Banner>
           ) : null}
           {state === 'empty-prefix' ? (

@@ -6,19 +6,21 @@ export const STATES = [
   {value: 'default', label: 'Off (default)', help: 'Limit not turned on yet'},
   {value: 'on', label: 'On', help: '1 Joy code per order, no clash with own codes'},
   {value: 'conflict', label: 'Own codes match', help: '2 shop codes look like Joy codes'},
-  {value: 'test', label: 'Test a code', help: 'Results for a shop code and a Joy code'},
+  {value: 'test', label: 'Is this a Joy code?', help: 'Results for a shop code and a Joy code'},
   {value: 'empty-prefix', label: 'Reward with no prefix', help: 'Warning before turning on'},
   {value: 'limit-error', label: 'Shopify discount limit', help: 'Turning on fails, stays off'},
+  {value: 'auto-off', label: 'Turned off by Joy', help: 'Its discount was deactivated or deleted in Shopify'},
+  {value: 'save-error', label: 'Save failed', help: 'Update failed, switch keeps its saved value'},
   {value: 'checkout', label: 'Checkout', help: 'Second Joy code removed at checkout'},
   {value: 'empty', label: 'Empty', help: 'Joy has not issued a code yet'},
   {value: 'loading', label: 'Loading', help: 'Data on its way'},
   {value: 'error', label: 'Error', help: 'Loading failed'},
   {value: 'disabled', label: 'Disabled', help: 'Staff without Settings permission'},
   {value: 'overflow', label: 'Overflow', help: 'Longest prefix, most formats, biggest numbers'},
-  {value: 'worst', label: 'Worst case', help: 'Overflow, many clashing codes and a failed check'},
+  {value: 'worst', label: 'Worst case', help: 'Overflow and the check against own codes failing'},
 ];
-// ?state=off is the same screen as Default (the limit starts off); people type either.
-const ALIASES = {off: 'default'};
+// ?state=off is the same screen as Default (the limit starts off); ?state=check is the old name's twin of test.
+const ALIASES = {off: 'default', check: 'test'};
 const VALID = new Set(STATES.map((s) => s.value));
 function readState() {
   const query = new URLSearchParams(window.location.hash.split('?').slice(1).join('?'));

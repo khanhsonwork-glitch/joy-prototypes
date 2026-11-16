@@ -15,16 +15,17 @@ const fmt = (prefix, length, chars, example, from, last, extra = {}) => ({
   example,
   from,
   last,
-  label: prefix ? `${prefix} + ${length} characters${extra.hideChars ? '' : ` (${chars.label})`}` : `${length} characters (${chars.label}), no prefix`,
+  label: prefix ? `${prefix} + ${length} characters (${chars.label})` : `${length} characters (${chars.label}), no prefix`,
   ...extra,
 });
 
 /** What Joy treats as a Joy code at checkout, one row per format (newest issue first). */
 export const FORMATS = [
   fmt('NB-', 12, AN, 'NB-O8QY6BW9J3FC', '$5 / $10 / $20 Off coupon, Free product rewards, VIP tier rewards', 'Today'),
+  fmt('NBGIFT-', 12, AN, 'NBGIFT-7Q2MX9KD4WLP', 'Free gift reward', 'Nov 15', {added: 'Nov 15'}),
   fmt('BDAY-', 10, BASE32, 'BDAY-K7BR2QXDHL', 'Birthday reward', 'Nov 14'),
   fmt('JOY-', 12, AN, 'JOY-7K2MQ9XW4PLA', 'Joy default prefix (always counted)', 'Oct 30'),
-  fmt('OLD-', 12, AN, 'OLD-H3XW2M8Q1ZPC', 'Previous prefix — no longer issued, 34 unused codes still valid', 'Aug 02', {hideChars: true, retired: true}),
+  fmt('OLD-', 12, AN, 'OLD-H3XW2M8Q1ZPC', 'Previous prefix — no longer issued, 34 unused codes still valid', 'Aug 02', {retired: true}),
 ];
 export const EXACT = [{code: 'VIP10', label: 'VIP10 (exact code)', example: 'VIP10', from: 'Fixed code reward', last: 'Nov 10'}];
 
@@ -47,7 +48,7 @@ export const OVERFLOW_FORMATS = [
   fmt('MILESTONE-', 12, AN, 'MILESTONE-9XW4PLA7K2MQ', 'Milestone reward', 'Nov 09'),
   fmt('GIFT-', 12, AN, 'GIFT-2MQ9XW4PLA7K', 'Free gift reward', 'Oct 22'),
   fmt('POS-', 12, AN, 'POS-XW4PLA7K2MQ9', 'Rewards redeemed at the counter (Point of Sale)', 'Oct 17'),
-  fmt('OLD-', 12, AN, 'OLD-H3XW2M8Q1ZPC', 'Previous prefix — no longer issued, 12,408 unused codes still valid', 'Aug 02', {hideChars: true, retired: true}),
+  fmt('OLD-', 12, AN, 'OLD-H3XW2M8Q1ZPC', 'Previous prefix — no longer issued, 12,408 unused codes still valid', 'Aug 02', {retired: true}),
 ];
 
 /** Codes Joy issued, so a test can say which reward a code came from. */
@@ -57,6 +58,7 @@ export const ISSUED = {
   'BDAY-K7BR2QXDHL': 'Birthday reward',
   'JOY-7K2MQ9XW4PLA': '$5 Off coupon',
   'OLD-H3XW2M8Q1ZPC': '$20 Off coupon',
+  'NBGIFT-7Q2MX9KD4WLP': 'Free gift reward',
 };
 
 /** The shop's own Shopify codes that happen to match a Joy format (found by the daily check). */
@@ -71,7 +73,7 @@ export const WORST_CLASHES = [
   {code: 'REF-SPRINGPOPUP1', orders: 97},
   {code: 'GIFT-WITHPURCHASE', orders: 63},
   {code: 'BRONZE-WELCOMEBACK1', orders: 9},
-  {code: 'DIAMOND-LAUNCHPARTY1', orders: 1},
+  {code: 'DIAMOND-LAUNCHPARTY1', orders: 2},
 ];
 
 export const CHECKED = {default: 2148, overflow: 1_248_906};
