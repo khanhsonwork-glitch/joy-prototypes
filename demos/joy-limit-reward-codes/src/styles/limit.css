@@ -1,0 +1,91 @@
+/* Settings › General › Redemption behavior: the "Limit Joy reward codes per order" block. Polaris tokens only. */
+.lc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.lc-search { padding: var(--p-space-300); }
+.lc-ico { display: inline-flex; width: 20px; height: 20px; color: var(--p-color-icon-secondary); }
+.lc-ico svg { width: 20px; height: 20px; fill: currentColor; }
+.lc-sticky { position: sticky; top: calc(var(--chrome-topbar-height) + 56px + var(--p-space-400)); }
+.lc-anchor { scroll-margin-top: calc(var(--chrome-topbar-height) + 56px + var(--p-space-400)); }
+.lc-fields { max-width: 360px; }
+/* The settings list stays in view next to a long card, like the admin's left rail */
+.lc-page .Polaris-Layout { align-items: stretch; }
+.lc-page .Polaris-Layout__Section--oneThird { align-self: stretch; }
+
+/* Switch: same size and colours as the Polaris switch (s-switch) the Joy admin uses */
+.lc-switch {
+  flex: none;
+  position: relative;
+  width: 32px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--p-border-radius-full);
+  background: var(--p-color-border-hover);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.lc-switch.is-on { background: var(--p-color-bg-fill-brand); }
+.lc-switch:disabled { cursor: not-allowed; opacity: 0.5; }
+.lc-switch:focus-visible { outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: var(--p-space-050); }
+.lc-switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--p-border-radius-full);
+  background: var(--p-color-bg-surface);
+  box-shadow: var(--p-shadow-100);
+  transition: transform 120ms ease;
+}
+.lc-switch.is-on .lc-switch__knob { transform: translateX(12px); }
+@media (prefers-reduced-motion: reduce) { .lc-switch, .lc-switch__knob { transition: none; } }
+
+/* Codes are read character by character: monospace, never broken mid-word unless they are too long for the line */
+.lc-code { font-family: var(--p-font-family-mono); font-size: var(--p-font-size-325); font-weight: var(--p-font-weight-medium); overflow-wrap: anywhere; }
+.lc-code--subdued { color: var(--p-color-text-secondary); font-weight: var(--p-font-weight-regular); }
+
+/* Joy code formats: three columns on wide screens, one block per format on phones */
+.lc-table { display: grid; }
+.lc-table__head,
+.lc-table__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) 84px;
+  gap: var(--p-space-300);
+  padding-block: var(--p-space-200);
+}
+.lc-table__head {
+  padding-block-start: 0;
+  color: var(--p-color-text-secondary);
+  font-size: var(--p-font-size-300);
+  font-weight: var(--p-font-weight-medium);
+}
+.lc-table__row { border-top: var(--p-border-width-025) solid var(--p-color-border-secondary); }
+.lc-table__format { display: grid; gap: var(--p-space-050); align-content: start; min-width: 0; }
+.lc-table__from, .lc-table__last { min-width: 0; overflow-wrap: anywhere; }
+.lc-table__label { display: none; }
+@media (max-width: 640px) {
+  .lc-table__head { display: none; }
+  .lc-table__row { grid-template-columns: minmax(0, 1fr); gap: var(--p-space-100); }
+  .lc-table__label { display: block; color: var(--p-color-text-secondary); font-size: var(--p-font-size-300); }
+}
+
+/* Own codes that clash, and excluded ones */
+.lc-clash { display: grid; }
+.lc-clash__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-space-200) var(--p-space-400);
+  padding-block: var(--p-space-200);
+  border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);
+}
+.lc-clash__row:first-child { border-top: 0; padding-block-start: 0; }
+
+/* Test a code */
+.lc-test { display: flex; gap: var(--p-space-200); align-items: flex-start; }
+.lc-test__field { flex: 1 1 auto; min-width: 0; max-width: 360px; }
+.lc-results { display: grid; gap: var(--p-space-200); }
+.lc-result { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--p-space-200); align-items: start; }
+.lc-result p { margin: 0; }
+.lc-result__icon { padding-top: 1px; }

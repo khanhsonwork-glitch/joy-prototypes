@@ -342,6 +342,31 @@
     },
     {
       "product": "loyalty",
+      "slug": "joy-limit-reward-codes",
+      "name": "Limit Joy reward codes per order",
+      "area": "Settings",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-16",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-joy-limit-reward-codes.jpg",
+      "reviewUrl": "/loyalty/joy-limit-reward-codes/#/settings?state=on",
+      "kind": "prototype",
+      "aliases": [
+        "One reward code per order",
+        "Discount code limit"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "joy-pulse",
       "name": "Joy Pulse",
       "area": "On-site content",
