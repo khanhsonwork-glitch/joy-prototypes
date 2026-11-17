@@ -1054,6 +1054,32 @@
     },
     {
       "product": "loyalty",
+      "slug": "store-credit-plan-gate",
+      "name": "Store credit plan gate",
+      "area": "Reward programs",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-17",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-store-credit-plan-gate.jpg",
+      "reviewUrl": "/loyalty/store-credit-plan-gate/#/redeem-add",
+      "kind": "prototype",
+      "aliases": [
+        "store credit",
+        "available on essential",
+        "plan badge"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "sync-shopify-discounts",
       "name": "Sync Shopify discounts (My coupons)",
       "area": "On-site content",
