@@ -792,6 +792,16 @@
   text-decoration: underline;
   font-size: 12px;
 }
+.wg-guest small {
+  color: var(--pp-ink-soft);
+}
+.wg-link--button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
 .wg-member__points {
   display: flex;
   align-items: baseline;

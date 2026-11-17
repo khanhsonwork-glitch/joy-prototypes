@@ -1,22 +1,22 @@
 // Fake widget design for the fictional shop (Pomelo Park). Nothing here is a real merchant's setting.
 // Section ids, block types, defaults and labels follow the real Widget editor so the prototype reads the same.
 
-/** Who is looking at the widget. "Signed in, not joined" is a customer who has an account but is not a loyalty member. */
+/** Who is looking at the widget. On an opt-in shop "Signed in" lands on the Join Program screen (not a member yet), like a guest. */
 export const VIEWERS = [
   {value: 'guest', label: 'Guest'},
-  {value: 'signed-in', label: 'Signed in, not joined'},
+  {value: 'signed-in', label: 'Signed in'},
   {value: 'member', label: 'Member'},
 ];
 export const viewerLabel = (value) => VIEWERS.find((v) => v.value === value)?.label ?? value;
 
+export const SHOW_TO_LABEL = 'Who can see this block';
 export const SHOW_TO_OPTIONS = [
   {label: 'Everyone', value: 'everyone'},
-  {label: 'Guests only', value: 'guests'},
-  {label: 'Members only', value: 'members'},
+  {label: 'Guests', value: 'guests'},
+  {label: 'Members', value: 'members'},
 ];
-export const SHOW_TO_HELP = "Guests are visitors who aren't loyalty members yet, including signed-in customers who haven't joined.";
-export const SHOW_TO_GUESTS_HELP =
-  "When off, this section is hidden from visitors who aren't loyalty members yet, including signed-in customers who haven't joined.";
+export const SHOW_TO_HELP = 'Guests are visitors who see the Sign in or Join screen in the widget. Everyone else counts as a member.';
+export const SHOW_TO_GUESTS_HELP = 'When off, this section is hidden from visitors who see the Sign in or Join screen in the widget.';
 
 /** Built-in Body sections, in the default order of the real editor. `guestOption: false` = no "Show to guests" checkbox. */
 export const SECTION_META = {
@@ -92,7 +92,7 @@ export function rowLabel(section) {
   return SECTION_META[section.id]?.label ?? section.id;
 }
 
-/** Everyone / Guests only / Members only against the three preview customers. */
+/** Everyone / Guests / Members against the three preview customers (Guest and Signed in both see the Sign in or Join screen). */
 export function audienceSees(audience, viewer) {
   const rule = audience || 'everyone';
   if (rule === 'everyone') return true;
@@ -118,7 +118,7 @@ export function initialSections(preset = 'default') {
       content: 'Start BLACK WEEK early with code BLACK26',
       size: 'lg',
       align: 'center',
-      // A block saved before Show to existed as hidden for guests: it opens as Members only.
+      // A block saved as hidden for guests (before the select existed) opens as Members.
       audience: preset === 'members-only-existing' ? 'members' : 'everyone',
     },
     {
@@ -132,7 +132,7 @@ export function initialSections(preset = 'default') {
       layout: 'image-left',
       alt: '',
       url: '/collections/black-week',
-      external: false,
+      external: true,
       audience: 'everyone',
     },
     {id: 'COUPONS', enabled: true},

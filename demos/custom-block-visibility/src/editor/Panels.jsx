@@ -1,10 +1,10 @@
 // Middle column of the Widget editor: the settings of the selected Body entry.
-// Custom blocks follow the real CustomBlockConfig (same fields, same control types); "Show to" is the new select at the
+// Custom blocks follow the real CustomBlockConfig (same fields, same control types); "Who can see this block" is the new select at the
 // top of each. Built-in sections follow the real SectionPanel; only the help text of "Show to guests" changed.
 import React from 'react';
 import {BlockStack, Checkbox, Divider, Icon, RangeSlider, Select, Text, TextField} from '@shopify/polaris';
 import {DragHandleIcon, EditIcon, HideIcon, UploadIcon, ViewIcon, DeleteIcon} from '@shopify/polaris-icons';
-import {CUSTOM_LABELS, SECTION_META, SHOW_TO_GUESTS_HELP, SHOW_TO_HELP, SHOW_TO_OPTIONS, THEME_PRIMARY, isCustom, typeOf} from '../data/widget.js';
+import {CUSTOM_LABELS, SECTION_META, SHOW_TO_GUESTS_HELP, SHOW_TO_HELP, SHOW_TO_LABEL, SHOW_TO_OPTIONS, THEME_PRIMARY, isCustom, typeOf} from '../data/widget.js';
 import {useEditor} from '../state/editor.jsx';
 import {useShell} from '../shell/ShellContext.jsx';
 import {cx, useSortable} from './bits.jsx';
@@ -64,12 +64,12 @@ function Pair({children}) {
   return <div className="we-pair">{children}</div>;
 }
 
-/** NEW on every custom block: who sees it. Same position as the built-in sections' "Show to guests": first under the heading. */
+/** NEW on every custom block: who can see it. Same position as the built-in sections' "Show to guests": first under the heading. */
 function ShowTo({section}) {
   const ed = useEditor();
   return (
     <Select
-      label="Show to"
+      label={SHOW_TO_LABEL}
       options={SHOW_TO_OPTIONS}
       value={section.audience || 'everyone'}
       onChange={(value) => ed.patch(section.id, {audience: value})}

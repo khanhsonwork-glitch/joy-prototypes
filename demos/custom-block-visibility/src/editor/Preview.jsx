@@ -129,6 +129,7 @@ export function Preview({onInspect}) {
             inspect={ed.inspect}
             onInspect={onInspect}
             onLink={onLink}
+            onJoin={() => ed.setViewer('member')}
           />
         </Storefront>
       </div>

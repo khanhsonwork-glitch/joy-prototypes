@@ -211,7 +211,7 @@ function Block({block, onLink}) {
   }
 }
 
-export function Widget({sections, membership, programs, viewer, inspect, onInspect, onLink}) {
+export function Widget({sections, membership, programs, viewer, inspect, onInspect, onLink, onJoin}) {
   const member = viewer === 'member';
   const rows = sections.filter((s) => sectionVisible(s, viewer));
   const tap = (id) => (event) => {
@@ -247,9 +247,19 @@ export function Widget({sections, membership, programs, viewer, inspect, onInspe
             <div className="wg-card wg-guest" data-inspect="membership-card" onClickCapture={tap('membership-card')}>
               <strong>Welcome to Pomelo Rewards</strong>
               <p>Join our loyalty program to earn points, redeem rewards and more.</p>
-              <button type="button" className="wg-btn wg-btn--dark wg-btn--md">
-                Join the program
+              <button type="button" className="wg-btn wg-btn--dark wg-btn--md" onClick={onJoin}>
+                Join Program
               </button>
+              {viewer === 'guest' ? (
+                <small>
+                  Already a member?{' '}
+                  <button type="button" className="wg-link wg-link--button" onClick={onJoin}>
+                    Sign in
+                  </button>
+                </small>
+              ) : (
+                <small>Signed in as ava@example.com</small>
+              )}
             </div>
           )
         ) : null}
