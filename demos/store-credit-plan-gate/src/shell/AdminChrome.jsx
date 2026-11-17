@@ -108,7 +108,8 @@ function NavSection({label, onClick}) {
 const JOY_SUB = [
   {id: 'customers', label: 'Customers'},
   {id: 'rewards', label: 'Reward programs', path: '/earning',
-    routes: ['earning', 'earning-place-order', 'earning-sign-up', 'earning-newsletter', 'redeem', 'redeem-add', 'redeem-new', 'referral', 'referral-reward', 'referral-friend-reward']},
+    routes: ['earning', 'earning-place-order', 'earning-sign-up', 'earning-newsletter', 'redeem', 'redeem-add', 'redeem-new', 'referral', 'referral-reward', 'referral-friend-reward',
+      'milestones', 'quizzes', 'point-expiration', 'subscription-membership']},
   {id: 'membership', label: 'Membership'},
   {id: 'onsite', label: 'On-site content'},
   {id: 'analytics', label: 'Analytics'},

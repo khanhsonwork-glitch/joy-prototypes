@@ -3,9 +3,9 @@
 import React, {createContext, useCallback, useContext, useMemo, useState} from 'react';
 
 export const INITIAL = {
-  placeOrder: {title: 'Place an order', dateRange: 'static', start: '2026-11-20', who: 'all', typeEarn: 'point', earnBy: 'price', value: '1', every: '1'},
-  signUp: {title: 'Sign Up', start: '2026-11-20', typeEarn: 'point', value: '100'},
-  newsletter: {title: 'Sign up for newsletter', start: '2026-11-20', typeEarn: 'point', value: '50'},
+  placeOrder: {title: 'Place an order', dateRange: 'static', start: '2026-11-20', end: '', who: 'all', typeEarn: 'point', earnBy: 'price', value: '1', every: '1'},
+  signUp: {title: 'Sign Up', start: '2026-11-20', end: '', typeEarn: 'point', value: '100'},
+  newsletter: {title: 'Sign up for newsletter', start: '2026-11-20', end: '', typeEarn: 'point', value: '50'},
   referrer: {method: 'fixed_amount', value: '10'},
   friend: {method: 'percentage', value: '10'},
 };

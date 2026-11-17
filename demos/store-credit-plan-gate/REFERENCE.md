@@ -35,3 +35,13 @@ plan label "Essential" (`getLabelPlan`).
 - Environmental impact, Free gift, Free shipping and Gift card blocks already show the badge and a disabled Add more on
   every Free shop; the demo shows that on both Free states.
 - Block illustrations (Shopify CDN images) are left out: the prototype loads nothing from outside.
+
+## Same pattern, not drawn here
+
+- Other earning programs reuse the controls drawn above: `RewardTypeSelect` (Write a review, Google Maps review,
+  SMS, Social, Fill survey, Submit form, Submit receipt, Custom, Interact website, Streak, via `RewardRule.js`) and the
+  Birthday "Choose reward" select. Same treatment as `#/earning-newsletter`.
+- Still a store credit choice, not redrawn: Milestones tab rewards (`EVENT_MILESTONE` is in `storeCreditEarningEvents`),
+  VIP tier rewards ("Store credit" and "Bonus store credit" in `TierRewardSettings.js`), Quest rewards, the
+  "Store credit cashback" Place order template (`const/placeOrderTemplates.js`), and the Onboarding V2 Cashback and
+  Referral steps (`Wizard/V2/steps/CashbackSetup.js`, `ReferralSetup.js`). The Milestones tab in the demo says so.

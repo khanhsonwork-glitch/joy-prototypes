@@ -18,7 +18,8 @@ import {DEMO} from './demo.config.js';
 
 // Routes (hash): #/redeem-add (default) · #/redeem · #/redeem-new/<option> · #/earning · #/earning-place-order ·
 // #/earning-sign-up · #/earning-newsletter · #/referral · #/referral-reward · #/referral-friend-reward · #/plans · #/kit
-const PROGRAM_TABS = ['earning', 'redeem', 'redeem-add', 'referral'];
+// (#/milestones, #/quizzes, #/point-expiration, #/subscription-membership: tabs this prototype does not redraw)
+const PROGRAM_TABS = ['earning', 'redeem', 'redeem-add', 'referral', 'milestones', 'quizzes', 'point-expiration', 'subscription-membership'];
 const PAGES = {
   'earning-place-order': () => <PlaceOrderEdit />,
   'earning-sign-up': () => <SignUpEdit variant="sign-up" />,

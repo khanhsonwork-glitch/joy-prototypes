@@ -3,8 +3,9 @@
 // - Sign Up (SignUpProgramV2.js): custom dropdown "Rewarding method" (SelectOptions) whose paid options carry a badge.
 // - Sign up for newsletter (SignUpProgramV2.js › RewardTypeSelect.js): select "Reward type".
 import React, {useState} from 'react';
-import {BlockStack, Card, ChoiceList, Icon, InlineGrid, Popover, Select, Text, TextField} from '@shopify/polaris';
-import {SelectIcon} from '@shopify/polaris-icons';
+import {BlockStack, Card, ChoiceList, Icon, InlineGrid, InlineStack, Link, Popover, Select, Text, TextField, Tooltip} from '@shopify/polaris';
+import {InfoIcon, SelectIcon} from '@shopify/polaris-icons';
+import {useShell} from '../shell/ShellContext.jsx';
 import {useNavigate} from '../shell/router.jsx';
 import {useShop} from '../kit/scenario.jsx';
 import {LabelWithBadge, PlanBadge} from '../components/PlanBadge.jsx';
@@ -21,7 +22,10 @@ function ProgramInfo({editor, nameLabel = 'Program name', children}) {
         <Text as="h2" variant="headingSm">Program information</Text>
         <TextField label={nameLabel} value={form.title} onChange={set('title')} error={show('title')} placeholder="Reward Program" autoComplete="off" />
         {children}
-        <TextField label="Start date" type="date" value={form.start} onChange={set('start')} autoComplete="off" />
+        <InlineGrid columns={{xs: 1, sm: 2}} gap="300">
+          <TextField label="Start date" type="date" value={form.start} onChange={set('start')} autoComplete="off" />
+          <TextField label="End date" type="date" value={form.end || ''} onChange={set('end')} autoComplete="off" />
+        </InlineGrid>
       </BlockStack>
     </Card>
   );
@@ -31,6 +35,7 @@ function ProgramInfo({editor, nameLabel = 'Program name', children}) {
 
 export function PlaceOrderEdit() {
   const shop = useShop();
+  const {notYet} = useShell();
   const editor = useEditForm('placeOrder', (f) => ({
     ...(nameError(f.title) ? {title: nameError(f.title)} : {}),
     ...(positive(f.value) ? {value: positive(f.value)} : {}),
@@ -60,7 +65,7 @@ export function PlaceOrderEdit() {
               title="Who to reward"
               choices={[
                 {label: 'All loyalty members', value: 'all', helpText: form.who === 'all' ? `All customers who joined the loyalty program can earn ${credit ? 'store credit' : 'points'}` : undefined},
-                {label: 'VIP Tier only', value: 'vip', disabled: true, helpText: "You haven't setup VIP Tier yet."},
+                {label: 'VIP Tier only', value: 'vip', disabled: true, helpText: <>{"You haven't setup VIP Tier yet. Click "}<Link onClick={notYet}>here</Link>{' to setup'}</>},
                 {label: 'All customers', value: 'guest', helpText: form.who === 'guest' ? `Everyone can earn ${credit ? 'store credit' : 'points'}, including guests` : undefined},
               ]}
               selected={[form.who]}
@@ -190,7 +195,12 @@ export function SignUpEdit({variant}) {
         <ProgramInfo editor={editor} nameLabel="Rule name" />
         <Card>
           <BlockStack gap="400">
-            <Text as="h2" variant="headingSm">Setup rule</Text>
+            <InlineStack gap="100" blockAlign="center">
+              <Text as="h2" variant="headingSm">Setup rule</Text>
+              <Tooltip content={newsletter ? 'Configure how customers earn when they sign up for your newsletter' : 'Configure how customers earn points when they create an account'}>
+                <span className="scg-info" tabIndex={0} role="img" aria-label="About setup rule"><Icon source={InfoIcon} tone="subdued" /></span>
+              </Tooltip>
+            </InlineStack>
             {newsletter ? (
               <div data-field="reward-type">
                 <LabelWithBadge htmlFor={selectId} locked={locked}>Reward type</LabelWithBadge>

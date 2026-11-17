@@ -64,6 +64,10 @@
 .scg-select-options .Polaris-Icon {margin: 0;}
 .scg-select-options__list {padding: var(--p-space-300) var(--p-space-400);}
 
+/* Info icon beside a card heading (tooltip). */
+.scg-info {display: inline-flex; border-radius: var(--p-border-radius-full);}
+.scg-info:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus);}
+
 /* Plans stub: the Essential line this feature adds. */
 .scg-plan-highlight {padding-left: var(--p-space-300); border-left: var(--p-border-width-050) solid var(--p-color-border-info);}
 

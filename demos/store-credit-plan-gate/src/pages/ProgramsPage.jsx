@@ -22,11 +22,12 @@ const TABS = [
   {id: 'earning', label: 'Earning programs', path: '/earning'},
   {id: 'redeem', label: 'Redeeming programs', path: '/redeem'},
   {id: 'referral', label: 'Referrals', path: '/referral'},
-  {id: 'milestone', label: 'Milestones'},
-  {id: 'quest', label: 'Quizzes'},
-  {id: 'point_expiration', label: 'Point expiration'},
-  {id: 'joySubscription', label: 'Subscription and Membership'},
+  {id: 'milestone', label: 'Milestones', path: '/milestones', other: true},
+  {id: 'quest', label: 'Quizzes', path: '/quizzes', other: true},
+  {id: 'point_expiration', label: 'Point expiration', path: '/point-expiration', other: true},
+  {id: 'joySubscription', label: 'Subscription and Membership', path: '/subscription-membership', other: true},
 ];
+const TAB_BY_ROUTE = Object.fromEntries(TABS.map((t) => [t.path.slice(1), t.id]));
 
 const ICONS = {money: CashDollarIcon, percent: DiscountIcon, product: ProductIcon, 'gift-card': GiftCardIcon, leaf: NatureIcon, order: OrderIcon, person: PersonAddIcon, email: EmailIcon};
 
@@ -61,7 +62,7 @@ function ProgramsFrame({tab, children}) {
         <Tabs
           tabs={TABS.map((t) => ({id: `tab-${t.id}`, content: t.label}))}
           selected={Math.max(0, TABS.findIndex((t) => t.id === tab))}
-          onSelect={(i) => (TABS[i].path ? navigate(TABS[i].path) : notYet())}
+          onSelect={(i) => navigate(TABS[i].path)}
         />
         {children}
       </BlockStack>
@@ -294,12 +295,13 @@ function EarningTab() {
 
 // ---------------------------------------------------------------- Referrals
 
-function RewardRow({title, summary, url}) {
+function RewardRow({title, summary, redeemed, url}) {
   return (
     <InlineStack align="space-between" blockAlign="center" gap="300" wrap={false}>
       <BlockStack gap="100">
         <Text variant="bodyMd" as="span" fontWeight="semibold">{title}</Text>
         <Text as="p" breakWord>{summary}</Text>
+        <span><Badge>{`${redeemed} redeemed`}</Badge></span>
       </BlockStack>
       <Button icon={EditIcon} variant="plain" url={url} accessibilityLabel={`Edit ${title.toLowerCase()}`} />
     </InlineStack>
@@ -335,7 +337,7 @@ function ReferralTab() {
       <BlockStack gap="400">
         <InlineStack align="space-between" blockAlign="start" gap="300" wrap={false}>
           <BlockStack gap="100">
-            <InlineStack gap="200" blockAlign="center">
+            <InlineStack gap="200" align="start" blockAlign="center">
               <Text as="h2" variant="headingMd">Referral program</Text>
               <Badge tone={on ? 'success' : undefined}>{on ? 'On' : 'Off'}</Badge>
             </InlineStack>
@@ -345,9 +347,9 @@ function ReferralTab() {
         </InlineStack>
         <Box borderWidth="025" borderColor="border" borderRadius="200" padding="400">
           <BlockStack gap="300">
-            <RewardRow title="Rewards for referrers" summary={summary(REFERRER_METHODS, data.referrer.method, data.referrer.value)} url="/referral-reward" />
+            <RewardRow title="Rewards for referrers" summary={summary(REFERRER_METHODS, data.referrer.method, data.referrer.value)} redeemed={128} url="/referral-reward" />
             <Divider />
-            <RewardRow title="Rewards for referees" summary={summary(FRIEND_METHODS, data.friend.method, data.friend.value)} url="/referral-friend-reward" />
+            <RewardRow title="Rewards for referees" summary={summary(FRIEND_METHODS, data.friend.method, data.friend.value)} redeemed={341} url="/referral-friend-reward" />
           </BlockStack>
         </Box>
       </BlockStack>
@@ -357,15 +359,32 @@ function ReferralTab() {
 
 // ---------------------------------------------------------------- page
 
+/** Tabs this prototype does not redraw: say so instead of a dead tab, and name the store credit choices there. */
+function OtherTab({tab}) {
+  const navigate = useNavigate();
+  const label = TABS.find((t) => t.id === tab).label;
+  const note = tab === 'milestone'
+    ? 'Milestone rewards can pay store credit too; on a new Free shop that choice gets the same “Available on Essential” badge as the earning and referral pages. This tab is not redrawn in the prototype.'
+    : `The ${label} tab does not change with this feature and is not redrawn in the prototype.`;
+  return (
+    <div className="scg-proto-note" role="note">
+      <p>{`Prototype · ${note}`}</p>
+      <Button onClick={() => navigate('/redeem')}>Open Redeeming programs</Button>
+    </div>
+  );
+}
+
 export function ProgramsPage() {
   const {segments} = useRoute();
   const route = segments[0];
-  const tab = route === 'redeem-add' ? 'redeem' : route;
+  const tab = route === 'redeem-add' ? 'redeem' : TAB_BY_ROUTE[route];
+  const other = TABS.find((t) => t.id === tab)?.other;
   return (
     <ProgramsFrame tab={tab}>
       {tab === 'earning' ? <EarningTab /> : null}
       {tab === 'redeem' ? <RedeemTab modalOpen={route === 'redeem-add'} /> : null}
       {tab === 'referral' ? <ReferralTab /> : null}
+      {other ? <OtherTab tab={tab} /> : null}
     </ProgramsFrame>
   );
 }
