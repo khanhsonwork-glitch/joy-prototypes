@@ -128,6 +128,29 @@
     },
     {
       "product": "loyalty",
+      "slug": "custom-block-visibility",
+      "name": "Custom blocks — who sees it, on/off, image link",
+      "area": "On-site content",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-17",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-custom-block-visibility.jpg",
+      "reviewUrl": "/loyalty/custom-block-visibility/#/rich-text",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "custom-plan",
       "name": "Custom plan",
       "area": "Subscription",
