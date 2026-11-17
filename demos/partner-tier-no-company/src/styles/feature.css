@@ -179,6 +179,19 @@
   gap: var(--p-space-100);
 }
 
+.pt-progress {
+  height: var(--p-space-150);
+  border-radius: var(--p-border-radius-full);
+  background: var(--p-color-bg-fill-tertiary);
+  overflow: hidden;
+}
+
+.pt-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+}
+
 .pt-check {
   flex-shrink: 0;
   display: inline-flex;
@@ -249,7 +262,47 @@
   outline-offset: var(--p-space-050);
 }
 
-/* Lines the warning up with the checkbox label, under its help text */
-.set-exclude-warning {
+/* Lines the warning and the plan badge up with the checkbox label, under its help text */
+.set-exclude-warning,
+.set-under-checkbox {
   margin-inline-start: var(--p-space-600);
+}
+
+/* The badge hugs the help text, as it does under Customer opt-in / Manually assigned */
+.set-under-checkbox {
+  margin-block-start: calc(var(--p-space-100) * -1);
+}
+
+/* ------------------------------------------------------------ shared */
+/* "Create company in Shopify" + external-link icon: opens in a new tab */
+.ncw-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-space-050);
+  text-decoration: underline; /* an inline-flex box does not inherit the link's underline */
+}
+
+.ncw-link .Polaris-Icon {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+/* AvailableBadge wrapper: clickable, 0.8 opacity on hover (AvailableBadge/styles.scss) */
+.plan-badge {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.plan-badge:hover {
+  opacity: 0.8;
+}
+
+.plan-badge:focus-visible {
+  outline: var(--p-border-width-050) solid var(--p-color-border-focus);
+  outline-offset: var(--p-space-050);
+  border-radius: var(--p-border-radius-200);
 }

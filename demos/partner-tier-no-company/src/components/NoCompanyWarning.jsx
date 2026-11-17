@@ -2,7 +2,8 @@
 // (shop.hasB2bCompanies === false). Same Polaris warning banner Joy already uses (s-banner tone="warning"),
 // laid out like Joy's other banners with a link: text first, the link on its own line under it.
 import React from 'react';
-import {Banner, BlockStack, Link, Text} from '@shopify/polaris';
+import {Banner, BlockStack, Icon, Link, Text} from '@shopify/polaris';
+import {ExternalSmallIcon} from '@shopify/polaris-icons';
 // Polaris React draws a page-level Banner as a card with a coloured header; Joy's s-banner is the same tinted box
 // everywhere. This context gives the Partner tier page the in-card look the Membership card and Settings get.
 import {WithinContentContext} from '@shopify/polaris/build/esm/utilities/within-content-context.js';
@@ -10,12 +11,17 @@ import {useShell} from '../shell/ShellContext.jsx';
 
 export const CREATE_COMPANY = 'Create company in Shopify';
 
-/** In the app the link opens Shopify admin › Companies › Add company in a new tab; the prototype says so. */
+/** Opens Shopify admin › Companies › Add company in a NEW TAB (external icon, as Joy's other new-tab links);
+ *  the prototype only says so with a toast. */
 function CreateCompanyLink() {
   const {notify} = useShell();
   return (
     <Link onClick={() => notify('Opens Shopify admin › Companies › Add company in a new tab')} removeUnderline={false}>
-      {CREATE_COMPANY}
+      <span className="ncw-link">
+        {CREATE_COMPANY}
+        <Icon source={ExternalSmallIcon} />
+        <Text as="span" visuallyHidden>(opens in a new tab)</Text>
+      </span>
     </Link>
   );
 }

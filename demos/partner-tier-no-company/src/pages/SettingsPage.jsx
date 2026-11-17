@@ -1,7 +1,11 @@
 // #/settings/general: Joy › Settings › General (pages/Setting/Setting.js + Details/General.js on avada/master; the app's
 // own URL is /settings?type=general). First card: "Membership enrollment" (Details/MembershipEnrollmentSettings.js).
-// Change: when "Exclude B2B customers" is ticked and Joy counted 0 Shopify companies, a warning under the checkbox
-// says nobody is excluded. Unticked, or a shop with companies: no warning, exactly as today.
+// Changes:
+// - When "Exclude B2B customers" is ticked and Joy counted 0 Shopify companies, a warning under the checkbox (below its
+//   help text) says nobody is excluded. Unticked, or a shop with companies: no warning.
+// - Below Advanced (?plan=essential) the checkbox is locked like Customer opt-in / Manually assigned: disabled with the
+//   "Available on Advanced" badge. A shop that ticked it before the release keeps it ticked and can untick it;
+//   once unticked it is locked like the others (?plan=essential&excluded=1).
 import React, {useState} from 'react';
 import {Banner, BlockStack, Button, Card, Checkbox, ChoiceList, Divider, Icon, InlineStack, Link, Page, Select, Text, TextField} from '@shopify/polaris';
 import {
@@ -12,6 +16,7 @@ import {useShell} from '../shell/ShellContext.jsx';
 import {useShop} from '../kit/scenario.jsx';
 import {useStore} from '../state/store.jsx';
 import {ExcludeB2bWarning} from '../components/NoCompanyWarning.jsx';
+import {PlanBadge} from '../components/PlanBadge.jsx';
 
 // listSettings.js order and labels (SettingDetails.listSetting).
 const SECTIONS = [
@@ -67,10 +72,12 @@ function SettingsNav() {
 }
 
 function MembershipEnrollment({form, setForm}) {
-  const {hasB2bCompanies} = useShop();
+  const {hasB2bCompanies, isAdvanced} = useShop();
   const {notify} = useShell();
   const help = () => notify('Opens the Joy help center in a new tab');
   const {mode, excludeB2B} = form;
+  // Locked below Advanced unless it is still ticked from before the release (unticking it locks it).
+  const excludeLocked = !isAdvanced && !excludeB2B;
   return (
     <Card>
       <BlockStack gap="400">
@@ -89,14 +96,20 @@ function MembershipEnrollment({form, setForm}) {
               label: 'Customer opt-in',
               value: MODE_OPT_IN,
               helpText: 'Customers must click "Join Program" on your storefront to become members.',
+              disabled: !isAdvanced,
               renderChildren: (selected) =>
-                selected ? (
-                  <Banner tone="info">
-                    <BlockStack gap="100">
-                      <Text as="p">Want to auto-tag members when they join?</Text>
-                      <span><Link onClick={() => notify('Opens Settings › Additional features › Auto-tag customers')}>Go to Auto-tag customers</Link></span>
-                    </BlockStack>
-                  </Banner>
+                !isAdvanced || selected ? (
+                  <BlockStack gap="200">
+                    {!isAdvanced ? <span><PlanBadge /></span> : null}
+                    {selected ? (
+                      <Banner tone="info">
+                        <BlockStack gap="100">
+                          <Text as="p">Want to auto-tag members when they join?</Text>
+                          <span><Link onClick={() => notify('Opens Settings › Additional features › Auto-tag customers')}>Go to Auto-tag customers</Link></span>
+                        </BlockStack>
+                      </Banner>
+                    ) : null}
+                  </BlockStack>
                 ) : null,
             },
             {
@@ -107,6 +120,8 @@ function MembershipEnrollment({form, setForm}) {
                   You assign each customer manually. Automatic enrollment is ignored. <Link onClick={help}>Learn more</Link>
                 </>
               ),
+              disabled: !isAdvanced,
+              renderChildren: () => (!isAdvanced ? <span><PlanBadge /></span> : null),
             },
           ]}
           selected={[mode]}
@@ -120,8 +135,10 @@ function MembershipEnrollment({form, setForm}) {
                 label="Exclude B2B customers"
                 helpText="Exclude B2B customers from loyalty program. Only direct-to-consumer customers will earn and redeem points."
                 checked={excludeB2B}
+                disabled={excludeLocked}
                 onChange={(checked) => setForm((f) => ({...f, excludeB2B: checked}))}
               />
+              {excludeLocked ? <div className="set-under-checkbox"><PlanBadge /></div> : null}
               {excludeB2B && !hasB2bCompanies ? <ExcludeB2bWarning /> : null}
             </BlockStack>
           </>
@@ -186,15 +203,18 @@ function StoreTimezone() {
   );
 }
 
+/** Keyed by plan in App.jsx: switching plan in the Prototype panel opens that shop's saved settings. */
 export function SettingsPage() {
-  const {enrollment, saveEnrollment} = useStore();
+  const {enrollmentFor, saveEnrollment} = useStore();
+  const {planKey} = useShop();
   const {notify} = useShell();
+  const enrollment = enrollmentFor(planKey);
   const [form, setForm] = useState(enrollment);
   const dirty = JSON.stringify(form) !== JSON.stringify(enrollment);
   return (
     <Page
       title="General"
-      primaryAction={{content: 'Save', disabled: !dirty, onAction: () => {saveEnrollment(form); notify('Settings saved');}}}
+      primaryAction={{content: 'Save', disabled: !dirty, onAction: () => {saveEnrollment(planKey, form); notify('Settings saved');}}}
       secondaryActions={dirty ? [{content: 'Discard', onAction: () => setForm(enrollment)}] : []}
     >
       <div className="set-root">

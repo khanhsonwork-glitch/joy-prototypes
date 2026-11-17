@@ -1,13 +1,15 @@
 // #/wholesale/vip: Membership › Partner tier › Set up = "Partner tier programs" (pages/VIPTiers/B2bVipTiers.js and
 // SubMenu/B2bSubMenu/TierB2bSettings.js on avada/master), Advanced plan, program not launched yet.
-// Change: with 0 Shopify companies the Tiers tab opens with the same warning banner as the Membership card.
-// Launch stays enabled: the merchant can build and launch tiers before the first company exists.
+// Change: with 0 Shopify companies the Tiers tab opens with the same warning banner as the Membership card; the Design
+// tab (?type=design, shown to shops on the V3 widget) has none. Launch stays enabled: the merchant can build and launch
+// tiers before the first company exists.
 import React, {useState} from 'react';
 import {
   ActionList, BlockStack, Box, Button, Card, Divider, Icon, InlineStack, Modal, Page, Popover, Select, Tabs, Text, TextField,
 } from '@shopify/polaris';
 import {CalendarIcon, CheckSmallIcon, ChevronRightIcon, ChevronUpIcon, DeleteIcon, MenuHorizontalIcon, PlusCircleIcon, RefreshIcon} from '@shopify/polaris-icons';
 import {useShell} from '../shell/ShellContext.jsx';
+import {useNavigate, useRoute} from '../shell/router.jsx';
 import {useShop} from '../kit/scenario.jsx';
 import {useStore} from '../state/store.jsx';
 import {NoCompanyBanner} from '../components/NoCompanyWarning.jsx';
@@ -163,8 +165,52 @@ function Summary({active}) {
   );
 }
 
+/** Design tab: "Partner Tier Display" (SettingsDesignB2b.js); its preview is the partner card on the account page. */
+function DesignTab() {
+  return (
+    <Card>
+      <BlockStack gap="200">
+        <Text as="h2" variant="headingSm">Partner Tier Display</Text>
+        <Text as="p">Customize tier visualization on account pages for your business partners.</Text>
+      </BlockStack>
+    </Card>
+  );
+}
+
+function DesignPreview() {
+  const {tiers} = useStore();
+  const [first, next] = tiers;
+  return (
+    <div className="pt-summary">
+      <Card>
+        <BlockStack gap="200">
+          <Text as="h2" variant="headingSm">Preview</Text>
+          <div className="pt-summary__box">
+            <BlockStack gap="200">
+              <Text as="p" tone="subdued">Your current loyalty tier</Text>
+              <Text as="p" variant="headingMd">{first?.name}</Text>
+              <Text as="p">Total amount spent: {money(0)}</Text>
+              {next ? (
+                <BlockStack gap="100">
+                  <Text as="p" tone="subdued">Progress to {next.name}</Text>
+                  <div className="pt-progress" aria-hidden="true"><span /></div>
+                </BlockStack>
+              ) : null}
+            </BlockStack>
+          </div>
+        </BlockStack>
+      </Card>
+    </div>
+  );
+}
+
+const TABS = [{id: 'tiers', content: 'Tiers'}, {id: 'design', content: 'Design'}];
+
 export function PartnerTierPage() {
   const {hasB2bCompanies} = useShop();
+  const {query} = useRoute();
+  const navigate = useNavigate();
+  const tab = query.get('type') === 'design' ? 1 : 0;
   const {partnerActive, setPartnerActive} = useStore();
   const {notify} = useShell();
   const [launching, setLaunching] = useState(false);
@@ -201,15 +247,20 @@ export function PartnerTierPage() {
         <div className="pt-grid">
           <BlockStack gap="300">
             <div className="pt-tabs">
-              <Tabs tabs={[{id: 'tiers', content: 'Tiers'}]} selected={0} onSelect={() => {}} />
+              <Tabs tabs={TABS} selected={tab} onSelect={(i) => navigate(`/wholesale/vip?type=${TABS[i].id}`)} />
             </div>
-            {hasB2bCompanies ? null : <NoCompanyBanner />}
-            <BlockStack gap="200">
-              <TierConfiguration />
-              <TierLevels />
-            </BlockStack>
+            {/* Only the Tiers tab carries the warning: it is about ranking companies, not about how tiers look. */}
+            {tab === 0 && !hasB2bCompanies ? <NoCompanyBanner /> : null}
+            {tab === 0 ? (
+              <BlockStack gap="200">
+                <TierConfiguration />
+                <TierLevels />
+              </BlockStack>
+            ) : (
+              <DesignTab />
+            )}
           </BlockStack>
-          <Summary active={partnerActive} />
+          {tab === 0 ? <Summary active={partnerActive} /> : <DesignPreview />}
         </div>
       </div>
     </Page>
