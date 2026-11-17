@@ -1,7 +1,7 @@
 // Right column: preview toolbar (Preview as, Inspect, embed badge) over a mock storefront with the widget on it.
 import React, {useState} from 'react';
 import {ActionList, Badge, Button, Icon, Popover} from '@shopify/polaris';
-import {CheckIcon, ChevronDownIcon, CursorIcon, DesktopIcon, MobileIcon, PersonIcon} from '@shopify/polaris-icons';
+import {CheckIcon, ChevronDownIcon, DesktopIcon, MobileIcon, PersonExitIcon, PersonIcon, SearchIcon} from '@shopify/polaris-icons';
 import {VIEWERS, viewerLabel} from '../data/widget.js';
 import {useEditor} from '../state/editor.jsx';
 import {useShell} from '../shell/ShellContext.jsx';
@@ -34,7 +34,7 @@ function Toolbar() {
             <Icon source={DeviceIcon} />
             <span>{ed.device === 'mobile' ? 'Mobile' : 'Desktop'}</span>
             <span aria-hidden="true">·</span>
-            <Icon source={PersonIcon} />
+            <Icon source={ed.viewer === 'guest' ? PersonExitIcon : PersonIcon} />
             <span data-testid="viewer-label">{viewerLabel(ed.viewer)}</span>
             <Icon source={ChevronDownIcon} />
           </button>
@@ -54,6 +54,7 @@ function Toolbar() {
               title: 'Customer',
               items: VIEWERS.map((v) => ({
                 content: v.label,
+                icon: v.value === 'guest' ? PersonExitIcon : PersonIcon,
                 active: ed.viewer === v.value,
                 suffix: mark(ed.viewer === v.value),
                 onAction: () => {
@@ -65,7 +66,7 @@ function Toolbar() {
           ]}
         />
       </Popover>
-      <Button icon={CursorIcon} pressed={ed.inspect} onClick={() => ed.setInspect(!ed.inspect)}>
+      <Button icon={SearchIcon} pressed={ed.inspect} onClick={() => ed.setInspect(!ed.inspect)}>
         Inspect
       </Button>
       <Badge tone="success">Embed active</Badge>
@@ -130,6 +131,7 @@ export function Preview({onInspect}) {
             onInspect={onInspect}
             onLink={onLink}
             onJoin={() => ed.setViewer('member')}
+            onSignIn={() => ed.setViewer('signed-in')}
           />
         </Storefront>
       </div>

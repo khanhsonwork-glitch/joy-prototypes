@@ -8,7 +8,7 @@ Scope as given for this prototype, one line each:
 - Image with text gets "Link URL" (placeholder "https://example.com or /collections/sale") and "Open in new tab" (ticked by default, same as Image banner); with a URL the block is clickable in the preview.
 - A block saved as hidden for guests opens with the select on Members.
 - Built-in sections keep "Show to guests"; its help text becomes "When off, this section is hidden from visitors who see the Sign in or Join screen in the widget."
-- Preview as, for an opt-in shop: Guest (signed out) / Signed in / Member. "Signed in" first shows the Join Program screen and counts as Guest; clicking "Join Program" moves to the Member screen. Everyone shows to all three, Guests to Guest and Signed in, Members to Member.
+- Preview as, for an opt-in shop: Guest (signed out) / Signed in / Member. "Signed in" first shows the Join Program screen and counts as Guest; clicking "Join Program" moves to the Member screen. Guest (signed out) keeps its own "Sign in or Sign up" screen, which moves to Signed in. Everyone shows to all three, Guests to Guest and Signed in, Members to Member.
 - Sample content: Rich text "Start BLACK WEEK early with code BLACK26".
 
 Choices made while drawing (to confirm):

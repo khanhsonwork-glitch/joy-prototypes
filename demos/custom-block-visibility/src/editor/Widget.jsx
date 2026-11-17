@@ -197,11 +197,6 @@ function Block({block, onLink}) {
           <div className="wg-imgtext__text">
             {block.title ? <strong>{block.title}</strong> : null}
             {block.description ? <small>{block.description}</small> : null}
-            {block.url ? (
-              <span className="wg-imgtext__go" aria-hidden="true">
-                <Icon source={block.external !== false ? ExternalIcon : ChevronRightIcon} />
-              </span>
-            ) : null}
           </div>
         </div>
       );
@@ -211,7 +206,7 @@ function Block({block, onLink}) {
   }
 }
 
-export function Widget({sections, membership, programs, viewer, inspect, onInspect, onLink, onJoin}) {
+export function Widget({sections, membership, programs, viewer, inspect, onInspect, onLink, onJoin, onSignIn}) {
   const member = viewer === 'member';
   const rows = sections.filter((s) => sectionVisible(s, viewer));
   const tap = (id) => (event) => {
@@ -246,19 +241,20 @@ export function Widget({sections, membership, programs, viewer, inspect, onInspe
           ) : (
             <div className="wg-card wg-guest" data-inspect="membership-card" onClickCapture={tap('membership-card')}>
               <strong>Welcome to Pomelo Rewards</strong>
-              <p>Join our loyalty program to earn points, redeem rewards and more.</p>
-              <button type="button" className="wg-btn wg-btn--dark wg-btn--md" onClick={onJoin}>
-                Join Program
-              </button>
               {viewer === 'guest' ? (
-                <small>
-                  Already a member?{' '}
-                  <button type="button" className="wg-link wg-link--button" onClick={onJoin}>
-                    Sign in
+                <>
+                  <p>Sign in to view your points, redeem rewards, and more.</p>
+                  <button type="button" className="wg-btn wg-btn--dark wg-btn--md" onClick={onSignIn}>
+                    Sign in or Sign up
                   </button>
-                </small>
+                </>
               ) : (
-                <small>Signed in as ava@example.com</small>
+                <>
+                  <p>Join the loyalty program to earn points, redeem rewards, and more.</p>
+                  <button type="button" className="wg-btn wg-btn--dark wg-btn--md" onClick={onJoin}>
+                    Join Program
+                  </button>
+                </>
               )}
             </div>
           )

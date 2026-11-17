@@ -49,13 +49,13 @@ const HOVER_OPTIONS = [
   {label: 'Brightness lift', value: 'brightness'},
 ];
 
-function Heading({children}) {
+function Heading({children, divider = true}) {
   return (
     <>
       <Text as="h2" variant="headingMd">
         {children}
       </Text>
-      <Divider />
+      {divider ? <Divider /> : null}
     </>
   );
 }
@@ -393,7 +393,7 @@ function SectionPanel({section}) {
   const meta = SECTION_META[section.id] || {label: section.id, guestOption: true, banner: false};
   return (
     <BlockStack gap="400">
-      <Heading>{meta.label}</Heading>
+      <Heading divider={false}>{meta.label}</Heading>
       {section.id === 'VIP_TIERS' ? (
         <Text as="p" tone="subdued">
           Lists every VIP tier and what it takes to reach it. Tapping a tier opens its perks.

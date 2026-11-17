@@ -1074,31 +1074,12 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.wg-imgtext.is-link .wg-imgtext__text {
-  padding-right: 24px;
-}
 .wg-imgtext__text strong {
   font-size: 13px;
 }
 .wg-imgtext__text small {
   font-size: 12px;
   color: var(--pp-ink-soft);
-}
-.wg-imgtext__go {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  display: flex;
-  transform: translateY(-50%);
-}
-.wg-imgtext__go .Polaris-Icon {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  color: var(--pp-ink-soft);
-}
-.wg-imgtext__go .Polaris-Icon svg {
-  fill: currentColor;
 }
 .wg-imgtext.is-link:hover,
 .wg-banner.is-link:hover {
