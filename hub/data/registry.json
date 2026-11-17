@@ -609,6 +609,32 @@
     },
     {
       "product": "loyalty",
+      "slug": "partner-tier-no-company",
+      "name": "Partner tier without Shopify companies",
+      "area": "Membership",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-17",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-partner-tier-no-company.jpg",
+      "reviewUrl": "/loyalty/partner-tier-no-company/#/membership",
+      "kind": "prototype",
+      "aliases": [
+        "partner tier",
+        "B2B companies",
+        "exclude B2B customers"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "place-order-templates",
       "name": "Place order templates",
       "area": "Programs",

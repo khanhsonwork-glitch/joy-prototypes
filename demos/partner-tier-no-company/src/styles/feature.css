@@ -1,0 +1,255 @@
+/* Layout of the three screens, ported from the app's own styles (avada/master):
+   pages/Membership/MemberShip.scss, the Settings and Partner tier s-grid columns. Polaris tokens only. */
+
+/* ------------------------------------------------------------ Membership (#/membership) */
+.mb-root {
+  container-type: inline-size;
+}
+
+.mb-support {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--p-space-200);
+}
+
+.mb-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--p-space-400);
+}
+
+@container (min-width: 490px) {
+  .mb-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 900px) {
+  .mb-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* DTC card: 4 subgrid rows (image, title, description, actions) so the three cards line up row by row */
+.mb-card {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  overflow: hidden;
+  background: var(--p-color-bg-surface);
+  border-radius: var(--p-border-radius-300);
+  box-shadow: var(--p-shadow-100), var(--p-shadow-bevel-100);
+}
+
+.mb-card__image {
+  display: block;
+  background: var(--ill-paper);
+}
+
+.mb-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mb-card__title {
+  padding: var(--p-space-400) var(--p-space-500) 0;
+}
+
+.mb-card__text {
+  padding: var(--p-space-200) var(--p-space-500) 0;
+  text-wrap: pretty;
+}
+
+.mb-card__actions {
+  align-self: end;
+  padding: var(--p-space-400) var(--p-space-500) var(--p-space-500);
+}
+
+.mb-partner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p-space-500);
+  padding: var(--p-space-500);
+}
+
+.mb-partner__image {
+  flex-shrink: 0;
+  width: 9.75rem;
+  height: 9.75rem;
+  overflow: hidden;
+  border-radius: var(--p-border-radius-200);
+}
+
+.mb-partner-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mb-partner__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--p-space-400);
+  min-width: 0;
+}
+
+@container (max-width: 560px) {
+  .mb-partner {
+    flex-direction: column;
+  }
+
+  .mb-partner__image {
+    width: 100%;
+    height: 12rem;
+  }
+
+  .mb-partner-art {
+    width: auto;
+    margin: 0 auto;
+  }
+}
+
+/* Artwork colours (tokens.css --ill-*) */
+.ill-500 { fill: var(--ill-red-500); }
+.ill-300 { fill: var(--ill-red-300); }
+.ill-700 { fill: var(--ill-red-700); }
+.ill-900 { fill: var(--ill-red-900); }
+.ill-white { fill: var(--ill-paper); }
+.ill-white-soft { fill: var(--ill-paper); opacity: 0.7; }
+.ill-dot { fill: var(--ill-red-300); opacity: 0.55; }
+.ill-line { stroke: var(--ill-red-300); }
+.ill-stop-glow { stop-color: var(--ill-red-100); }
+.ill-stop-clear { stop-color: var(--ill-paper); stop-opacity: 0; }
+.ill-stop-200 { stop-color: var(--ill-red-200); }
+.ill-stop-400 { stop-color: var(--ill-red-400); }
+.ill-stop-500 { stop-color: var(--ill-red-500); }
+.ill-stop-800 { stop-color: var(--ill-red-800); }
+
+/* ------------------------------------------------------------ Partner tier programs (#/wholesale/vip) */
+.pt-root {
+  container-type: inline-size;
+}
+
+.pt-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--p-space-400);
+}
+
+@container (min-width: 768px) {
+  .pt-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  /* The app pushes the summary down (marginTop 60px) so it starts level with the first card under the tabs */
+  .pt-summary {
+    margin-top: 3.5rem;
+  }
+}
+
+.pt-tabs .Polaris-Tabs__Wrapper {
+  padding: 0;
+}
+
+.pt-tier__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--p-space-300);
+  padding: var(--p-space-400);
+}
+
+.pt-tier__row.is-open {
+  background: var(--p-color-bg-surface-secondary);
+}
+
+.pt-summary__box {
+  padding: var(--p-space-300);
+  border-radius: var(--p-border-radius-200);
+  background: var(--p-color-bg-surface-secondary);
+}
+
+.pt-summary__line {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p-space-100);
+}
+
+.pt-check {
+  flex-shrink: 0;
+  display: inline-flex;
+  width: 1.25rem;
+}
+
+/* ------------------------------------------------------------ Settings › General (#/settings/general) */
+.set-root {
+  container-type: inline-size;
+}
+
+.set-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--p-space-400);
+}
+
+@container (min-width: 768px) {
+  .set-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  .set-grid__nav {
+    align-self: start;
+  }
+}
+
+.set-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-050);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.set-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--p-space-200);
+  width: 100%;
+  padding: var(--p-space-200) var(--p-space-300);
+  border: 0;
+  border-radius: var(--p-border-radius-200);
+  background: transparent;
+  color: var(--p-color-text);
+  font: inherit;
+  font-size: var(--p-font-size-325);
+  text-align: start;
+  cursor: pointer;
+}
+
+.set-nav__item .Polaris-Icon {
+  margin: 0;
+}
+
+.set-nav__item:hover {
+  background: var(--p-color-bg-surface-hover);
+}
+
+.set-nav__item.is-selected {
+  background: var(--p-color-bg-surface-secondary);
+  font-weight: var(--p-font-weight-medium);
+}
+
+.set-nav__item:focus-visible {
+  outline: var(--p-border-width-050) solid var(--p-color-border-focus);
+  outline-offset: var(--p-space-050);
+}
+
+/* Lines the warning up with the checkbox label, under its help text */
+.set-exclude-warning {
+  margin-inline-start: var(--p-space-600);
+}
