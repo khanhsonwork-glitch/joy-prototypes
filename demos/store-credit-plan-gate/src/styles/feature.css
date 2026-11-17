@@ -68,6 +68,24 @@
 .scg-info {display: inline-flex; border-radius: var(--p-border-radius-full);}
 .scg-info:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus);}
 
+/* Upgrade dialog (usePricingModal: content padding 0 1rem 1rem, plan pill, two-column ticks, 257px button). */
+.scg-upgrade {display: flex; flex-direction: column; gap: var(--p-space-400); padding: var(--p-space-500) var(--p-space-400) var(--p-space-400);}
+.scg-upgrade__heading, .scg-upgrade__whats {display: flex; flex-wrap: wrap; align-items: center; gap: var(--p-space-200);}
+.scg-upgrade__whats {align-items: baseline;}
+.scg-upgrade__pill {
+  display: inline-flex; align-items: center; padding: var(--p-space-050) var(--p-space-200); border-radius: var(--p-border-radius-200);
+  background: var(--joy-plan-pill); color: var(--p-color-text-inverse);
+  font-size: var(--p-font-size-325); font-weight: var(--p-font-weight-semibold); line-height: var(--p-font-line-height-500);
+}
+.scg-upgrade__pill--lg {font-size: var(--p-font-size-500); font-weight: var(--p-font-weight-bold); line-height: var(--p-font-line-height-600);}
+.scg-upgrade__features {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--p-space-400); margin: 0; padding: 0; list-style: none;}
+.scg-upgrade__features li {display: flex; align-items: flex-start; gap: var(--p-space-200); min-width: 0;}
+.scg-upgrade__tick {flex-shrink: 0; display: inline-flex;}
+.scg-upgrade__tick .Polaris-Icon {margin: 0;}
+.scg-upgrade__action {display: flex; justify-content: center;}
+.scg-upgrade__action > * {width: 257px; max-width: 100%;}
+@media (max-width: 480px) {.scg-upgrade__features {grid-template-columns: minmax(0, 1fr);}}
+
 /* Plans stub: the Essential line this feature adds. */
 .scg-plan-highlight {padding-left: var(--p-space-300); border-left: var(--p-border-width-050) solid var(--p-color-border-info);}
 

@@ -13,7 +13,7 @@ export function PlansPage() {
     <Page title="Plans">
       <BlockStack gap="400">
         <div className="scg-proto-note" role="note">
-          <p>Prototype · stub of Settings › Plans. Every “Available on Essential” badge opens this page.</p>
+          <p>Prototype · stub of Settings › Plans, reached from Settings. The “Available on Essential” badges open the upgrade dialog instead.</p>
         </div>
         <InlineGrid columns={{xs: 1, sm: 2, lg: 4}} gap="400">
           {PLANS.map((plan) => {

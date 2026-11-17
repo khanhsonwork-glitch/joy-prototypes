@@ -6,9 +6,9 @@ import React, {useState} from 'react';
 import {BlockStack, Card, ChoiceList, Icon, InlineGrid, InlineStack, Link, Popover, Select, Text, TextField, Tooltip} from '@shopify/polaris';
 import {InfoIcon, SelectIcon} from '@shopify/polaris-icons';
 import {useShell} from '../shell/ShellContext.jsx';
-import {useNavigate} from '../shell/router.jsx';
 import {useShop} from '../kit/scenario.jsx';
 import {LabelWithBadge, PlanBadge} from '../components/PlanBadge.jsx';
+import {useUpgrade} from '../components/UpgradeDialog.jsx';
 import {EARN_METHODS} from '../data/programs.js';
 import {EditFrame, positive, useEditForm} from './editShared.jsx';
 
@@ -124,7 +124,7 @@ export function PlaceOrderEdit() {
 
 /**
  * SelectOptions: a field-looking button that opens a list of choices. Paid choices show the plan badge in their
- * label; picking one opens Plans instead of selecting it (SignUpProgramV2 onSelected → openPricingModal).
+ * label; picking one opens the upgrade dialog instead of selecting it (SignUpProgramV2 onSelected → openPricingModal).
  */
 function SelectOptions({label, options, value, onPick}) {
   const [open, setOpen] = useState(false);
@@ -159,7 +159,7 @@ function SelectOptions({label, options, value, onPick}) {
 
 export function SignUpEdit({variant}) {
   const shop = useShop();
-  const navigate = useNavigate();
+  const {openUpgrade} = useUpgrade();
   const newsletter = variant === 'newsletter';
   const key = newsletter ? 'newsletter' : 'signUp';
   const editor = useEditForm(key, (f) => ({
@@ -223,7 +223,7 @@ export function SignUpEdit({variant}) {
                 value={form.typeEarn}
                 onPick={(v) => {
                   const option = signUpOptions.find((o) => o.value === v);
-                  if (option.locked) navigate('/plans');
+                  if (option.locked) openUpgrade();
                   else editor.setForm((f) => ({...f, typeEarn: v}));
                 }}
               />

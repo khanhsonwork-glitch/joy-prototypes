@@ -23,6 +23,8 @@
   --chrome-nav-icon: #4a4a4a;
   --chrome-tree: #a8a8a8;
   --chrome-joy-red: #e53935;
+  /* Joy pricing modal plan pill (usePricingModal BRAND_BADGE_STYLE): a brand colour no Polaris badge tone has */
+  --joy-plan-pill: #06038d;
   --chrome-avatar: #9474ff;
   --chrome-topbar-height: 56px;
   --chrome-nav-width: 240px;

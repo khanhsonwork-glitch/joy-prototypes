@@ -14,6 +14,7 @@ import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario, useShop} from '../kit/scenario.jsx';
 import {EmptyView, ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {PlanBadge} from '../components/PlanBadge.jsx';
+import {useUpgrade} from '../components/UpgradeDialog.jsx';
 import {useStore} from '../state/store.jsx';
 import {FRIEND_METHODS, REDEEM_OPTIONS, REFERRER_METHODS, earningData, methodLabel, redeemData} from '../data/programs.js';
 
@@ -141,9 +142,11 @@ function RedeemBlock({heading, help, rows = [], gated, learnMore = false, onAddM
   );
 }
 
-/** "Add new redeem program": one clickable row per option; a gated row (and its badge) opens Plans, like Gift card blocks do. */
+/** "Add new redeem program": one clickable row per option; a gated row closes this modal and opens the upgrade dialog
+ * (ModalContent: closeModal() then openPricingModal()). */
 function AddRedeemModal({open, onClose}) {
   const navigate = useNavigate();
+  const {openUpgrade} = useUpgrade();
   const shop = useShop();
   const gated = (o) => (o.proPlan && !shop.isPremium) || (o.storeCredit && shop.storeCreditLocked);
   return (
@@ -157,8 +160,12 @@ function AddRedeemModal({open, onClose}) {
                 type="button"
                 className="scg-option"
                 data-option={o.slug}
-                aria-label={gated(o) ? `${o.title}. Available on Essential. View plans` : o.title}
-                onClick={() => navigate(gated(o) ? '/plans' : `/redeem-new/${o.slug}`)}
+                aria-label={gated(o) ? `${o.title}. Available on Essential. Upgrade` : o.title}
+                onClick={() => {
+                  if (!gated(o)) {navigate(`/redeem-new/${o.slug}`); return;}
+                  onClose();
+                  openUpgrade();
+                }}
               >
                 <ProgramIcon name={o.icon} />
                 <span className="scg-option__text">

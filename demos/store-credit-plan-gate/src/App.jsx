@@ -8,6 +8,7 @@ import {ScenarioProvider, useShop} from './kit/scenario.jsx';
 import {ProtoControls} from './kit/ProtoControls.jsx';
 import {EmptyView} from './kit/StateView.jsx';
 import {StoreProvider} from './state/store.jsx';
+import {UpgradeProvider} from './components/UpgradeDialog.jsx';
 import {ProgramsPage} from './pages/ProgramsPage.jsx';
 import {PlaceOrderEdit, SignUpEdit} from './pages/EarningEdit.jsx';
 import {FriendRewardEdit, ReferrerRewardEdit} from './pages/ReferralRewardEdit.jsx';
@@ -69,8 +70,10 @@ export default function App() {
           <ShopStore>
             <Frame>
               <ShellProvider>
-                <Screen />
-                <ProtoControls />
+                <UpgradeProvider>
+                  <Screen />
+                  <ProtoControls />
+                </UpgradeProvider>
               </ShellProvider>
             </Frame>
           </ShopStore>
