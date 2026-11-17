@@ -1,0 +1,79 @@
+/* Store credit plan gate: the few things Polaris does not draw. Polaris tokens only; amber = prototype-only. */
+
+/* Joy AvailableBadge: clickable info badge, 0.8 opacity on hover (AvailableBadge/styles.scss). */
+.scg-plan-badge {
+  display: inline-flex; align-items: center; padding: 0; margin: 0; border: 0; background: none;
+  border-radius: var(--p-border-radius-200); cursor: pointer; font: inherit; line-height: 0;
+}
+.scg-plan-badge:hover {opacity: 0.8;}
+.scg-plan-badge:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: var(--p-space-050);}
+.scg-plan-badge--static {cursor: inherit;}
+.scg-plan-badge--static:hover {opacity: 1;}
+
+/* Label (or heading) with the badge beside it; wraps under on narrow screens. */
+.scg-label-row {display: flex; flex-wrap: wrap; align-items: center; gap: var(--p-space-200); min-width: 0;}
+.scg-label {
+  font-size: var(--p-font-size-325); line-height: var(--p-font-line-height-500); font-weight: var(--p-font-weight-regular);
+  color: var(--p-color-text);
+}
+.scg-label--block {display: block; margin-bottom: var(--p-space-100);}
+[data-field='reward-type'] .scg-label-row, [data-field='reward-method'] .scg-label-row {margin-bottom: var(--p-space-100);}
+
+/* Program icon tile (Avada-Program__Icon). */
+.scg-icon-box {
+  display: inline-grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px;
+  border: var(--p-border-width-025) solid var(--p-color-border); border-radius: var(--p-border-radius-200);
+  background: var(--p-color-bg-surface);
+}
+
+/* Redeem program row: icon · title + description · info / more / Turn on-off. */
+.scg-redeem-row {display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--p-space-300); align-items: center;}
+.scg-redeem-row__text {min-width: 0; display: flex; flex-direction: column; gap: var(--p-space-050);}
+.scg-redeem-row__title {display: flex; flex-wrap: wrap; align-items: center; gap: var(--p-space-150); min-width: 0;}
+.scg-redeem-row__actions {display: flex; align-items: center; gap: var(--p-space-200);}
+@media (max-width: 640px) {
+  .scg-redeem-row {grid-template-columns: auto minmax(0, 1fr);}
+  .scg-redeem-row__actions {grid-column: 1 / -1; justify-content: flex-end;}
+}
+
+/* "Add new redeem program" rows (s-clickable padding small/base). */
+.scg-option-list {padding-block: var(--p-space-100);}
+.scg-option {
+  display: flex; align-items: center; gap: var(--p-space-400); width: 100%; margin: 0; border: 0; background: none;
+  padding: var(--p-space-300) var(--p-space-400); text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.scg-option:hover {background: var(--p-color-bg-surface-hover);}
+.scg-option:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: calc(-1 * var(--p-border-width-050));}
+.scg-option__text {display: flex; flex-direction: column; gap: var(--p-space-050); min-width: 0;}
+
+/* Live mode switch next to the page title. */
+.scg-switch {width: 36px; height: 20px; border-radius: var(--p-border-radius-full); border: 0; padding: 2px; background: var(--p-color-bg-fill-disabled); cursor: pointer; display: inline-flex;}
+.scg-switch[aria-checked='true'] {background: var(--p-color-bg-fill-brand); justify-content: flex-end;}
+.scg-switch span {width: 16px; height: 16px; border-radius: var(--p-border-radius-full); background: var(--p-color-bg-surface);}
+.scg-switch:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
+
+/* SelectOptions activator: looks like a Polaris Select (border, value left, chevron right). */
+.scg-select-options {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--p-space-200); width: 100%;
+  min-height: 32px; padding: var(--p-space-150) var(--p-space-200) var(--p-space-150) var(--p-space-300);
+  border: var(--p-border-width-0165) solid var(--p-color-input-border); border-radius: var(--p-border-radius-200);
+  background: var(--p-color-input-bg-surface); color: var(--p-color-text); font: inherit; text-align: left; cursor: pointer;
+}
+.scg-select-options:hover {border-color: var(--p-color-input-border-hover); background: var(--p-color-input-bg-surface-hover);}
+.scg-select-options:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: var(--p-space-025);}
+.scg-select-options .Polaris-Icon {margin: 0;}
+.scg-select-options__list {padding: var(--p-space-300) var(--p-space-400);}
+
+/* Plans stub: the Essential line this feature adds. */
+.scg-plan-highlight {padding-left: var(--p-space-300); border-left: var(--p-border-width-050) solid var(--p-color-border-info);}
+
+/* Prototype-only notes: amber, never product UI. */
+.scg-proto-note {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--p-space-300);
+  padding: var(--p-space-400); border-radius: var(--p-border-radius-300);
+  background: var(--proto-amber-bg); border: 1px solid var(--proto-amber-border); color: var(--proto-amber-text);
+}
+.scg-proto-note p {margin: 0;}
+
+/* The default screen opens on a modal: keep the Prototype pill clickable above Polaris's modal layer (519). */
+body:has(.Polaris-Modal-Dialog) .kit-proto {z-index: 530;}
