@@ -8,7 +8,6 @@ import {useShell} from '../shell/ShellContext.jsx';
 import {useNavigate} from '../shell/router.jsx';
 import {useShop} from '../kit/scenario.jsx';
 import {useStore} from '../state/store.jsx';
-import {NoCompanyBanner} from '../components/NoCompanyWarning.jsx';
 import {ExclusiveDealArt, PartnerTierArt, SubscriptionArt, VipTiersArt} from '../components/Illustrations.jsx';
 
 const statusBadge = (active) => <Badge tone={active ? 'success' : undefined}>{active ? 'Active' : 'Inactive'}</Badge>;
@@ -106,7 +105,7 @@ export function MembershipPage() {
               </div>
             </BlockStack>
 
-            {/* Today: rendered only when shop.hasB2bCompanies !== false. Now: always, with the banner when it is false. */}
+            {/* Today: rendered only when shop.hasB2bCompanies !== false. Now: always, and the card itself never warns (PO 18/11: the warning lives only on the Partner tier page). */}
             <BlockStack gap="200">
               <Box paddingInline={{xs: '400', sm: '0'}}><Text as="h2" variant="headingSm">B2B programs</Text></Box>
               <Card padding="0">
@@ -120,7 +119,6 @@ export function MembershipPage() {
                       </InlineStack>
                       <Text as="p">Incentivize higher wholesale orders with tiered pricing, volume discounts, and exclusive partner perks</Text>
                     </BlockStack>
-                    {hasB2bCompanies ? null : <NoCompanyBanner />}
                     <Actions onSetUp={() => navigate('/wholesale/vip')} />
                   </div>
                 </div>

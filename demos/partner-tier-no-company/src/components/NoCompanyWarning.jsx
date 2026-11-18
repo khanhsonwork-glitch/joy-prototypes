@@ -26,7 +26,7 @@ function CreateCompanyLink() {
   );
 }
 
-/** Membership › Partner tier card and Partner tier programs › Tiers tab. */
+/** Partner tier programs › Tiers tab only (PO 18/11: not on the Membership list card). */
 export function NoCompanyBanner() {
   return (
     <div data-no-company-warning="">
