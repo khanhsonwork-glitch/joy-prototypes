@@ -21,7 +21,7 @@ const STEPS = [
 
 const NEWS = [
   {id: 'n1', art: 'credit', title: 'Points to store credit', body: 'Customers turn points into store credit that applies at checkout. No code to copy.', cta: 'Add reward', to: '/program?tier=member'},
-  {id: 'n2', art: 'banner', title: 'AI images for your Loyalty page', body: 'Joy makes desktop, mobile and referral images from your own products.', cta: 'Make images'},
+  {id: 'n2', art: 'banner', photo: true, title: 'AI images for your Loyalty page', body: 'Joy makes desktop, mobile and referral images from your own products. This one was made for Pomelo Park.', cta: 'Make images'},
   {id: 'n3', art: 'wallet', title: 'Apple Wallet opens in one tap', body: 'On iPhone the pass opens straight away. No QR code on the same phone.', cta: 'See the pass'},
 ];
 
@@ -87,7 +87,10 @@ export function Home() {
             <div className="rv-news">
               {NEWS.map(item => (
                 <article key={item.id} className="rv-newscard">
-                  <div className="rv-newscard__art">{MKT_ART[item.art] ? <img src={MKT_ART[item.art]} alt="" /> : null}</div>
+                  <div className="rv-newscard__art">
+                    {MKT_ART[item.art] ? <img src={MKT_ART[item.art]} alt={item.photo ? 'Loyalty page banner made by Joy AI from the shop products' : ''} /> : null}
+                    {item.photo ? <span className="rv-ai-tag">Made with Joy AI</span> : null}
+                  </div>
                   <div className="rv-newscard__body">
                     <Text as="h3" variant="headingSm">{item.title}</Text>
                     <Text as="p" tone="subdued">{item.body}</Text>

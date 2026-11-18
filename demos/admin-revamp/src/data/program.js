@@ -34,7 +34,8 @@ export const REWARDS = [
   {id: 'r2', icon: 'wallet', name: 'Store credit', detail: '$1 for every 100 points', cost: 100, minTier: 'member', isNew: true},
   {id: 'r3', icon: 'delivery', name: 'Free shipping', cost: 300, minTier: 'member'},
   {id: 'r4', icon: 'discount', name: '15% off', cost: 1500, minTier: 'silver'},
-  {id: 'r5', icon: 'product', name: 'Free Cloud Cream mini', cost: 1800, minTier: 'gold'},
+  {id: 'r5', icon: 'product', photo: 'miniJar', name: 'Free Cloud Cream mini', cost: 1800, minTier: 'gold'},
+  {id: 'r6', icon: 'product', photo: 'giftSet', name: 'Free Glow Getter Set', cost: 4000, minTier: 'vip'},
 ];
 
 export const PROGRAM = {status: 'live', members: TIERS.reduce((sum, t) => sum + t.members, 0), expireMonths: 12};

@@ -7,6 +7,7 @@ import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {Row, Section} from '../components/parts.jsx';
 import {MEMBERS} from '../data/index.js';
+import {PHOTOS} from '../assets/index.js';
 import {TIERS, num, tierById} from '../data/program.js';
 
 export function Referrals() {
@@ -34,6 +35,10 @@ export function Referrals() {
             </Section>
           </div>
           <aside className="rv-side">
+            <div className="rv-card rv-refimg">
+              <img src={PHOTOS.referral} alt="Referral banner made by Joy AI: two friends sharing a gift" />
+              <span className="rv-ai-tag">Made with Joy AI</span>
+            </div>
             <div className="rv-card rv-pad">
               <BlockStack gap="200">
                 <Text as="h3" variant="headingSm">Last 30 days</Text>

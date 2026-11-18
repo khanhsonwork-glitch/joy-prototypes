@@ -13,7 +13,7 @@ import {useScenario} from '../kit/scenario.jsx';
 import {Drawer} from '../kit/Drawer.jsx';
 import {EmptyView, ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {IconChip, NewBadge, Row, Section, TierCard, TierStrip} from '../components/parts.jsx';
-import {TIER_ART, EMPTY_ART} from '../assets/index.js';
+import {TIER_ART, EMPTY_ART, PHOTOS} from '../assets/index.js';
 import {useProgram} from '../state/program.jsx';
 import {
   EARN_RULES, REWARDS, RULES, money, num, pct, pointsPerDollar, rateLabel, reachLabel, ruleHint, ruleLabel,
@@ -194,7 +194,7 @@ export function ProgramBuilder() {
                 const min = tierById(reward.minTier);
                 const isLocked = tierIndex(min.id) > tierIndex(tier.id);
                 return (
-                  <Row key={reward.id} icon={reward.icon} locked={isLocked}
+                  <Row key={reward.id} icon={reward.icon} thumb={reward.photo ? PHOTOS[reward.photo] : null} locked={isLocked}
                     label={reward.name}
                     badge={reward.isNew ? <NewBadge /> : isLocked ? <Badge>{`From ${min.name}`}</Badge> : null}
                     hint={reward.detail}

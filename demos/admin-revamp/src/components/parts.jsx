@@ -36,10 +36,10 @@ export function IconChip({icon, tone}) {
 }
 
 /** One line of a settings list: icon, label (+ badge), value, chevron. The whole row is the button. */
-export function Row({icon, label, badge, value, hint, onClick, locked, disabled}) {
+export function Row({icon, thumb, label, badge, value, hint, onClick, locked, disabled}) {
   return (
     <button type="button" className={cx('rv-row', locked && 'is-locked')} onClick={onClick} disabled={disabled}>
-      {icon ? <IconChip icon={locked ? 'lock' : icon} /> : null}
+      {thumb ? <img className="rv-thumb" src={thumb} alt="" /> : icon ? <IconChip icon={locked ? 'lock' : icon} /> : null}
       <span className="rv-row__label">
         <span className="rv-row__name">{label}</span>
         {badge}
