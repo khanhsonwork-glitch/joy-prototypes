@@ -3,6 +3,28 @@
   "features": [
     {
       "product": "loyalty",
+      "slug": "admin-revamp",
+      "name": "Admin revamp — Polaris 2",
+      "area": "Admin",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-18",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-admin-revamp.jpg",
+      "reviewUrl": "/loyalty/admin-revamp/#/program?tier=gold",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "analytics-revamp",
       "name": "Analytics revamp",
       "area": "Analytics",

@@ -1,0 +1,186 @@
+/* Admin revamp layer on top of the Polaris 2 starter. Polaris tokens only, plus the tier "looks" (card art colours),
+ * which are content, not UI chrome. */
+
+.rv-wrap {display: flex; flex-direction: column; gap: var(--p-space-500);}
+.rv-stack {display: flex; flex-direction: column; gap: var(--p-space-500);}
+.rv-grow {flex: 1 1 auto; min-width: 0;}
+.rv-num {width: 132px;}
+.rv-num--sm {width: 84px;}
+.rv-pad {padding: var(--p-space-400);}
+
+/* Card + section heading outside the card (Polaris 2) */
+.rv-card {background: var(--p-color-bg-surface); border: 1px solid var(--p-color-border-secondary, #ebebeb); border-radius: 20px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 1px 3px rgba(0,0,0,.05); overflow: hidden;}
+.rv-section {display: flex; flex-direction: column; gap: var(--p-space-200);}
+.rv-section__head {display: flex; align-items: center; justify-content: space-between; gap: var(--p-space-200); min-height: 30px; padding-inline: 2px;}
+
+/* Top line: program tabs + rewards rate */
+.rv-topline {display: flex; align-items: center; justify-content: space-between; gap: var(--p-space-300); flex-wrap: wrap;}
+.rv-tabs .Polaris-Tabs__Wrapper {padding: 0; border: 0;}
+.rv-rate {display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--p-color-border-secondary, #ebebeb);
+  border-radius: 999px; background: var(--p-color-bg-surface); font: inherit; color: var(--p-color-text-secondary); cursor: pointer;}
+.rv-rate:hover {background: var(--p-color-bg-surface-hover);}
+.rv-rate:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
+.rv-rate__value {font-weight: 600; color: var(--p-color-text); font-variant-numeric: tabular-nums;}
+.rv-rate__sep {width: 1px; height: 14px; background: var(--p-color-border);}
+.rv-rate__word {color: var(--p-color-text);}
+
+/* Tier strip */
+.rv-tierbar {display: flex; gap: var(--p-space-200); align-items: stretch;}
+.rv-tierstrip {flex: 1 1 auto; display: flex; gap: 4px; padding: 4px; border-radius: 18px; background: var(--p-color-bg-fill-secondary, #ebebeb); overflow-x: auto; scrollbar-width: none;}
+.rv-tier {flex: 1 1 0; min-width: 132px; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; border-radius: 14px;
+  background: transparent; font: inherit; text-align: left; color: var(--p-color-text); cursor: pointer; transition: background .15s ease-out, box-shadow .15s ease-out;}
+.rv-tier:hover {background: rgba(255,255,255,.55);}
+.rv-tier.is-selected {background: var(--p-color-bg-surface); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.04);}
+.rv-tier:focus-visible, .rv-overview-btn:focus-visible, .rv-row:focus-visible, .rv-ov__tier:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 1px;}
+.rv-tier__swatch {flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;}
+.rv-tier__swatch .Polaris-Icon {width: 16px; height: 16px;}
+.rv-tier__text {display: flex; flex-direction: column; min-width: 0;}
+.rv-tier__name {font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.rv-tier__meta {font-size: 12px; color: var(--p-color-text-secondary); white-space: nowrap;}
+.rv-tier--add {flex: 0 0 auto; min-width: 0; justify-content: center; gap: 4px; color: var(--p-color-text-secondary); font-weight: 500;}
+.rv-tier--add .Polaris-Icon {width: 16px; height: 16px; margin: 0;}
+.rv-overview-btn {flex: none; width: 56px; border: 0; border-radius: 18px; background: var(--p-color-bg-fill-secondary, #ebebeb); cursor: pointer; display: grid; place-items: center;}
+.rv-overview-btn:hover {background: var(--p-color-bg-fill-tertiary, #ddd);}
+
+/* Tier looks: also used by the card art fallback */
+.rv-look--bronze {background: linear-gradient(135deg, #b9774a, #7a4626); color: #fff;}
+.rv-look--silver {background: linear-gradient(135deg, #d9dde2, #8f979f); color: #1d2125;}
+.rv-look--gold {background: linear-gradient(135deg, #f1cf7a, #b98a22); color: #2b1d00;}
+.rv-look--black {background: linear-gradient(135deg, #3a3436, #121011); color: #fff;}
+.rv-tier__swatch.rv-look--bronze .Polaris-Icon svg, .rv-tier__swatch.rv-look--black .Polaris-Icon svg {fill: #fff;}
+.rv-tier__swatch.rv-look--silver .Polaris-Icon svg, .rv-tier__swatch.rv-look--gold .Polaris-Icon svg {fill: currentColor;}
+
+/* Two columns: settings left, tier card right */
+.rv-cols {display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--p-space-600); align-items: start;}
+.rv-main {display: flex; flex-direction: column; gap: var(--p-space-500); min-width: 0;}
+.rv-side {position: sticky; top: 8px; display: flex; flex-direction: column; gap: var(--p-space-300);}
+
+/* Rows */
+.rv-row {width: 100%; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 14px 8px 16px; border: 0; border-top: 1px solid var(--p-color-border-secondary, #ebebeb);
+  background: var(--p-color-bg-surface); font: inherit; color: var(--p-color-text); text-align: left; cursor: pointer; transition: background .12s ease-out;}
+.rv-card > .rv-row:first-child {border-top: 0;}
+.rv-row:hover {background: var(--p-color-bg-surface-hover);}
+.rv-row:disabled {cursor: default; opacity: .6;}
+.rv-row__label {flex: 1 1 auto; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px;}
+.rv-row__name {font-weight: 500; overflow-wrap: anywhere;}
+.rv-row__hint {flex-basis: 100%; font-size: 12px; color: var(--p-color-text-secondary);}
+.rv-row__value {flex: none; color: var(--p-color-text-secondary); font-variant-numeric: tabular-nums; text-align: right; max-width: 45%;}
+.rv-row__value strong {color: var(--p-color-text); font-weight: 600;}
+.rv-row__chev {flex: none; color: var(--p-color-icon-secondary);}
+.rv-row.is-locked .rv-row__name {color: var(--p-color-text-secondary);}
+.rv-chip {flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--p-color-bg-fill-secondary, #f1f1f1);}
+.rv-chip .Polaris-Icon {width: 18px; height: 18px;}
+.rv-chip--bronze, .rv-chip--silver, .rv-chip--gold, .rv-chip--black {color: inherit;}
+
+.rv-ratebox {display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; flex-wrap: wrap;}
+.rv-pill {display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--p-color-bg-fill-secondary, #ebebeb); font-size: 12px; font-weight: 500; color: var(--p-color-text-secondary);}
+.rv-note {display: flex; gap: 8px; align-items: flex-start; padding: 14px 16px;}
+
+/* Tier card (wallet pass) */
+.rv-pass {position: relative; aspect-ratio: 1.586; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;
+  background-size: cover; background-position: center; box-shadow: 0 10px 28px rgba(28,14,18,.18), 0 2px 6px rgba(28,14,18,.12); overflow: hidden;
+  transition: transform .25s ease-out;}
+.rv-pass__top {display: flex; justify-content: space-between; align-items: center;}
+.rv-pass__icon {display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.22); backdrop-filter: blur(4px);}
+.rv-pass__icon svg {fill: currentColor;}
+.rv-pass__shop {font-size: 11px; letter-spacing: .08em; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.22);}
+.rv-pass__bottom {display: flex; justify-content: space-between; align-items: flex-end;}
+.rv-pass__tier {font-size: 30px; font-weight: 700; letter-spacing: -.01em; line-height: 1;}
+.rv-pass__qr {display: grid; grid-template-columns: repeat(5, 8px); gap: 2px; padding: 6px; border-radius: 8px; background: #fff;}
+.rv-pass__qr i {display: block; width: 8px; height: 8px; background: #fff;}
+.rv-pass__qr i.on {background: #111;}
+
+/* Tier settings: label-left value-right list in the side column */
+.rv-props {display: flex; flex-direction: column; gap: var(--p-space-300);}
+
+/* Simulator */
+.rv-sim {display: flex; flex-direction: column; border: 1px solid var(--p-color-border-secondary, #ebebeb); border-radius: 16px; overflow: hidden;}
+.rv-sim__row {display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--p-color-border-secondary, #ebebeb); font-variant-numeric: tabular-nums;}
+.rv-sim__row:first-child {border-top: 0;}
+
+/* Overview table */
+.rv-ov-scroll {overflow-x: auto;}
+.rv-ov {width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 720px;}
+.rv-ov th, .rv-ov td {padding: 10px 14px; text-align: left; border-top: 1px solid var(--p-color-border-secondary, #ebebeb); font-weight: 400; white-space: nowrap;}
+.rv-ov thead th {border-top: 0; vertical-align: bottom; padding-block: 14px;}
+.rv-ov tbody th {font-weight: 500;}
+.rv-ov__item {width: 30%; color: var(--p-color-text-secondary);}
+.rv-ov__group th {background: var(--p-color-bg-surface-secondary); color: var(--p-color-text-secondary); font-size: 12px; font-weight: 600; padding-block: 8px;}
+.rv-ov td {color: var(--p-color-text-secondary);}
+.rv-ov td.is-diff {color: var(--p-color-text); font-weight: 600;}
+.rv-ov td.is-off {color: var(--p-color-text-disabled);}
+.rv-ov tbody tr > td:nth-child(2) {border-left: 2px solid var(--p-color-text);}
+.rv-ov__tier {display: flex; align-items: center; gap: 8px; border: 0; background: none; font: inherit; cursor: pointer; padding: 0; text-align: left; color: var(--p-color-text);}
+.rv-ov__tname {display: block; font-weight: 600;}
+.rv-ov__tmeta {display: block; font-size: 12px; color: var(--p-color-text-secondary);}
+
+/* Home */
+.rv-status {padding: 14px 16px;}
+.rv-setup {padding: 16px;}
+.rv-steps {display: flex; flex-direction: column;}
+.rv-step {display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--p-color-border-secondary, #ebebeb);}
+.rv-step:first-child {border-top: 0;}
+.rv-step.is-done .rv-step__text > span:first-child {color: var(--p-color-text-secondary); text-decoration: line-through; text-decoration-color: var(--p-color-border);}
+.rv-step__mark {flex: none; width: 20px; display: grid; place-items: center;}
+.rv-step__dot {width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed var(--p-color-border-emphasis, #8a8a8a);}
+.rv-step__text {flex: 1 1 auto; display: flex; flex-direction: column;}
+.rv-news {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--p-space-400);}
+.rv-newscard {display: flex; flex-direction: column; background: var(--p-color-bg-surface); border: 1px solid var(--p-color-border-secondary, #ebebeb); border-radius: 20px; overflow: hidden;
+  transition: transform .2s ease-out, box-shadow .2s ease-out;}
+.rv-newscard:hover {transform: translateY(-2px); box-shadow: 0 8px 24px rgba(28,14,18,.08);}
+.rv-newscard__art {aspect-ratio: 3 / 2; background: #faf7f6; display: grid; place-items: center; overflow: hidden;}
+.rv-newscard__art img {width: 100%; height: 100%; object-fit: cover; display: block;}
+.rv-newscard__body {display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px;}
+.rv-kpis {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));}
+.rv-kpi {padding: 16px; border-left: 1px solid var(--p-color-border-secondary, #ebebeb);}
+.rv-kpi:first-child {border-left: 0;}
+.rv-kpi__value {margin: 4px 0 2px; font-size: 24px; font-weight: 600; letter-spacing: -.01em; font-variant-numeric: tabular-nums;}
+
+.rv-flat {flex: none; display: inline-flex;}
+.rv-setup .Polaris-ProgressBar__Indicator {background: var(--p-color-bg-fill-inverse, #1b1b1b);}
+.rv-step__dot {border-color: #8a8a8a;}
+
+/* Empty program: one decision */
+.rv-empty {display: flex; flex-direction: column; align-items: center; gap: var(--p-space-500); padding: 40px 24px; max-width: 720px; margin: 0 auto;}
+.rv-empty__art {width: 160px; height: 160px; object-fit: cover; border-radius: 24px;}
+.rv-presets {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--p-space-300); width: 100%;}
+.rv-preset {display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px 16px; border: 1px solid var(--p-color-border-secondary, #ebebeb);
+  border-radius: 16px; background: var(--p-color-bg-surface); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease-out, box-shadow .15s ease-out;}
+.rv-preset:hover {border-color: var(--p-color-border);}
+.rv-preset.is-selected {border-color: var(--p-color-text); box-shadow: 0 0 0 1px var(--p-color-text);}
+.rv-preset:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
+.rv-preset__rate {font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums;}
+.rv-preset__word {font-weight: 500;}
+
+@media (max-width: 1024px) {
+  .rv-cols {grid-template-columns: 1fr;}
+  .rv-side {position: static; order: -1; display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: var(--p-space-400); align-items: start;}
+  .rv-side > :not(.rv-pass) {grid-column: 2;}
+  .rv-side > .rv-pass {grid-row: span 3;}
+}
+@media (max-width: 768px) {
+  .rv-news {grid-template-columns: 1fr;}
+  .rv-newscard {flex-direction: row;}
+  .rv-newscard__art {flex: 0 0 38%; aspect-ratio: auto;}
+  .rv-kpis {grid-template-columns: 1fr;}
+  .rv-kpi {border-left: 0; border-top: 1px solid var(--p-color-border-secondary, #ebebeb);}
+  .rv-kpi:first-child {border-top: 0;}
+}
+@media (max-width: 600px) {
+  .rv-wrap, .rv-stack {padding-inline: 12px;}
+  .rv-side {display: flex; order: 0;}
+  .rv-tierbar {flex-direction: column;}
+  .rv-overview-btn {width: auto; height: 40px;}
+  .rv-pass {max-width: 340px;}
+  .rv-tier {min-width: 112px;}
+  .rv-row__value {max-width: 50%;}
+  .rv-newscard {flex-direction: column;}
+  .rv-newscard__art {aspect-ratio: 3 / 2;}
+  .rv-ratebox {align-items: flex-start;}
+  .rv-presets {grid-template-columns: 1fr;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .rv-tier, .rv-row, .rv-newscard, .rv-pass {transition: none;}
+  .rv-newscard:hover {transform: none;}
+}
