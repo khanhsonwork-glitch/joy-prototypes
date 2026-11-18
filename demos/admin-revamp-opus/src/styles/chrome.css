@@ -1,0 +1,80 @@
+/* New Shopify admin frame. All colours live in tokens.css; product controls remain Polaris. */
+:where(.adm) button {font: inherit; cursor: pointer;}
+:where(.adm) a {text-decoration: none;}
+.adm {min-height: 100vh; background: var(--chrome-nav-bg);}
+.adm .Polaris-Icon {margin: 0;}
+.adm-nav {
+  position: fixed; z-index: 300; inset: 0 auto 0 0;
+  box-sizing: border-box; width: var(--chrome-nav-width);
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 12px 8px 10px 14px;
+  background: var(--chrome-nav-bg); color: var(--chrome-nav-text);
+  font-size: 13px; line-height: 20px;
+}
+.adm-nav__brand {display: flex; align-items: center; justify-content: space-between; min-height: 32px; padding: 0 6px;}
+.adm-wordmark {display: inline-flex; color: var(--chrome-shopify-green); align-items: center;}
+.adm-wordmark__text {display: none;}
+.adm-nav__collapse {display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; color: var(--chrome-nav-muted); background: transparent; border: 0; border-radius: 6px;}
+.adm-nav__collapse:hover {background: var(--chrome-nav-hover);}
+.adm-nav__collapse .Polaris-Icon {--p-color-icon: var(--chrome-nav-muted); width: 17px; height: 17px;}
+.adm-search {display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 8px; border: 1px solid var(--chrome-search-border); border-radius: 9px; background: var(--chrome-search-bg); color: var(--chrome-nav-sub); text-align: left; font-size: 13px;}
+.adm-search:hover {background: var(--chrome-nav-hover);}
+.adm-search > span {flex: 1;}
+.adm-search kbd {font: 11px/1 Inter, sans-serif; color: var(--chrome-nav-sub);}
+.adm-search .Polaris-Icon {--p-color-icon: var(--chrome-nav-sub); width: 16px; height: 16px;}
+.adm-nav__scroll {flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding-right: 2px;}
+.adm-nav__scroll::-webkit-scrollbar {display: none;}
+.adm-nav__group {display: flex; flex-direction: column; margin: 8px 0 18px;}
+.adm-nav__row, .adm-nav__section, .adm-sub__item {box-sizing: border-box; width: 100%; min-height: 29px; border: 0; border-radius: 9px; color: var(--chrome-nav-text); background: transparent; text-align: left;}
+.adm-nav__row {display: flex; align-items: center; gap: 7px; padding: 0 8px;}
+.adm-nav__row:hover, .adm-nav__section:hover, .adm-sub__item:hover, .adm-store:hover {background: var(--chrome-nav-hover);}
+.adm-nav__row.is-selected, .adm-sub__item.is-selected {background: var(--chrome-nav-selected); color: var(--chrome-nav-selected-text);}
+.adm-nav__icon {display: inline-flex; width: 18px; height: 18px; flex: none; align-items: center;}
+.adm-nav__icon .Polaris-Icon {color: var(--chrome-nav-icon); width: 17px; height: 17px;}
+.adm-nav__label {flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;}
+.adm-nav__badge {padding: 0 7px; border-radius: 6px; background: var(--chrome-search-bg); font-size: 12px; line-height: 20px;}
+.adm-nav__section {display: flex; align-items: center; gap: 3px; padding: 0 7px; color: var(--chrome-nav-sub); font-size: 12px;}
+.adm-nav__section .Polaris-Icon {--p-color-icon: var(--chrome-nav-sub); width: 12px; height: 12px;}
+.adm-sub {display: flex; flex-direction: column;}
+.adm-sub__item {display: flex; align-items: center; padding: 0 8px 0 32px; color: var(--chrome-nav-sub);}
+.adm-nav__footer {flex: none; padding-top: 4px; border-top: 1px solid var(--chrome-nav-hover);}
+.adm-store {display: flex; align-items: center; gap: 7px; width: 100%; min-height: 32px; padding: 0 7px; border: 0; border-radius: 8px; background: transparent; color: var(--chrome-nav-text); font-size: 12px; text-align: left;}
+.adm-store__avatar {display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex: none; border-radius: 5px; background: var(--chrome-avatar); color: var(--chrome-nav-selected-text); font-size: 9px;}
+.adm-store__name {flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.adm-store__pill {padding: 1px 7px; border-radius: 999px; background: var(--chrome-search-bg); color: var(--chrome-nav-sub);}
+.adm-store .Polaris-Icon {--p-color-icon: var(--chrome-nav-sub); width: 16px; height: 16px;}
+.adm-main {position: relative; box-sizing: border-box; min-height: calc(100vh - 4px); margin: 4px 4px 4px var(--chrome-nav-width); overflow: hidden; border-radius: var(--chrome-panel-radius); background-color: var(--chrome-panel-bg); background-image: linear-gradient(to bottom, var(--chrome-panel-bg) var(--chrome-appbar-height), var(--chrome-content-bg) var(--chrome-appbar-height));}
+.adm-appbar {position: sticky; top: 0; z-index: 200; display: flex; align-items: center; gap: 9px; box-sizing: border-box; height: var(--chrome-appbar-height); padding: 0 14px; background: var(--chrome-panel-bg); border-bottom: 1px solid var(--chrome-panel-border); color: var(--p-color-text); font-size: 13px;}
+.adm-appbar__back, .adm-appbar__more, .adm-appbar__menu {display: inline-flex; align-items: center; justify-content: center; flex: none; width: 30px; height: 30px; border: 1px solid var(--chrome-panel-border); border-radius: 50%; background: var(--chrome-panel-bg); color: var(--p-color-text);}
+.adm-appbar__back:hover, .adm-appbar__more:hover, .adm-appbar__menu:hover {background: var(--p-color-bg-surface-secondary-hover);}
+.adm-appbar__menu {display: none;}
+.adm-appbar__back .Polaris-Icon, .adm-appbar__more .Polaris-Icon, .adm-appbar__menu .Polaris-Icon {--p-color-icon: var(--p-color-icon); width: 16px; height: 16px;}
+.adm-appbar__divider {color: var(--p-color-text-secondary);}
+.adm-appbar__title {font-weight: 600;}
+.adm-appbar__more {margin-left: auto;}
+.adm-content {box-sizing: border-box; min-height: calc(100vh - var(--chrome-appbar-height) - 4px); padding: 18px 0 84px; background: var(--chrome-content-bg); overflow-anchor: none;}
+.adm-sidekick {position: fixed; z-index: 210; left: calc(var(--chrome-nav-width) + (100vw - var(--chrome-nav-width))/2); bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; width: 375px; max-width: calc(100vw - var(--chrome-nav-width) - 44px); height: 50px; padding: 0 13px; border: 1px solid var(--chrome-panel-border); border-radius: 20px; background: var(--chrome-panel-bg); box-shadow: var(--p-shadow-200); color: var(--p-color-text-secondary); font-size: 12px; text-align: left;}
+.adm-sidekick > span:nth-of-type(1) {flex: 1;}
+.adm-sidekick .Polaris-Icon {color: var(--p-color-text-ai); width: 20px; height: 20px;}
+.adm-scrim {position: fixed; z-index: 450; inset: 0; background: var(--chrome-scrim);}
+.adm-nav button:focus-visible, .adm-nav a:focus-visible, .adm-appbar button:focus-visible, .adm-appbar a:focus-visible, .adm-sidekick:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: -2px;}
+@media (max-width: 768px) {
+  body:has(.adm-nav.is-open) .kit-proto {display: none;}
+  .adm-nav {z-index: 500; width: min(260px, 85vw); transform: translateX(-102%); visibility: hidden;}
+  .adm-nav.is-open {transform: none; visibility: visible; box-shadow: var(--p-shadow-600); transition: transform 160ms ease-out;}
+  .adm-main {margin-left: 4px;}
+  .adm-appbar__menu {display: inline-flex;}
+  .adm-sidekick {left: 50%; max-width: calc(100vw - 30px);}
+}
+@media (max-width: 540px) {
+  .adm-appbar {gap: 6px; padding: 0 10px;}
+  .adm-appbar__title {overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .adm-sidekick {width: 185px; height: 40px; border-radius: 15px; bottom: 12px;}
+  .adm-sidekick > span:last-child {display: none;}
+}
+/* Reserve a reviewer control lane at every width so the floating amber chip does not cover product rows. */
+body:has(.kit-proto) {--proto-lane: calc(64px + env(safe-area-inset-bottom, 0px));}
+body:has(.kit-proto) .adm-main {min-height: calc(100vh - 8px);}
+body:has(.kit-proto) .adm-content {height: calc(100dvh - var(--chrome-appbar-height) - 4px - var(--proto-lane)); min-height: 0; overflow-y: auto; padding-bottom: 72px; scroll-padding-block: 16px;}
+body:has(.kit-proto) .Polaris-Frame-ToastManager {bottom: var(--proto-lane);}
+@media (prefers-reduced-motion: reduce) {.adm-nav.is-open {transition: none;}}

@@ -25,6 +25,28 @@
     },
     {
       "product": "loyalty",
+      "slug": "admin-revamp-opus",
+      "name": "Admin revamp — clean build (Opus)",
+      "area": "Admin",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-18",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-admin-revamp-opus.jpg",
+      "reviewUrl": "/loyalty/admin-revamp-opus/#/programs/points",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "analytics-revamp",
       "name": "Analytics revamp",
       "area": "Analytics",
