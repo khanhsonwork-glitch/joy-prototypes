@@ -1,0 +1,17 @@
+/* store module styles. Prefix every class with rv-store-. */
+.rv-store-row{border:0;background:transparent;text-align:left;font:inherit;cursor:pointer;min-width:0}
+.rv-store-row:focus-visible{outline:2px solid var(--p-color-border-focus)}
+.rv-store-preview{border:1px solid var(--p-color-border);border-radius:var(--p-border-radius-300);overflow:hidden;background:var(--p-color-bg-surface)}
+.rv-store-preview__top{display:flex;justify-content:space-between;gap:var(--p-space-200);padding:var(--p-space-300);border-bottom:1px solid var(--p-color-border);font-weight:600}
+.rv-store-preview__top span{font-weight:400;color:var(--p-color-text-secondary)}
+.rv-store-hero{width:100%;height:160px;object-fit:cover;display:block}
+.rv-store-preview__body{display:flex;flex-direction:column;gap:var(--p-space-200);padding:var(--p-space-400)}
+.rv-store-preview__section{display:flex;justify-content:space-between;padding:var(--p-space-300);border:1px solid var(--p-color-border);border-radius:var(--p-border-radius-200)}
+.rv-store-launcher{float:right;margin:var(--p-space-300);padding:var(--p-space-200) var(--p-space-400);border-radius:999px;color:var(--p-color-text-on-color)}
+.rv-store-color{display:flex;align-items:center;gap:var(--p-space-200);flex-wrap:wrap}
+.rv-store-swatch{display:inline-block;width:18px;height:18px;flex:none;border-radius:var(--p-border-radius-100);border:1px solid var(--p-color-border)}
+.rv-store-picker{width:240px;padding:var(--p-space-300)}
+.rv-store-pass{min-height:180px;box-sizing:border-box;border-radius:var(--p-border-radius-300);padding:var(--p-space-500);display:flex;flex-direction:column;justify-content:space-between;overflow-wrap:anywhere}
+.rv-store-qr{display:grid;grid-template-columns:repeat(11,1fr);width:150px;height:150px;padding:6px;gap:1px;background:var(--p-color-bg-surface);border:1px solid var(--p-color-border)}
+.rv-store-qr i.on{background:var(--p-color-text)}
+@media(max-width:600px){.rv-store-overview-row{display:flex;flex-direction:column;align-items:stretch;gap:var(--p-space-200)}.rv-store-overview-row .rv-store-row{width:100%;flex:none}.rv-store-overview-row .rv-item__meta{width:100%;justify-content:space-between}.rv-store-section-row{flex-wrap:wrap}.rv-store-section-row .rv-item__meta{width:100%;justify-content:space-between}.rv-store-preview__top span{display:none}}

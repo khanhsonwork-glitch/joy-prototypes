@@ -1,0 +1,24 @@
+/* Programs module: layout only. Shared Polaris controls retain their kit appearance. */
+.rv-programs-filters { min-width: 0; }
+.rv-programs-grow { flex: 1 1 240px; min-width: 0; }
+.rv-programs-share { overflow: hidden; border-radius: var(--p-border-radius-400); }
+.rv-programs-share img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
+.rv-programs-share > div { padding: var(--p-space-400); display: grid; gap: var(--p-space-200); }
+.rv-programs-preview { display: grid; gap: var(--p-space-300); padding: var(--p-space-400); border: 1px solid var(--p-color-border); border-radius: var(--p-border-radius-400); }
+.rv-programs-preview-option { padding: var(--p-space-300); border: 1px solid var(--p-color-border); border-radius: var(--p-border-radius-300); overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .rv-programs-filters { overflow-x: auto; }
+  .rv-programs-share img { max-height: 160px; }
+}
+
+.rv-programs-mobile-list { display: none; }
+@media (max-width: 800px) {
+  .rv-programs-desktop-table { display: none; }
+  .rv-programs-mobile-list { display: block; }
+  .rv-programs-mobile-row { display: grid; gap: var(--p-space-200); padding: var(--p-space-400); border-block-start: 1px solid var(--p-color-border); overflow-wrap: anywhere; }
+  .rv-programs-mobile-row:first-child { border-block-start: 0; }
+}
+
+.rv-programs-list-tools { display: flex; gap: var(--p-space-300); align-items: end; padding: var(--p-space-300); }
+.rv-programs-list-tools > :first-child { flex: 1 1 300px; min-width: 0; }
+@media (max-width: 600px) { .rv-programs-list-tools { flex-wrap: wrap; } .rv-programs-list-tools > * { flex: 1 1 100%; } }

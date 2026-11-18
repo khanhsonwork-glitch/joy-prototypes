@@ -1,0 +1,21 @@
+/* settings module styles. Prefix every class with rv-settings-. */
+.rv-settings-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:var(--p-space-400);align-items:start}
+.rv-settings-nav{min-width:0;position:sticky;top:16px}
+.rv-settings-nav-item{border:0;background:transparent;color:var(--p-color-text);font:inherit;text-align:left;width:100%;padding:10px 14px;border-radius:var(--p-border-radius-200);cursor:pointer}
+.rv-settings-nav-item:hover,.rv-settings-nav-item.is-active{background:var(--p-color-bg-surface-hover)}
+.rv-settings-nav-item:focus-visible,.rv-settings-row:focus-visible{outline:2px solid var(--p-color-border-focus)}
+.rv-settings-nav-mobile{display:none}
+.rv-settings-main,.rv-settings-row{min-width:0}
+.rv-settings-row{background:transparent;border:0;text-align:left;font:inherit;cursor:pointer}
+.rv-settings-color{display:flex;align-items:end;gap:var(--p-space-200);min-width:0}
+.rv-settings-swatch{display:inline-block;width:18px;height:18px;border-radius:var(--p-border-radius-100);border:1px solid var(--p-color-border)}
+.rv-settings-picker{width:240px;padding:var(--p-space-300)}
+.rv-settings-color .Polaris-TextField{min-width:0;flex:1}
+.rv-settings-email-preview{display:flex;flex-direction:column;align-items:flex-start;gap:var(--p-space-400);overflow-wrap:anywhere}
+.rv-settings-email-banner{width:100%;box-sizing:border-box;padding:var(--p-space-500);background:var(--p-color-bg-surface-secondary);font-weight:600;text-align:center;border-radius:var(--p-border-radius-300)}
+.rv-settings-logo-preview{max-width:180px;max-height:90px;object-fit:contain}
+.rv-settings-plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--p-space-300)}
+.rv-settings-main .rv-item__meta{flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:1000px){.rv-settings-plans{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.rv-settings-layout{grid-template-columns:220px minmax(0,1fr)}}
+@media(max-width:600px){.rv-settings-layout{display:block}.rv-settings-nav{position:static;margin-bottom:var(--p-space-400)}.rv-settings-nav-desktop{display:none}.rv-settings-nav-mobile{display:block}.rv-settings-plans{grid-template-columns:1fr}.rv-settings-main .rv-item{flex-wrap:wrap}.rv-settings-main .rv-item__meta{width:100%;justify-content:space-between}}

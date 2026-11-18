@@ -1,0 +1,31 @@
+/* Customers screens share the shell and Polaris tokens. */
+.rv-customers-toolbar {min-width:0; display:flex; align-items:flex-start; gap:var(--p-space-200); padding:var(--p-space-200);}
+.rv-customers-toolbar > :first-child {min-width:0; flex:1;}
+.rv-customers-tools {flex:none; padding-top:var(--p-space-100);}
+.rv-customers-bulk {padding:var(--p-space-300) var(--p-space-400); border-block:1px solid var(--p-color-border);}
+.rv-customers-cell {display:inline-block; max-width:220px; overflow-wrap:anywhere;}
+.rv-customers-rows {min-width:0;}
+.rv-customers-row,.rv-customers-reviewrow,.rv-customers-event {min-width:0; display:flex; align-items:center; gap:var(--p-space-300); justify-content:space-between; padding:var(--p-space-400); border-block-end:1px solid var(--p-color-border);}
+.rv-customers-row > *, .rv-customers-reviewrow > *, .rv-customers-event > * {min-width:0;}
+.rv-customers-rowmeta,.rv-customers-person,.rv-customers-reviewbody {display:flex; flex-direction:column; min-width:0; gap:var(--p-space-100); overflow-wrap:anywhere;}
+.rv-customers-reviewbody {flex:1;}
+.rv-customers-reviewrow {align-items:flex-start;}
+.rv-customers-reviewrow > :last-child {flex:none;}
+.rv-customers-pager {display:flex; align-items:center; justify-content:space-between; gap:var(--p-space-200); padding:var(--p-space-300) var(--p-space-400);}
+.rv-customers-timeline {min-width:0;}
+.rv-customers-grow {flex:1; min-width:0;}
+.rv-customers-checkgrid {display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--p-space-200);}
+.rv-customers-steps {display:flex; flex-wrap:wrap; gap:var(--p-space-200);}
+.rv-customers-filterline {display:flex; gap:var(--p-space-200); padding:var(--p-space-300); min-width:0;}
+.rv-customers-filterline > * {min-width:0; flex:1;}
+@media(max-width:760px){
+  .rv-customers-toolbar {flex-direction:column;}
+  .rv-customers-toolbar > :first-child {width:100%;}
+  .rv-customers-tools {padding:0;}
+  .rv-customers-reviewrow {flex-wrap:wrap;}
+  .rv-customers-reviewrow > :last-child {width:100%; padding-inline-start:var(--p-space-500);}
+  .rv-customers-row {align-items:flex-start; flex-wrap:wrap;}
+  .rv-customers-rowmeta {width:100%; padding-inline-start:var(--p-space-500);}
+  .rv-customers-checkgrid {grid-template-columns:1fr;}
+  .rv-customers-filterline {flex-direction:column;}
+}

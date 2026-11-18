@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {AppProvider, Card, Frame, Page} from '@shopify/polaris';
+import {AppProvider, Card, Frame} from '@shopify/polaris';
 import en from '@shopify/polaris/locales/en.json';
 import {AdminChrome} from './shell/AdminChrome.jsx';
 import {HashLink, RouterProvider, useRoute} from './shell/router.jsx';
@@ -7,42 +7,41 @@ import {ShellProvider} from './shell/ShellContext.jsx';
 import {ScenarioProvider} from './kit/scenario.jsx';
 import {ProtoControls} from './kit/ProtoControls.jsx';
 import {EmptyView} from './kit/StateView.jsx';
-import {RewardsProvider} from './state/rewards.jsx';
-import {ProgramProvider} from './state/program.jsx';
+import {StoreProvider} from './state/store.jsx';
+import {SaveBarProvider} from './ui/SaveBar.jsx';
+import {PageFrame, TitleBarProvider} from './ui/page.jsx';
 import {KitPage} from './pages/KitPage.jsx';
-import {Home} from './pages/Home.jsx';
-import {ProgramBuilder} from './pages/ProgramBuilder.jsx';
-import {ProgramOverview} from './pages/ProgramOverview.jsx';
-import {Customers, Referrals} from './pages/Others.jsx';
+import {RESOLVERS} from './routes.jsx';
 import {DEMO} from './demo.config.js';
 
-// Routes: #/home · #/program (?tier=) · #/program/overview · #/referrals · #/customers (?tier=) · #/kit.
 function NotFound() {
   return (
-    <Page title="Page not found">
+    <PageFrame title="Page not found">
       <Card>
-        <EmptyView heading="There's no page at this address" action={{content: 'Back to program', url: '/program'}}>
-          Check the link, or go back to the program.
+        <EmptyView heading="There's no page at this address" action={{content: 'Go to Home', url: '/home'}}>
+          Check the link, or open a page from the menu.
         </EmptyView>
       </Card>
-    </Page>
+    </PageFrame>
   );
 }
 
 function Screen() {
-  const {segments} = useRoute();
+  const {segments, query} = useRoute();
+  const first = segments[0] || 'home';
   useEffect(() => {
-    document.title = `${DEMO.name} · Joy prototype`;
-  }, []);
-  const [first, second] = segments;
-  let page = <NotFound />;
-  if (first === 'home' || first === 'demo') page = <Home />;
-  else if (first === 'program' && !second) page = <ProgramBuilder />;
-  else if (first === 'program' && second === 'overview') page = <ProgramOverview />;
-  else if (first === 'referrals') page = <Referrals />;
-  else if (first === 'customers') page = <Customers />;
-  else if (first === 'kit') page = <KitPage />;
-  return <AdminChrome>{page}</AdminChrome>;
+    document.title = `${DEMO.titles[first] ?? 'Joy'} · Joy admin revamp`;
+  }, [first]);
+  let page = null;
+  if (first === 'kit') page = <KitPage />;
+  else {
+    const route = segments.length ? segments : ['home'];
+    for (const resolve of RESOLVERS) {
+      page = resolve(route, query);
+      if (page) break;
+    }
+  }
+  return <AdminChrome>{page ?? <NotFound />}</AdminChrome>;
 }
 
 export default function App() {
@@ -50,16 +49,18 @@ export default function App() {
     <AppProvider i18n={en} linkComponent={HashLink}>
       <RouterProvider>
         <ScenarioProvider>
-          <RewardsProvider>
-            <ProgramProvider>
+          <StoreProvider>
             <Frame>
               <ShellProvider>
-                <Screen />
-                <ProtoControls />
+                <TitleBarProvider>
+                  <SaveBarProvider>
+                    <Screen />
+                    <ProtoControls />
+                  </SaveBarProvider>
+                </TitleBarProvider>
               </ShellProvider>
             </Frame>
-            </ProgramProvider>
-          </RewardsProvider>
+          </StoreProvider>
         </ScenarioProvider>
       </RouterProvider>
     </AppProvider>

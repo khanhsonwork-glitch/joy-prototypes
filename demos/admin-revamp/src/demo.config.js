@@ -1,21 +1,20 @@
-// The one file `npm run new` rewrites for a new prototype. Edit by hand to rename or re-point the app nav.
-// Revamp menu: the program is set up in one place (Program), Membership and Reward programs are gone as separate
-// modules. No Home item: the app name row in Shopify's nav already opens the app home (Alex 18/11).
+// Revamp menu, approved by Alex 18/11 (joy-admin-revamp-map.vercel.app). Order follows how a merchant builds a
+// program: rules → loyalty perks → what customers see → customers → results. No Home item: the app name row in
+// Shopify's nav opens the app home.
 export const DEMO = {
-  name: "Admin revamp — Polaris 2",
-  product: "loyalty",
-  pageTitle: 'Loyalty program',
-  detailTitle: 'All tiers side by side',
-  titles: {home: 'Home', demo: 'Home', program: 'Program', referrals: 'Program', customers: 'Customers'},
+  name: 'Joy admin revamp',
+  product: 'loyalty',
+  titles: {home: 'Home', programs: 'Programs', vip: 'VIP & membership', store: 'On your store', customers: 'Customers',
+    analytics: 'Analytics', integrations: 'Integrations', settings: 'Settings', wishlist: 'Wishlist', subscription: 'Subscription'},
   menu: [
-    {id: 'program', label: 'Program', href: '#/program', routes: ['program', 'referrals']},
+    {id: 'programs', label: 'Programs', href: '#/programs', routes: ['programs']},
+    {id: 'vip', label: 'VIP & membership', href: '#/vip', routes: ['vip']},
+    {id: 'store', label: 'On your store', href: '#/store', routes: ['store']},
     {id: 'customers', label: 'Customers', href: '#/customers', routes: ['customers']},
-    {id: 'onsite', label: 'On your store'},
-    {id: 'analytics', label: 'Analytics'},
-    {id: 'integrations', label: 'Integrations'},
-    {id: 'settings', label: 'Settings'},
-    // Cross-app entries the real admin shows under Joy (config/crossApp): Joy Wishlist and Joy Subscription.
-    {id: 'wishlist', label: 'Wishlist'},
-    {id: 'subscription', label: 'Subscription'},
+    {id: 'analytics', label: 'Analytics', href: '#/analytics', routes: ['analytics']},
+    {id: 'integrations', label: 'Integrations', href: '#/integrations', routes: ['integrations']},
+    {id: 'settings', label: 'Settings', href: '#/settings', routes: ['settings']},
+    {id: 'wishlist', label: 'Wishlist', href: '#/wishlist', routes: ['wishlist']},
+    {id: 'subscription', label: 'Subscription', href: '#/subscription', routes: ['subscription']},
   ],
 };

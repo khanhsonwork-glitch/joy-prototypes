@@ -1,6 +1,6 @@
 // Shopify's new admin frame around the demo. The app content remains Polaris React.
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {Icon} from '@shopify/polaris';
+import {ActionList, Badge, Button, Icon, InlineStack, Popover} from '@shopify/polaris';
 import {
   ChartVerticalIcon, ChevronLeftIcon, ChevronRightIcon, ContentIcon,
   DiscountIcon, FinanceIcon, GlobeIcon, HomeIcon,
@@ -13,6 +13,8 @@ import {DEMO} from '../demo.config.js';
 import {JoyIcon, ShopifyWordmark} from './icons.jsx';
 import {HashLink, useRoute} from './router.jsx';
 import {useShell} from './ShellContext.jsx';
+import {useTitleBar} from '../ui/page.jsx';
+import {SaveBarSlot, useUnsaved} from '../ui/SaveBar.jsx';
 
 const cx = (...parts) => parts.filter(Boolean).join(' ');
 const APP_NAME = DEMO.product === 'wishlist' ? 'Joy: Wishlist' : 'Joy: Loyalty Program';
@@ -47,7 +49,7 @@ function Navigation({open, onClose}) {
   const route = useRoute();
   const {notYet} = useShell();
   const selected = APP_MENU.findIndex(item => item.routes?.includes(route.segments[0]));
-  const atAppHome = ['home', 'demo'].includes(route.segments[0] || 'demo');
+  const atAppHome = ['home', 'demo'].includes(route.segments[0] || 'home');
   const stub = () => {notYet(); onClose();};
   return <>
     {open && <div className="adm-scrim" onClick={onClose} aria-hidden="true" />}
@@ -99,19 +101,45 @@ function Navigation({open, onClose}) {
   </>;
 }
 
+// The app title bar: back, Joy icon, page title (+ badge), page actions. While a form has unsaved changes the
+// whole bar becomes the contextual save bar, as in the new admin.
 function AppTitleBar({onMenu}) {
   const route = useRoute();
-  const {notYet} = useShell();
-  const title = route.segments[0] === 'kit' ? 'Components and tokens'
-    : route.segments.length === 1 && DEMO.titles?.[route.segments[0] || 'demo'] ? DEMO.titles[route.segments[0] || 'demo']
-    : route.segments.length > 1 ? (DEMO.detailTitle ?? 'Reward details')
-      : (DEMO.pageTitle ?? (DEMO.name === 'Starter kit' ? 'Rewards' : DEMO.name));
-  return <div className="adm-appbar">
+  const bar = useTitleBar();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const fallback = route.segments[0] === 'kit' ? 'Components and tokens' : (DEMO.titles?.[route.segments[0]] ?? 'Joy');
+  const title = bar?.title ?? fallback;
+  const back = bar?.backUrl ?? (route.segments[0] === 'home' ? null : '/home');
+  const secondary = bar?.secondaryActions ?? [];
+  const primary = bar?.primaryAction;
+  const unsaved = useUnsaved();
+  return <div className={cx('adm-appbar', unsaved && 'is-unsaved')}>
     <button type="button" className="adm-appbar__menu" aria-label="Open navigation" onClick={onMenu}><Icon source={MenuIcon} /></button>
-    <HashLink className="adm-appbar__back" url="/home" aria-label="Back to home"><Icon source={ChevronLeftIcon} /></HashLink>
-    <JoyIcon size={18} /> <span className="adm-appbar__divider">/</span>
+    {back
+      ? <HashLink className="adm-appbar__back" url={back} aria-label="Back"><Icon source={ChevronLeftIcon} /></HashLink>
+      : null}
+    <JoyIcon size={18} />
     <span className="adm-appbar__title">{title}</span>
-    <button type="button" className="adm-appbar__more" aria-label="More" onClick={notYet}><Icon source={MenuHorizontalIcon} /></button>
+    {bar?.badge ? <span className="adm-appbar__badge">{bar.badge}</span> : null}
+    <div className="adm-appbar__actions">
+      {unsaved ? <SaveBarSlot /> : <span className="adm-appbar__page-actions">
+        <InlineStack gap="200" wrap={false} blockAlign="center">
+          <span className="adm-appbar__secondary">
+            <InlineStack gap="200" wrap={false}>
+              {secondary.map(a => <Button key={a.content} size="slim" onClick={a.onAction} url={a.url} disabled={a.disabled} tone={a.destructive ? 'critical' : undefined}>{a.content}</Button>)}
+            </InlineStack>
+          </span>
+          {primary ? <Button size="slim" variant="primary" onClick={primary.onAction} url={primary.url} disabled={primary.disabled} loading={primary.loading}>{primary.content}</Button> : null}
+        </InlineStack>
+      </span>}
+      {!unsaved && <Popover active={moreOpen} onClose={() => setMoreOpen(false)} preferredAlignment="right"
+        activator={<button type="button" className="adm-appbar__more" aria-label="More actions" aria-expanded={moreOpen} onClick={() => setMoreOpen(v => !v)}><Icon source={MenuHorizontalIcon} /></button>}>
+        <ActionList actionRole="menuitem" onActionAnyItem={() => setMoreOpen(false)} items={[
+          ...secondary.map(a => ({content: a.content, onAction: a.onAction, url: a.url, disabled: a.disabled, destructive: a.destructive})),
+          {content: 'Help center', url: 'https://help.joy.so', external: true},
+        ]} />
+      </Popover>}
+    </div>
   </div>;
 }
 

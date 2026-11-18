@@ -1,9 +1,11 @@
 // Amber panel that is visibly NOT product UI: switch the screen state, open the component sheet.
 import React, {useEffect, useRef, useState} from 'react';
 import {STATES, useScenario} from './scenario.jsx';
+import {useStore} from '../state/store.jsx';
 
 export function ProtoControls() {
   const {state, setState} = useScenario();
+  const store = useStore();
   const [open, setOpen] = useState(false);
   const toggle = useRef(null);
   const panel = useRef(null);
@@ -40,6 +42,7 @@ export function ProtoControls() {
               </label>
             ))}
           </fieldset>
+          <button type="button" className="kit-proto__link" onClick={() => {store?.reset(); setOpen(false);}}>Reset sample data</button>
           <a className="kit-proto__link" href="#/kit" onClick={() => setOpen(false)}>Components and tokens →</a>
         </div>
       ) : null}
