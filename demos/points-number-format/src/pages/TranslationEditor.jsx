@@ -12,7 +12,7 @@ import {useNavigate, useRoute} from '../shell/router.jsx';
 import {useSaveBar, useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
-import {MODE_SAME, MODE_TRANSLATION, apiDefault, useSettings} from '../state/settings.jsx';
+import {apiDefault, useSettings} from '../state/settings.jsx';
 import {WIDGET_SECTIONS} from '../data/widgetSections.js';
 import {BIG_SAMPLES, FORMATS, LANGUAGES, LOCALE, POINT_LABELS, SAMPLES, formatLabel, formatPoints, localeLabel} from '../data/numberFormat.js';
 import {LockedBanner, SyncBanner, useLeaveGuard} from './shared.jsx';
@@ -36,12 +36,6 @@ const SURFACE_OPTIONS = [
 
 const VAR_HELP = 'Keep the same variable format to display the right value';
 const POINT_LOCKED = 'Using the same point label for all languages. Switch to "Different labels per language" in Settings → Custom point label to edit per-locale values.';
-
-function numberLockedHelp(mode) {
-  return mode === MODE_SAME
-    ? 'Using the same number format for all languages. Switch to "Set per language in Translations" in Settings → General → Number format to set one per language.'
-    : 'Each language follows its own standard. Switch to "Set per language in Translations" in Settings → General → Number format to set one per language.';
-}
 
 function AiAssistant({disabled}) {
   const {notify} = useShell();
@@ -70,7 +64,7 @@ export function TranslationEditor() {
   const lang = codes.includes(query.get('lang')) ? query.get('lang') : saved.primaryLanguage;
   const isDefault = lang === saved.primaryLanguage;
   const field = query.get('field');
-  const perLanguageMode = saved.numberMode === MODE_TRANSLATION;
+  const perLanguageMode = true; // Alex 18/11: the format is set per language in Translations only, no Settings card
   const pointsPerLanguage = saved.pointLabelMode === 'translation';
   const samples = saved.big ? BIG_SAMPLES : SAMPLES;
 
@@ -121,7 +115,7 @@ export function TranslationEditor() {
     return amount === 1 ? saved.pointSingular : saved.pointPlural;
   };
   const seen = (format) => samples.map((n) => `${formatPoints(n, format, lang)} ${pointLabel(lang, n)}`).join(' · ');
-  const effectiveFormat = perLanguageMode ? draft.perLanguage[lang] || LOCALE : saved.numberMode === MODE_SAME ? saved.numberFormat : LOCALE;
+  const effectiveFormat = draft.perLanguage[lang] || LOCALE;
   const textKey = (key) => `${lang}|${key}`;
   const setText = (key, value) => setDraft((d) => ({...d, texts: {...d.texts, [textKey(key)]: value}}));
 
@@ -130,14 +124,14 @@ export function TranslationEditor() {
     let original;
     let translation;
     if (row.type === 'number') {
-      const defaultFormat = perLanguageMode ? draft.perLanguage[saved.primaryLanguage] || LOCALE : effectiveFormat;
+      const defaultFormat = draft.perLanguage[saved.primaryLanguage] || LOCALE;
       original = <TextField label="Original" labelHidden disabled autoComplete="off" value={formatLabel(defaultFormat, saved.primaryLanguage)} />;
       const options = [{label: localeLabel(lang), value: LOCALE}, ...FORMATS.map((f) => ({label: f.label, value: f.value}))];
       translation = (
         <BlockStack gap="100">
-          <Select label="Translation" labelHidden options={options} value={effectiveFormat} disabled={disabled || !perLanguageMode}
+          <Select label="Translation" labelHidden options={options} value={effectiveFormat} disabled={disabled}
             onChange={(value) => setDraft((d) => ({...d, perLanguage: {...d.perLanguage, [lang]: value}}))} />
-          <Text as="p" variant="bodySm" tone="subdued">{perLanguageMode ? `Customers see: ${seen(effectiveFormat)}` : numberLockedHelp(saved.numberMode)}</Text>
+          <Text as="p" variant="bodySm" tone="subdued">{`Customers see: ${seen(effectiveFormat)}`}</Text>
         </BlockStack>
       );
     } else if (row.type === 'api') {
@@ -148,7 +142,7 @@ export function TranslationEditor() {
       translation = (
         <TextField label="Translation" labelHidden autoComplete="off" disabled={disabled} value={value} placeholder={isDefault ? row.source : apiDefault(lang)}
           onChange={(v) => setDraft((d) => ({...d, apiMessage: {...d.apiMessage, [lang]: v}}))}
-          helpText={<BlockStack gap="050"><span>{VAR_HELP}</span><span>{`Shown when your other system adds points through the Joy REST API. Customers see: ${shown}`}</span></BlockStack>} />
+          helpText={<BlockStack gap="050"><span>{VAR_HELP}</span><span>{`Shown when your other system adds points through the Joy REST API or Shopify Flow. Customers see: ${shown}`}</span></BlockStack>} />
       );
     } else {
       const isPoint = row.label === 'Point singular' || row.label === 'Point plural';

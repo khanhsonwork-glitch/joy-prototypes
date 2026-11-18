@@ -3,9 +3,8 @@
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 
 export const STATES = [
-  {value: 'default', label: 'Default', help: 'Follow each language (today)'},
-  {value: 'same', label: 'Same format', help: "Same format for all languages, 1'125 picked"},
-  {value: 'per-language', label: 'Per language', help: 'Set per language in Translations'},
+  {value: 'default', label: 'Default', help: 'Every language on Language standard (today)'},
+  {value: 'per-language', label: 'Format picked', help: "Italian set to 1'125, French to 1 125"},
   {value: 'empty', label: 'Empty', help: 'New shop, no detected languages yet'},
   {value: 'loading', label: 'Loading', help: 'Data on its way'},
   {value: 'error', label: 'Error', help: 'Loading failed'},
@@ -15,7 +14,7 @@ export const STATES = [
 ];
 const VALID = new Set(STATES.map((s) => s.value));
 // ?mode=follow|same|translation is a readable alias for the three Number format choices (#/settings?mode=same).
-const MODE_ALIAS = {follow: 'default', same: 'same', translation: 'per-language', 'per-language': 'per-language'};
+const MODE_ALIAS = {follow: 'default', same: 'per-language', translation: 'per-language', 'per-language': 'per-language'};
 function readState() {
   const query = new URLSearchParams(window.location.hash.split('?').slice(1).join('?'));
   const search = new URLSearchParams(window.location.search);

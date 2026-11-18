@@ -34,7 +34,7 @@ function initialFor(state) {
     numberMode: state === 'same' ? MODE_SAME : state === 'per-language' ? MODE_TRANSLATION : MODE_LOCALE,
     numberFormat: state === 'same' ? 'apostrophe' : 'comma',
     // Translations › Unified widget › Points display › Number format, per language (used when mode = translation)
-    perLanguage: Object.fromEntries(all.map((code) => [code, state === 'per-language' ? ({it: 'dot', fr: 'space'}[code] || LOCALE) : LOCALE])),
+    perLanguage: Object.fromEntries(all.map((code) => [code, state === 'per-language' ? ({it: 'apostrophe', fr: 'space'}[code] || LOCALE) : LOCALE])),
     // Translations › Unified widget › Activity history › Activity messages › Points added via API (new)
     apiMessage: Object.fromEntries(all.map((code) => [code, ''])),
     // Other Unified widget rows the merchant edits, keyed "<language>|<row key>"

@@ -43,78 +43,6 @@ function perLanguageLine(codes, formatOf, samples) {
   return `${shown.join('; ')}${more > 0 ? `; and ${more} more ${more === 1 ? 'language' : 'languages'}` : ''}`;
 }
 
-function NumberFormatCard({form, set, saved, disabled}) {
-  const codes = shopLanguages(saved);
-  const samples = saved.big ? BIG_SAMPLES : SAMPLES;
-  const selectedFormat = FORMATS.find((f) => f.value === form.numberFormat) || FORMATS[0];
-  const sameLine = samples.map((n) => pointsText(n, form.numberFormat, 'en', form)).join(' · ');
-  return (
-    <Card>
-      <BlockStack gap="200">
-        <InlineStack gap="200" blockAlign="center">
-          <Heading>Number format</Heading>
-          <span className="pnf-new" aria-label="New in this prototype">New</span>
-        </InlineStack>
-        <Text as="p" tone="subdued">
-          How point amounts appear to your customers — in the loyalty widget, customer account pages, and email notifications.
-          Applies to point balances, earn and redeem amounts, and activity history.
-        </Text>
-        <ChoiceList
-          title="Number format mode"
-          titleHidden
-          disabled={disabled}
-          selected={[form.numberMode]}
-          onChange={([value]) => set('numberMode')(value)}
-          choices={[
-            {
-              value: MODE_LOCALE,
-              label: 'Follow each language',
-              helpText: `Numbers are written the way each customer's language writes them. Example: ${perLanguageLine(codes, () => LOCALE, samples)}`,
-            },
-            {
-              value: MODE_SAME,
-              label: 'Same format for all languages',
-              helpText: form.numberMode === MODE_SAME ? undefined : 'One format everywhere, whatever language the customer reads.',
-              renderChildren: (isSelected) => isSelected && (
-                <div className="pnf-choice-child">
-                  <BlockStack gap="100">
-                    <Select
-                      label="Format"
-                      disabled={disabled}
-                      options={FORMATS.map((f) => ({label: f.label, value: f.value}))}
-                      value={selectedFormat.value}
-                      onChange={set('numberFormat')}
-                    />
-                    <Text as="p" tone="subdued" id="pnf-same-example">{`Customers see: ${sameLine}`}</Text>
-                  </BlockStack>
-                </div>
-              ),
-            },
-            {
-              value: MODE_TRANSLATION,
-              label: 'Set per language in Translations',
-              helpText: form.numberMode === MODE_TRANSLATION ? undefined : 'Pick a format for each language, next to its point labels.',
-              renderChildren: (isSelected) => isSelected && (
-                <div className="pnf-choice-child">
-                  <BlockStack gap="200">
-                    <Banner tone="info">
-                      <p>
-                        {'Each language uses the number format you set for it, so a customer reading Italian can see 1.125 while English shows 1,125. To set the format for each language, please go to the '}
-                        <Link url="/translations?field=number_format&state=per-language">Translation</Link>
-                      </p>
-                    </Banner>
-                    <Text as="p" tone="subdued">{`Customers see: ${perLanguageLine(codes, (code) => saved.perLanguage[code] || LOCALE, samples)}`}</Text>
-                  </BlockStack>
-                </div>
-              ),
-            },
-          ]}
-        />
-      </BlockStack>
-    </Card>
-  );
-}
-
 function CustomPointLabelCard({form, set, disabled}) {
   const {notify} = useShell();
   const on = form.enabledCustomPointLabel;
@@ -363,7 +291,6 @@ export function GeneralSettings() {
         {disabled ? <LockedBanner /> : null}
         {state === 'worst' ? <SyncBanner what="number format" /> : null}
         <OtherCardsBefore form={form} set={set} disabled={disabled} />
-        <div id="number-format" className="pnf-anchor"><NumberFormatCard form={form} set={set} saved={saved} disabled={disabled} /></div>
         <div id="currency-format"><CurrencyFormatCard form={form} set={set} disabled={disabled} /></div>
         <CustomPointLabelCard form={form} set={set} disabled={disabled} />
         <OtherCardsAfter form={form} set={set} saved={saved} disabled={disabled} />

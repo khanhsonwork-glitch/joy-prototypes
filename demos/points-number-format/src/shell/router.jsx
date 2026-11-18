@@ -2,7 +2,7 @@
 // The URL *search* (?option=a) is left alone so the prototype controls can own it.
 import React, {createContext, forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 
-export const DEFAULT_PATH = '/settings';
+export const DEFAULT_PATH = '/translations';
 
 function readHash() {
   const raw = (window.location.hash || '').replace(/^#/, '');
