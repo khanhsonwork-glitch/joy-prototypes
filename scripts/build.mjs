@@ -13,6 +13,9 @@ const HUB_ORIGIN = 'https://joy-prototypes.web.app';
 // from the private Joy code on Alex's Mac and hosted there; this public repo only carries their list and card images.
 const NORTH_BLOOM = 'https://joy-north-bloom.vercel.app';
 const noindex = {source: '**', headers: [{key: 'X-Robots-Tag', value: 'noindex, nofollow'}]};
+// Pages (no file extension, or .html) are revalidated on every visit, so a new home shows right after a deploy instead of
+// a browser keeping the old one for an hour (Alex 19/11 saw the previous list after the merge). Assets keep caching.
+const freshPages = {regex: '^(/[^.]*|.*\\.html)$', headers: [{key: 'Cache-Control', value: 'no-cache'}]};
 
 function loadRegistry() {
   const source = JSON.parse(fs.readFileSync(path.join(ROOT, 'hub/data/registry.json'), 'utf8'));
@@ -83,7 +86,7 @@ function buildHub() {
   }));
   const rewrites = [{source: '/', destination: '/index.html'}, {source: '/archive', destination: '/archive/index.html'}];
   // Generated, never committed: redirects follow hub/data/registry.json, so nobody hand-edits deploy config.
-  const hosting = {public: 'hub', ignore: ['firebase.json', '**/.*'], redirects, rewrites, headers: [noindex]};
+  const hosting = {public: 'hub', ignore: ['firebase.json', '**/.*'], redirects, rewrites, headers: [noindex, freshPages]};
   fs.writeFileSync(path.join(DIST, 'firebase.json'), JSON.stringify({hosting}, null, 2) + '\n');
   fs.copyFileSync(path.join(out, 'index.html'), path.join(out, '404.html'));
   // Static entry copies let ordinary static servers support history-mode deep links.
