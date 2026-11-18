@@ -203,9 +203,11 @@
 .Polaris-ShadowBevel,
 .Polaris-LegacyCard {
   border-radius: 20px;
-  box-shadow: var(--p-shadow-200);
+  /* polaris-2.js s-section card (18/11/2026): a soft 24% 2px edge and wide faint drops — lighter than shadow-200. */
+  box-shadow: 0 0 2px #0000003d, 0 2px 12px #00000005, 0 4px 16px #00000005, 0 4px 48px #00000005;
   overflow: hidden;
 }
+.Polaris-ShadowBevel::before {box-shadow: none;}
 .Polaris-ShadowBevel > .Polaris-Box,
 .Polaris-LegacyCard > .Polaris-Box {border-radius: inherit;}
 .Polaris-ShadowBevel::before {border-radius: inherit;}
@@ -216,12 +218,26 @@
  * the visible field edge; keep the error and focus states intact. */
 .Polaris-TextField,
 .Polaris-Select {border-radius: 12px;}
+/* Numbers read from Shopify's polaris-2.js s-text-field / s-select (18/11/2026): a 13% black hairline ring plus two
+ * soft drops, never a solid grey border. The old #8c8c8c ring read as a dark, heavy outline next to the real admin. */
 .Polaris-TextField__Backdrop,
 .Polaris-Select__Backdrop {
+  border: 0;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 1px 2px #00000012, 0 0 0 1px #8c8c8c;
+  box-shadow: 0 2px 3px -1px #0000000a, 0 3px 4px -1.5px #0000000a, 0 0 0 1px #00000021;
 }
+.Polaris-TextField__Backdrop::after,
+.Polaris-Select__Backdrop::after {border-radius: 12px;}
+/* Disabled (the "Original" column): still white, lighter 10% ring, grey text — polaris-2.js disabled input-wrapper. */
+.Polaris-TextField--disabled .Polaris-TextField__Backdrop,
+.Polaris-Select--disabled .Polaris-Select__Backdrop {
+  background: #fff;
+  box-shadow: 0 0 0 1px #0000001a;
+}
+.Polaris-TextField--disabled .Polaris-TextField__Input,
+.Polaris-TextField--disabled .Polaris-TextField__Input::placeholder,
+.Polaris-Select--disabled .Polaris-Select__Content {color: #a6a6a6; -webkit-text-fill-color: #a6a6a6;}
 .Polaris-TextField__Input,
 .Polaris-Select__Input {min-height: 30px;}
 .Polaris-TextField__Input:focus-visible ~ .Polaris-TextField__Backdrop,
@@ -230,7 +246,8 @@
   box-shadow: 0 0 0 2px var(--p-color-border-focus), 0 2px 5px #00000018;
 }
 .Polaris-Checkbox__Backdrop,
-.Polaris-RadioButton__Backdrop {border-radius: 4px; width: 14px; height: 14px;}
+.Polaris-RadioButton__Backdrop {border-radius: 4px; width: 14px; height: 14px; border: 0;
+  box-shadow: 0 2px 3px -1px #0000000a, 0 3px 4px -1.5px #0000000a, 0 0 0 1px #00000033;}
 .Polaris-RadioButton__Backdrop {border-radius: 50%;}
 .Polaris-Checkbox__Input:checked + .Polaris-Checkbox__Backdrop,
 .Polaris-RadioButton__Input:checked + .Polaris-RadioButton__Backdrop {background: #0c0c0c; border-color: #0c0c0c;}
