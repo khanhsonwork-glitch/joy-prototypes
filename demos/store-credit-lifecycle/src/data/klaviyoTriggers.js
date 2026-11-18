@@ -1,0 +1,57 @@
+// Klaviyo trigger list in the order of LIST_INTEGRATION_KLAVIYO_TRIGGERS (functions/src/const/integrations.js on avada/master),
+// names from getEventName() and help text from getEventHelpText() (functions/src/helpers/utils/omnisend.js).
+// The three store credit triggers are new; they go at the end like the other Klaviyo-only events.
+export const EXISTING_TRIGGERS = [
+  ['earn_point', 'Earn Point', 'Triggered when customer earns points'],
+  ['points_eligible_reward', 'Points Eligible Reward', 'Triggered when customer has enough points to redeem a reward'],
+  ['redeem_points', 'Redeem Points', 'Triggered when customer redeems points'],
+  ['pos_point_redemption', 'POS Point Redemption', 'Triggered when customer redeems points at POS'],
+  ['tier_achieved', 'Tier Achieved', 'Triggered when customer achieves a new tier'],
+  ['tier_downgrade', 'Tier Downgrade', 'Triggered when customer tier is downgraded'],
+  ['tier_reset', 'Tier Reset', 'Triggered when customer tier is reset'],
+  ['4w_pre_tier_reset', '4 Weeks Pre Tier Reset', 'Triggered 4 weeks before customer tier reset'],
+  ['2w_pre_tier_reset', '2 Weeks Pre Tier Reset', 'Triggered 2 weeks before customer tier reset'],
+  ['1d_pre_tier_reset', '1 Day Pre Tier Reset', 'Triggered 1 day before customer tier reset'],
+  ['birthday', 'Birthday', "Triggered on a customer's birthday"],
+  ['7d_pre_birthday', '7 Days Pre Birthday', "Triggered 7 days before a customer's birthday"],
+  ['30d_pre_point_expiration', '30 Days Pre Point Expiration', 'Triggered 30 days before customer points expire'],
+  ['7d_pre_point_expiration', '7 Days Pre Point Expiration', 'Triggered 7 days before customer points expire'],
+  ['3d_pre_point_expiration', '3 Days Pre Point Expiration', 'Triggered 3 days before customer points expire'],
+  ['referee_claim_reward', 'Referee Claim Reward', 'Triggered when referee claims a reward'],
+  ['referral_friend', 'Referral Friend Complete', 'Triggered when a referred friend makes their first purchase'],
+  ['4w_pre_tier_demotion', '4 Weeks Pre Tier Demotion', 'Triggered 4 weeks before customer tier demotion'],
+  ['2w_pre_tier_demotion', '2 Weeks Pre Tier Demotion', 'Triggered 2 weeks before customer tier demotion'],
+  ['1d_pre_tier_demotion', '1 Day Pre Tier Demotion', 'Triggered 1 day before customer tier demotion'],
+  ['upon_point_expiration', 'Upon Point Expiration', 'Triggered when customer points expire'],
+  ['milestone_achieved', 'Milestone Achieved', 'Triggered when a customer receives milestone rewards: when the milestone is reached, or, for rewards the customer picks, when they claim them'],
+  ['milestone_reward_claimable', 'Milestone Reward Ready To Claim', 'Triggered when a customer reaches a milestone whose reward they must claim themselves'],
+  ['milestone_reward_claimed', 'Milestone Reward Claimed', 'Triggered when a customer claims the milestone rewards they chose. Fires together with Milestone Achieved — send your confirmation email from one place only.'],
+  ['member_anniversary', 'Member Anniversary', "Triggered on the anniversary of the customer's membership date"],
+  ['7d_pre_member_anniversary', '7 Days Pre Member Anniversary', "Triggered 7 days before the anniversary of the customer's membership date"],
+  ['approved_submit_receipt', 'Approve submitted receipt', 'Triggered when submitted receipt is approved'],
+  ['reject_submit_receipt', 'Reject submitted receipt', 'Triggered when submitted receipt is rejected'],
+  ['referral_link_shared', 'Referral Link Sent', 'Triggered when a customer shares their referral link via email'],
+  ['joined_loyalty_program', 'Joined Loyalty Program', 'Triggered when a customer joins the loyalty program for the first time'],
+  ['reward_sent_to_friend', 'Reward Sent to Friend', 'Triggered when a customer sends their redeemed reward to a friend via email'],
+  ['wishlist_added', 'Added to Wishlist', 'Triggered when a customer adds a product to their wishlist'],
+  ['wishlist_back_in_stock', 'Wishlisted Item Back in Stock', 'Triggered when a wishlisted item is back in stock'],
+  ['wishlist_price_drop', 'Wishlisted Item Price Drop', 'Triggered when the price drops on a wishlisted item'],
+  ['wishlist_purchased', 'Wishlisted Item Purchased', 'Triggered when a customer purchases an item that was on their wishlist'],
+  ['wishlist_reminder', 'Wishlist Reminder', 'Triggered when a customer is reminded about items in their wishlist'],
+  ['wishlist_low_stock', 'Wishlisted Item Low Stock', 'Triggered when a wishlisted item is low in stock'],
+  ['coupon_reminder_after_redeem', 'Unused Coupon - After Redeem', 'Triggered N days after a coupon is issued to a customer if still unused'],
+  ['coupon_reminder_before_expire', 'Unused Coupon - Before Expire', 'Triggered N days before a coupon expires if still unused'],
+  ['tier_assessment_reminder', 'Pre Tier Assessment Reminder', "Triggered N days before a member's tier assessment review if they haven't yet reached the threshold to maintain their tier"],
+].map(([value, name, help]) => ({value, name: `Joy: ${name}`, help}));
+
+/** New in this feature: unticked by default in every shop. */
+export const STORE_CREDIT_TRIGGERS = [
+  {value: 'store_credit_issued', name: 'Joy: Store Credit Issued', isNew: true,
+    help: "Triggered when Joy adds store credit to a customer's balance. If Joy's store credit expiry reminder email is on, you don't need a reminder flow in Klaviyo, or customers get two reminders for the same credit."},
+  {value: 'store_credit_used', name: 'Joy: Store Credit Used', isNew: true,
+    help: 'Triggered when a customer pays for an order with store credit, including store credit not issued by Joy'},
+  {value: 'store_credit_expired', name: 'Joy: Store Credit Expired', isNew: true,
+    help: 'Triggered when store credit issued by Joy expires with money left. Usually arrives within 1 day after the expiry date'},
+];
+export const KLAVIYO_TRIGGERS = [...EXISTING_TRIGGERS, ...STORE_CREDIT_TRIGGERS];
+export const DEFAULT_SELECTED = ['earn_point', 'redeem_points', 'birthday', 'referral_friend'];

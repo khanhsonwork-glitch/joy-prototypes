@@ -1054,6 +1054,37 @@
     },
     {
       "product": "loyalty",
+      "slug": "store-credit-lifecycle",
+      "name": "Store credit lifecycle",
+      "area": "On-site content",
+      "surfaces": [
+        "Widget",
+        "Loyalty page",
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-18",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-store-credit-lifecycle.jpg",
+      "reviewUrl": "/loyalty/store-credit-lifecycle/#/widget",
+      "kind": "prototype",
+      "aliases": [
+        "Store credit expiry",
+        "Store credit expires on",
+        "Klaviyo store credit triggers",
+        "Store Credit Issued",
+        "Store Credit Used",
+        "Store Credit Expired"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "store-credit-plan-gate",
       "name": "Store credit plan gate",
       "area": "Reward programs",

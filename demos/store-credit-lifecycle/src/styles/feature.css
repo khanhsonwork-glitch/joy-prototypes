@@ -1,0 +1,171 @@
+/* Store credit lifecycle: storefront screens (Joy widget V4 + Shopify customer account) and the Klaviyo admin page.
+   Storefront colours come from the --joy-* / --ca-* variables in tokens.css (Joy widget default theme); amber = prototype-only. */
+
+/* ---------- prototype-only ---------- */
+.scl-new {outline: 1.5px dashed var(--proto-amber-border); outline-offset: 2px; border-radius: 3px; background: var(--proto-amber-bg);}
+div.scl-new {display: block;}
+body.is-shot .scl-new {outline: 0; background: none;}
+body.is-shot .scl-new-tag {display: none;}
+body.is-shot .scl-choice--new {outline: 0; background: none;}
+.scl-new-tag {
+  display: inline-flex; align-items: center; margin-left: var(--p-space-200); padding: 0 var(--p-space-150); border-radius: var(--p-border-radius-full);
+  background: var(--proto-amber-bg); border: var(--p-border-width-025) solid var(--proto-amber-border); color: var(--proto-amber-text);
+  font-size: var(--p-font-size-275); line-height: var(--p-font-line-height-400); font-weight: var(--p-font-weight-medium);
+}
+.scl-proto {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--p-space-200);
+  padding: var(--p-space-300) var(--p-space-600); background: var(--proto-amber-bg); border-bottom: 1px solid var(--proto-amber-border);
+}
+.scl-proto__label {font: 600 12px/16px var(--p-font-family-sans); color: var(--proto-amber-text); margin-right: var(--p-space-200);}
+.scl-proto__btn {
+  font: 500 13px/18px var(--p-font-family-sans); padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--proto-amber-border); background: var(--pp-paper); color: var(--proto-amber-text);
+}
+.scl-proto__btn.is-on {background: var(--proto-amber-text); color: var(--pp-paper);}
+.scl-proto__btn:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
+.scl-proto__hint {flex-basis: 100%; font-size: 12px; color: var(--proto-amber-text);}
+
+/* ---------- storefront frame (fictional Pomelo Park) ---------- */
+.scl-sf {min-height: 100vh; background: var(--pp-cream); color: var(--pp-ink); font-family: var(--pp-font-body); padding-bottom: 72px;}
+.scl-sf--account {background: var(--ca-bg); color: var(--ca-text); font-family: var(--p-font-family-sans);}
+.scl-store {display: flex; align-items: center; gap: var(--p-space-600); padding: var(--p-space-400) var(--p-space-600); background: var(--pp-paper); border-bottom: 1px solid var(--pp-line);}
+.scl-store--account {background: var(--ca-surface); border-bottom-color: var(--ca-border);}
+.scl-store__name {font-family: var(--pp-font-head); font-weight: 700; font-size: 20px; letter-spacing: 0.01em;}
+.scl-store__nav {margin-left: auto; display: flex; gap: var(--p-space-400); flex-wrap: wrap;}
+.scl-store__nav button {border: 0; background: none; padding: 0; font: inherit; font-size: 14px; color: inherit; opacity: 0.8; cursor: pointer;}
+.scl-stage {position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: var(--p-space-800); max-width: 1200px; margin: 0 auto; padding: var(--p-space-800) var(--p-space-600);}
+.scl-hero {align-self: start; padding: var(--p-space-1600) var(--p-space-800); border-radius: 24px; background: linear-gradient(135deg, var(--pp-yellow-soft), var(--pp-pink-soft));}
+.scl-hero__kicker {margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--pp-ink-soft);}
+.scl-hero__title {margin: 0; font-family: var(--pp-font-head); font-size: 44px; line-height: 1.1;}
+.scl-widget-slot {display: flex; justify-content: flex-end;}
+
+/* ---------- Joy widget V4 (joy-loyalty-widget.styles.ts, default theme) ---------- */
+.joyw {
+  width: 420px; max-width: 100%; background: var(--joy-surface); border-radius: 20px; overflow: hidden;
+  box-shadow: 0 20px 48px var(--joy-shadow); color: var(--joy-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px;
+}
+.joyw__header {display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: var(--pp-red); color: var(--joy-on-brand); border-bottom: 1px solid var(--joy-border-light);}
+.joyw__program {font-weight: 700; font-size: 14px;}
+.joyw__close {border: 0; background: none; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; padding: 0 4px;}
+.joyw__content {min-height: 560px;}
+.joyw__main {display: flex; flex-direction: column; gap: 16px; padding: 4px 16px 20px;}
+.joyw__welcome {display: flex; align-items: center; gap: 12px; padding: 12px 0 0;}
+.joyw__avatar {width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--pp-yellow); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;}
+.joyw__hello {margin: 0; font-size: 16px; font-weight: 700;}
+.joyw__link {border: 0; background: none; padding: 0; font: inherit; font-size: 11px; color: var(--joy-text-secondary); text-decoration: underline; cursor: pointer;}
+.joyw__member {border: 1px solid var(--joy-border-light); border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;}
+.joyw__member-top {display: flex; justify-content: space-between; font-size: 13px;}
+.joyw__member-top span {color: var(--joy-text-secondary);}
+.joyw__progress {height: 6px; border-radius: 999px; background: var(--joy-bg-tertiary); overflow: hidden;}
+.joyw__progress span {display: block; height: 100%; background: var(--joy-text-primary);}
+.joyw__muted {margin: 0; font-size: 11px; color: var(--joy-text-secondary);}
+.joyw__row {display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 14px 16px; border: 1px solid var(--joy-border-light); border-radius: 10px; background: var(--joy-surface); font: inherit; font-weight: 600; font-size: 13px; color: inherit; cursor: pointer;}
+.joyw__error {border: 1px solid var(--joy-border-light); border-radius: 14px; padding: 16px; text-align: center; font-size: 13px;}
+.joyw__error p {margin: 0 0 12px;}
+.joyw__btn {border: 1px solid var(--joy-border-light); background: var(--joy-surface); border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;}
+.joyw__btn:disabled {opacity: 0.4; cursor: default;}
+.joyw button:focus-visible, .joyb-card:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 2px;}
+
+/* joy-balance-cards.ts, tile layout */
+.joyb-grid {display: flex; gap: 8px;}
+.joyb-card {
+  position: relative; flex: 1; min-width: 0; display: grid; gap: 2px; align-content: start; cursor: pointer;
+  grid-template-columns: auto 1fr; grid-template-areas: 'i l' 'v v'; align-items: center; column-gap: 4px;
+  border: 1px solid var(--joy-border-light); border-radius: 14px; background: var(--joy-surface); padding: 12px 16px;
+}
+.joyb-card:hover .joyb-card__chevron {color: var(--joy-text-primary);}
+.joyb-card__icon {grid-area: i; display: inline-flex; color: var(--joy-text-secondary);}
+.joyb-card__label {grid-area: l; font-size: 11px; color: var(--joy-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-flex; align-items: center; gap: 4px; padding-right: 14px;}
+.joyb-card__value {grid-area: v; font-size: 18px; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.joyb-card__value.is-masked, .is-masked {letter-spacing: 2px;}
+/* Expiry note: full-width row under the value, same place and size for points and store credit. */
+.joyb-card__expiry {grid-column: 1 / -1; font-size: 11px; color: var(--joy-text-secondary); white-space: normal;}
+.joyb-card__chevron {position: absolute; top: 8px; right: 8px; display: inline-flex; color: var(--joy-text-tertiary); pointer-events: none;}
+.joyb-eye {display: inline-flex; padding: 0; border: 0; background: none; color: var(--joy-text-tertiary); cursor: pointer; line-height: 0;}
+.joyb-skel {flex: 1; height: 72px; border-radius: 14px; background: var(--joy-bg-tertiary); animation: scl-pulse 1.2s ease-in-out infinite;}
+@keyframes scl-pulse {50% {opacity: 0.5;}}
+
+/* joy-page header + joy-balance-history.ts + joy-activity-item.ts */
+.joyp__header {display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--joy-border-light);}
+.joyp__back {display: inline-flex; padding: 4px; border: 0; background: none; color: inherit; cursor: pointer; border-radius: 6px;}
+.joyp__title {margin: 0; font-size: 16px; font-weight: 700;}
+.joyh {padding: 16px;}
+.joyh__balance {margin-bottom: 16px; padding: 16px; border: 1px solid var(--joy-border-light); border-radius: 14px; background: var(--joy-bg-subtle);}
+.joyh__balance-label {margin: 0; font-size: 11px; color: var(--joy-text-secondary);}
+.joyh__balance-amount {display: inline-flex; align-items: center; gap: 4px; font-size: 18px; font-weight: 700; line-height: 1.2;}
+.joyh__title {margin: 0 0 12px; font-size: 13px; font-weight: 600;}
+.joyh__list {display: flex; flex-direction: column; gap: 8px;}
+.joyh__pager {display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px; font-size: 13px;}
+.joyh__empty {padding: 24px 16px; text-align: center; color: var(--joy-text-secondary); font-size: 13px;}
+.joyh__empty span {font-size: 28px;}
+.joya {display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; background: var(--joy-surface); border: 1px solid var(--joy-border-light); border-radius: 10px;}
+.joya__content {display: flex; flex-direction: column; gap: 2px; min-width: 0;}
+.joya__title {margin: 0; font-size: 13px; font-weight: 600; line-height: 1.4;}
+.joya__desc {margin: 0; font-size: 11px; color: var(--joy-text-secondary); line-height: 1.4;}
+.joya__date {margin: 0; font-size: 11px; color: var(--joy-text-tertiary); line-height: 1.4;}
+.joya__amount {flex-shrink: 0; font-size: 13px; font-weight: 700;}
+.joya__amount.is-earn {color: var(--joy-earn);}
+.joya__amount.is-redeem {color: var(--joy-redeem);}
+.joya--skel span {display: block; height: 10px; border-radius: 4px; background: var(--joy-bg-tertiary); width: 60%;}
+.joya--skel span + span {width: 56px;}
+
+/* ---------- Shopify customer account (s-section / s-box / s-heading look) ---------- */
+.scl-account {max-width: 1000px; margin: 0 auto; padding: var(--p-space-800) var(--p-space-600);}
+.ca-page {display: flex; flex-direction: column; gap: 16px;}
+.ca-title {margin: 0 0 4px; font-size: 24px; font-weight: 600;}
+.ca-section {background: var(--ca-surface); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px;}
+.ca-section--muted .ca-text {color: var(--ca-text-subdued);}
+.ca-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: start;}
+.ca-box {display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 8px; border: 1px solid var(--ca-border); min-width: 0;}
+.ca-box--subdued {border-color: transparent; background: var(--ca-subdued);}
+.ca-box--skel span {display: block; height: 12px; border-radius: 4px; background: var(--ca-subdued); width: 70%;}
+.ca-heading {margin: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere;}
+.ca-text {margin: 0; font-size: 14px; overflow-wrap: anywhere;}
+.ca-small {font-size: 13px;}
+.ca-subdued {color: var(--ca-text-subdued);}
+.ca-inline {display: flex; flex-wrap: wrap; gap: 4px 6px;}
+.ca-wallet {display: flex; flex-direction: column; gap: 2px;}
+.ca-progress {height: 6px; border-radius: 999px; background: var(--ca-subdued); overflow: hidden; margin: 4px 0;}
+.ca-box--subdued .ca-progress {background: var(--ca-border);}
+.ca-progress span {display: block; height: 100%; background: var(--ca-progress);}
+.ca-link {display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; color: var(--ca-text-subdued); width: fit-content;}
+
+/* ---------- Klaviyo admin page: light borders (new admin), no extra chrome ---------- */
+.scl-admin {padding-bottom: 72px;}
+.scl-admin .Polaris-ShadowBevel {--pc-shadow-bevel-box-shadow: 0 0 0 1px var(--adm-card-border) !important; box-shadow: 0 0 0 1px var(--adm-card-border);}
+.scl-admin .Polaris-ShadowBevel::before {box-shadow: none !important;}
+.scl-disabled-note {padding: var(--p-space-300) var(--p-space-400); border: 1px dashed var(--adm-card-border); border-radius: var(--p-border-radius-300);}
+.scl-choices {border: 0; margin: 0; padding: 0;}
+.scl-choices ul {list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--p-space-200);}
+.scl-choice {display: grid; grid-template-columns: auto 1fr; column-gap: var(--p-space-200); align-items: start;}
+.scl-choice--new {padding: var(--p-space-150) var(--p-space-200); margin-inline: calc(var(--p-space-200) * -1); border-radius: var(--p-border-radius-200); outline: 1.5px dashed var(--proto-amber-border); background: var(--proto-amber-bg);}
+.scl-choice__box {
+  appearance: none; width: 16px; height: 16px; margin: 2px 0 0; border-radius: 4px; border: 1px solid var(--adm-field-border); background: var(--p-color-bg-surface);
+  display: inline-grid; place-content: center; cursor: pointer;
+}
+.scl-choice__box:checked {background: var(--p-color-bg-fill-brand); border-color: var(--p-color-bg-fill-brand);}
+.scl-choice__box:checked::after {content: ''; width: 8px; height: 5px; border: 2px solid var(--p-color-text-brand-on-bg-fill); border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px);}
+.scl-choice__box:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: 1px;}
+.scl-choice__label {display: inline-flex; align-items: center; flex-wrap: wrap; font-size: var(--p-font-size-325); line-height: var(--p-font-line-height-500); cursor: pointer;}
+.scl-choice__help {grid-column: 2; margin: 0; font-size: var(--p-font-size-325); line-height: var(--p-font-line-height-500); color: var(--p-color-text-secondary);}
+.scl-visually-hidden {position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;}
+
+/* ---------- small screens ---------- */
+@media (max-width: 1000px) {
+  .scl-stage {grid-template-columns: 1fr; padding: var(--p-space-500) var(--p-space-300);}
+  .scl-hero {display: none;}
+  .scl-widget-slot {justify-content: center;}
+  .ca-grid {grid-template-columns: 1fr;}
+}
+@media (max-width: 600px) {
+  .scl-proto {padding: var(--p-space-200) var(--p-space-300);}
+  .scl-proto__btn {font-size: 12px; padding: 4px 10px;}
+  .scl-store {padding: var(--p-space-300); gap: var(--p-space-300);}
+  .scl-store__nav {gap: var(--p-space-300);}
+  .scl-store__nav button {font-size: 13px;}
+  .scl-stage {padding: 0;}
+  .joyw {width: 100%; border-radius: 0; box-shadow: none;}
+  .scl-account {padding: var(--p-space-400) var(--p-space-300);}
+  .ca-section {padding: 16px;}
+}
