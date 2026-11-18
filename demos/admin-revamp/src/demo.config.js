@@ -12,6 +12,10 @@ export const DEMO = {
     {id: 'customers', label: 'Customers', href: '#/customers', routes: ['customers']},
     {id: 'onsite', label: 'On your store'},
     {id: 'analytics', label: 'Analytics'},
+    {id: 'integrations', label: 'Integrations'},
     {id: 'settings', label: 'Settings'},
+    // Cross-app entries the real admin shows under Joy (config/crossApp): Joy Wishlist and Joy Subscription.
+    {id: 'wishlist', label: 'Wishlist'},
+    {id: 'subscription', label: 'Subscription'},
   ],
 };
