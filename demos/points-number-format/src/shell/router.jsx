@@ -15,8 +15,10 @@ function readHash() {
 // The reviewer's screen state (?state=… after the #) travels with in-app links, so opening a row in the
 // Worst case list shows that row instead of falling back to the Default data ("Reward not found").
 function carryState(target) {
-  if (/[?&]state=/.test(target)) return target;
-  const current = new URLSearchParams(window.location.hash.split('?').slice(1).join('?')).get('state');
+  if (/[?&](state|mode)=/.test(target)) return target;
+  const params = new URLSearchParams(window.location.hash.split('?').slice(1).join('?'));
+  // ?mode= is the readable alias of ?state= (#/settings?mode=translation); keep it across in-app links too.
+  const current = params.get('state') || ({follow: 'default', same: 'same', translation: 'per-language'}[params.get('mode')] ?? params.get('mode'));
   return current ? `${target}${target.includes('?') ? '&' : '?'}state=${current}` : target;
 }
 

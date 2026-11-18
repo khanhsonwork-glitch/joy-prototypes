@@ -100,7 +100,7 @@ function NumberFormatCard({form, set, saved, disabled}) {
                     <Banner tone="info">
                       <p>
                         {'Each language uses the number format you set for it, so a customer reading Italian can see 1.125 while English shows 1,125. To set the format for each language, please go to the '}
-                        <Link url="/translations?field=number_format">Translation</Link>
+                        <Link url="/translations?field=number_format&state=per-language">Translation</Link>
                       </p>
                     </Banner>
                     <Text as="p" tone="subdued">{`Customers see: ${perLanguageLine(codes, (code) => saved.perLanguage[code] || LOCALE, samples)}`}</Text>

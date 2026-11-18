@@ -14,7 +14,7 @@ Màn thật: Settings › General xem ở ảnh chụp admin production giao di�
 | Link | Màn |
 |---|---|
 | `#/settings` | Settings › General, cuộn tới card Number format (mặc định "Follow each language") |
-| `#/settings?mode=same` | Đã chọn "Same format for all languages", định dạng 1'125.50 |
+| `#/settings?mode=same` | Đã chọn "Same format for all languages", định dạng 1'125 |
 | `#/settings?mode=translation` | Đã chọn "Set per language in Translations" (banner + link sang Translations) |
 | `#/settings/translations` | Settings › Translations (bảng ngôn ngữ, bấm "Unified widget") |
 | `#/translations?state=per-language&lang=it&field=number_format` | Unified widget, tiếng Ý, mở thẳng dòng Number format |

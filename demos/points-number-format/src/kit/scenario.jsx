@@ -4,7 +4,7 @@ import React, {createContext, useCallback, useContext, useEffect, useMemo, useSt
 
 export const STATES = [
   {value: 'default', label: 'Default', help: 'Follow each language (today)'},
-  {value: 'same', label: 'Same format', help: "Same format for all languages, 1'125.50 picked"},
+  {value: 'same', label: 'Same format', help: "Same format for all languages, 1'125 picked"},
   {value: 'per-language', label: 'Per language', help: 'Set per language in Translations'},
   {value: 'empty', label: 'Empty', help: 'New shop, no detected languages yet'},
   {value: 'loading', label: 'Loading', help: 'Data on its way'},

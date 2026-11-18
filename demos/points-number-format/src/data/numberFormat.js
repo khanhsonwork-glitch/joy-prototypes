@@ -1,12 +1,12 @@
 // Number formats for point amounts. What Joy does today: each language writes numbers by its own standard
 // (Intl number format of the customer's language), e.g. Italian 1125 · 11.250 — four-digit numbers ungrouped.
 
-/** The four formats a merchant can force, each shown with its thousands AND decimal separator. */
+/** The four formats a merchant can force (labels as approved: thousands separator only, points are whole numbers). */
 export const FORMATS = [
-  {value: 'comma', label: '1,125.50', group: ',', decimal: '.'},
-  {value: 'dot', label: '1.125,50', group: '.', decimal: ','},
-  {value: 'apostrophe', label: "1'125.50", group: "'", decimal: '.'},
-  {value: 'space', label: '1 125,50', group: ' ', decimal: ','},
+  {value: 'comma', label: '1,125', group: ',', decimal: '.'},
+  {value: 'dot', label: '1.125', group: '.', decimal: ','},
+  {value: 'apostrophe', label: "1'125", group: "'", decimal: '.'},
+  {value: 'space', label: '1 125', group: ' ', decimal: ','},
 ];
 export const LOCALE = 'locale';
 
