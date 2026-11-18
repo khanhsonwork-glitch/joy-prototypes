@@ -1,0 +1,370 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Joy Loyalty prototype — North Bloom</title>
+<meta name="description" content="Thử từng tính năng Joy Loyalty: Admin và Storefront thật, chung dữ liệu shop mẫu North Bloom.">
+<link rel="icon" type="image/png" href="/home-assets/joy-icon-round-192.png">
+<style>
+/* Joy Brand 2.0 — tokens from ~/.claude/skills/joy-brand/references/tokens.css (Joy Hub style approved 06/11/2026) */
+@font-face{font-family:"Be Vietnam Pro";src:url(/fonts/be-vietnam-pro-regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Be Vietnam Pro";src:url(/fonts/be-vietnam-pro-medium.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Be Vietnam Pro";src:url(/fonts/be-vietnam-pro-semibold.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Be Vietnam Pro";src:url(/fonts/be-vietnam-pro-bold.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{
+  --joy-red:#E53935; --joy-drive:#D32020; --joy-dark:#1C0E12; --joy-affinity:#FF7878; --joy-momentum:#EFB348; --joy-vision:#B875C6;
+  --ink:#1C0E12; --ink-2:#4B3B3F; --ink-3:#6B5C5F; --ink-4:#74666A;
+  --rule:#EEE6E4; --rule-strong:#E0D5D3; --page:#FAF7F6; --sheet:#FFFFFF; --tint:#FAF5F4;
+  --blush:color-mix(in srgb,var(--joy-affinity) 14%,var(--sheet));
+  --font:"Be Vietnam Pro",-apple-system,"Segoe UI",sans-serif;
+  --radius-sm:6px; --radius:10px; --radius-lg:14px; --radius-pill:999px; --radius-device:16px; /* phone bezel in a card */
+  --shadow-1:0 1px 2px rgba(28,14,18,.05);
+  --shadow-2:0 1px 2px rgba(28,14,18,.05),0 10px 28px -16px rgba(28,14,18,.22);
+  --shadow-3:0 2px 4px rgba(28,14,18,.06),0 28px 56px -24px rgba(28,14,18,.32);
+  --ease-out:cubic-bezier(.2,.8,.2,1); --ease-expo:cubic-bezier(.16,1,.3,1);
+  --dur-fast:150ms; --dur:220ms; --dur-slow:320ms; --motion-reveal:640ms;
+  --gutter:120px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:24px;scroll-behavior:smooth}
+body{margin:0;font:400 15px/1.5 var(--font);color:var(--ink-2);background:var(--page);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0;color:var(--ink);font-weight:600}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--joy-red);outline-offset:3px;border-radius:var(--radius-sm)}
+.skip{position:absolute;left:16px;top:-48px;z-index:10;background:var(--ink);color:var(--sheet);padding:8px 14px;border-radius:var(--radius-sm);text-decoration:none;font-weight:500;transition:top var(--dur) var(--ease-out)}
+.skip:focus{top:12px}
+.wrap{max-width:1440px;margin:0 auto;padding:0 var(--gutter)}
+
+/* ── hero: the Joy logo large, one line, one action; the real store (left) and admin (right) over Joy's radial dot art */
+.hero{position:relative;background:var(--sheet);border-bottom:1px solid var(--rule);overflow:hidden}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:center;padding-top:88px;padding-bottom:80px}
+.dev{position:absolute;top:20px;right:var(--gutter);z-index:3;display:flex;gap:4px;font-size:13px}
+.dev a{display:inline-flex;align-items:center;min-height:36px;color:var(--ink-4);text-decoration:none;padding:0 10px;border-radius:var(--radius-sm)}
+.dev a:hover{color:var(--ink);background:var(--tint)}
+.logo{display:block;width:fit-content;line-height:0}
+.logo img{display:block;height:72px;width:auto}
+.hero h1{margin-top:48px;font-size:46px;line-height:1.1;letter-spacing:-.025em;max-width:11em;text-wrap:balance}
+.hero .sub{margin:16px 0 0;font-size:17px;line-height:1.5;color:var(--ink-3);max-width:28em}
+.cta{display:flex;align-items:center;gap:12px;margin-top:36px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 24px;border-radius:var(--radius-pill);font:600 15px/1 var(--font);text-decoration:none;transition:background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.btn.primary{background:var(--joy-red);color:var(--sheet)}
+.btn.primary:hover{background:var(--joy-drive)}
+.btn.ghost{color:var(--ink);border:1px solid var(--rule-strong);background:var(--sheet)}
+.btn.ghost:hover{border-color:var(--ink-4)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn .n{font-weight:500;color:var(--ink-4);font-variant-numeric:tabular-nums}
+.stagewrap{position:relative;container-type:inline-size}
+.stage{position:relative;width:100%;aspect-ratio:7/5}
+.art{position:absolute;left:-8%;top:-24%;width:120%;height:148%;pointer-events:none;background:center/contain no-repeat;transform-origin:26% 50%}
+.stage .win{position:absolute;right:0;top:9%;width:73%;border-radius:var(--radius);overflow:hidden;background:var(--sheet);border:1px solid var(--rule);box-shadow:var(--shadow-3)}
+.stage .win img{display:block;width:100%;height:auto}
+.stage .phone{position:absolute;left:5%;top:2%;width:29%;aspect-ratio:390/844;border:.9cqw solid var(--joy-dark);border-radius:4.2cqw;overflow:hidden;background:var(--sheet);box-shadow:var(--shadow-3);z-index:2}
+.stage .phone img{display:block;width:100%;height:100%;object-fit:cover;object-position:left top}
+.stage .lbl{position:absolute;z-index:3;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--ink);background:var(--sheet);border:1px solid var(--rule);border-radius:var(--radius-pill);padding:6px 12px;box-shadow:var(--shadow-2);white-space:nowrap}
+.stage .lbl.s{left:5%;bottom:-2%}
+.stage .lbl.a{right:3%;bottom:13%}
+.stage .lbl svg{width:15px;height:15px;color:var(--ink-3)}
+
+/* ── sections */
+.sec .wrap{padding-top:64px;padding-bottom:24px}
+.sec + .sec .wrap{padding-top:56px}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 24px;margin-bottom:24px;flex-wrap:wrap}
+.shead h2{font-size:28px;line-height:1.2;letter-spacing:-.02em;display:flex;align-items:baseline;gap:12px}
+.shead h2 .n{font-size:16px;font-weight:500;color:var(--ink-4);letter-spacing:0;font-variant-numeric:tabular-nums}
+.shead p{margin:6px 0 0;font-size:14px;color:var(--ink-3)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button{font:500 14px/1 var(--font);color:var(--ink-2);background:var(--sheet);border:1px solid var(--rule-strong);border-radius:var(--radius-pill);padding:0 14px;height:38px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.chips button:hover{border-color:var(--ink-4);color:var(--ink)}
+.chips button span{color:var(--ink-4);font-variant-numeric:tabular-nums}
+.chips button[aria-pressed=true]{background:var(--joy-red);border-color:var(--joy-red);color:var(--sheet)}
+.chips button[aria-pressed=true] span{color:rgba(255,255,255,.78)}
+
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;list-style:none;margin:0;padding:0}
+#pgrid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{position:relative;display:flex;flex-direction:column;background:var(--sheet);border:1px solid var(--rule);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-1);transition:box-shadow var(--dur) var(--ease-out),transform var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out)}
+.card:hover{box-shadow:var(--shadow-3);transform:translateY(-2px);border-color:var(--rule-strong)}
+.card[hidden]{display:none}
+.card > a{display:flex;flex-direction:column;flex:1;text-decoration:none;color:inherit;border-radius:var(--radius-lg)}
+.card > a:focus-visible{outline-offset:-2px}
+
+/* real feature thumb: storefront phone on the LEFT (widget opens from the left), admin settings on the right */
+.thumb{position:relative;aspect-ratio:16/10;background:var(--blush);overflow:hidden;border-bottom:1px solid var(--rule)}
+.thumb .w{position:absolute;left:31%;top:12%;width:75%;border-radius:var(--radius-sm);overflow:hidden;background:var(--sheet);border:1px solid var(--rule);box-shadow:var(--shadow-2);transition:transform var(--dur-slow) var(--ease-out)}
+.thumb .p{position:absolute;left:6%;top:7%;width:24%;aspect-ratio:312/675;border:4px solid var(--joy-dark);border-radius:var(--radius-device);overflow:hidden;background:var(--sheet);box-shadow:var(--shadow-3);z-index:1;transition:transform var(--dur-slow) var(--ease-out)}
+.thumb.noshop .w{left:7%;width:93%;top:10%}
+.thumb img{display:block;width:100%;height:auto;opacity:0;transition:opacity var(--dur-slow) var(--ease-out)}
+.thumb img.ok{opacity:1}
+.card:hover .thumb .w{transform:translateX(-4px)}
+.card:hover .thumb .p{transform:translateY(-6px)}
+/* no screenshot yet (new feature before tools/thumbs.py ran): outline of the same pair, never a broken image */
+.thumb .sk-w{position:absolute;left:31%;top:12%;width:75%;aspect-ratio:800/477;border-radius:var(--radius-sm);background:var(--sheet);border:1px solid var(--rule);display:grid;grid-template-columns:22% 1fr}
+.thumb .sk-w i{border-right:1px solid var(--rule);background:var(--page)}
+.thumb .sk-p{position:absolute;left:6%;top:7%;width:24%;aspect-ratio:312/675;border:4px solid var(--rule-strong);border-radius:var(--radius-device);background:var(--sheet);z-index:1;display:flex;align-items:flex-start;justify-content:center;padding-top:28%}
+.thumb .sk-p b{width:36%;aspect-ratio:1;border-radius:50%;background:var(--blush)}
+.thumb.noshop .sk-w{left:7%;width:93%;top:10%}
+.thumb.noshop .sk-p{display:none}
+.thumb.has-img .sk-w,.thumb.has-img .sk-p{display:none}
+
+.body{padding:16px 20px 18px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card h3{font-size:18px;line-height:1.3;letter-spacing:-.01em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.line{font-size:14px;line-height:1.45;color:var(--ink-3);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.meta{margin-top:auto;padding-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.meta:empty{display:none}
+#pgrid .card h3{font-size:16px}
+.tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--radius-pill);font-size:12px;font-weight:500;line-height:1;white-space:nowrap;color:var(--ink-2);background:var(--page);border:1px solid var(--rule)}
+.tag i{width:6px;height:6px;border-radius:50%;background:var(--ink-4)}
+.tag.new{background:var(--blush);border-color:transparent;color:var(--ink)}
+.tag.new i{background:var(--joy-affinity)}
+.tag.st-building i{background:var(--joy-momentum)}
+.tag.st-review i{background:var(--joy-vision)}
+.tag.st-todo i{background:transparent;border:1px solid var(--ink-4)}
+.tag.st-paused i{background:var(--rule-strong)}
+
+/* prototype (design-only, no code yet): dashed edge + "Prototype thiết kế" label, opens in a new tab */
+.card.proto{border-style:dashed;border-color:var(--rule-strong);box-shadow:none}
+.card.proto:hover{border-style:solid}
+.card.proto .thumb{aspect-ratio:16/9;background:var(--page)}
+.card.proto .thumb img{width:100%;height:100%;object-fit:cover;object-position:left top}
+.card.proto .thumb .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.card.proto .thumb .ph b{width:28%;aspect-ratio:1;border-radius:50%;background:var(--blush)}
+.card.proto .thumb.has-img .ph{display:none}
+.pl{position:absolute;left:10px;top:10px;z-index:2;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:var(--radius-pill);background:var(--sheet);border:1px dashed var(--ink-4);font-size:12px;font-weight:500;color:var(--ink-2)}
+.tag.pt{display:none;border-style:dashed;border-color:var(--ink-4);background:var(--sheet)}
+.card.proto h3 svg{display:inline-block;width:14px;height:14px;margin-left:6px;vertical-align:-1px;color:var(--ink-4)}
+.paused{margin-top:24px;border-top:1px solid var(--rule)}
+.paused summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:48px;cursor:pointer;font-weight:500;color:var(--ink-2);border-radius:var(--radius-sm)}
+.paused summary::-webkit-details-marker{display:none}
+.paused summary::before{content:"";width:7px;height:7px;border-right:1.5px solid var(--ink-3);border-bottom:1.5px solid var(--ink-3);transform:rotate(-45deg);transition:transform var(--dur) var(--ease-out);margin:0 4px}
+.paused[open] summary::before{transform:rotate(45deg)}
+.paused summary .n{color:var(--ink-4);font-variant-numeric:tabular-nums}
+.paused ul{list-style:none;margin:0 0 8px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 24px}
+.paused li a{display:flex;flex-direction:column;padding:10px 12px;border-radius:var(--radius);text-decoration:none}
+.paused li a:hover{background:var(--sheet)}
+.paused li b{font-weight:500;color:var(--ink);font-size:14px}
+.paused li span{font-size:13px;color:var(--ink-4)}
+.empty{padding:40px 24px;text-align:center;color:var(--ink-3);border:1px dashed var(--rule-strong);border-radius:var(--radius-lg)}
+
+.foot .wrap{padding-top:48px;padding-bottom:40px;font-size:13px;color:var(--ink-4)}
+.foot p{margin:0}
+
+/* entrance: once, from where the eye lands (motion.md "Landing: hero" ≤ 0.9 s); the dots expand from the centre = Joy's radial */
+@media (prefers-reduced-motion:no-preference){
+  .logo,.hero h1,.hero .sub,.cta{animation:rise var(--motion-reveal) var(--ease-expo) both}
+  .hero h1{animation-delay:60ms}.hero .sub{animation-delay:120ms}.cta{animation-delay:180ms}
+  .stage .phone{animation:lift var(--motion-reveal) var(--ease-expo) 140ms both}
+  .stage .win{animation:slide var(--motion-reveal) var(--ease-expo) 220ms both}
+  .stage .lbl{animation:fade 360ms var(--ease-out) 700ms both}
+  .art{animation:bloom 900ms var(--ease-expo) both}
+}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes slide{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes lift{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes bloom{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms!important;animation:none!important}html{scroll-behavior:auto}}
+
+/* 1280: three columns */
+@media (max-width:1279px){
+  :root{--gutter:64px}
+  #pgrid,.paused ul{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hero h1{font-size:42px}
+}
+/* tablet 768 → 8 col, 44 margin (joy-brand visual-system grid); hero stacks */
+@media (max-width:1023px){
+  :root{--gutter:44px}
+  .hero .wrap{grid-template-columns:1fr;gap:48px;padding-top:72px;padding-bottom:64px}
+  .hero h1{margin-top:36px}
+  .stagewrap{max-width:600px}
+  .grid,.paused ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  #pgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  #pgrid .body{padding:12px 14px 14px}
+}
+/* mobile 375 → 4 col, 16 margin; cards become compact rows so 25 features stay scannable */
+@media (max-width:640px){
+  :root{--gutter:16px}
+  .dev{top:14px}
+  .hero .wrap{padding-top:64px;padding-bottom:48px;gap:36px}
+  .logo img{height:52px}
+  .hero h1{margin-top:28px;font-size:32px;line-height:1.14}
+  .hero .sub{font-size:16px}
+  .cta{margin-top:28px}
+  .btn{height:46px;padding:0 20px}
+  .stage .lbl{font-size:12px;padding:5px 10px}
+  .sec .wrap{padding-top:48px}
+  .shead h2{font-size:24px}
+  .chips{flex-wrap:nowrap;overflow-x:auto;margin:0 calc(-1 * var(--gutter));padding:2px var(--gutter);scrollbar-width:none;width:calc(100% + 2 * var(--gutter))}
+  .chips::-webkit-scrollbar{display:none}
+  .chips button{flex:none}
+  .grid,#pgrid{grid-template-columns:1fr;gap:12px}
+  .card > a{flex-direction:row;align-items:stretch}
+  .thumb,.card.proto .thumb{flex:none;width:112px;aspect-ratio:auto;min-height:112px;border-bottom:0;border-right:1px solid var(--rule)}
+  .thumb .w,.thumb .sk-w{display:none}
+  .thumb .p,.thumb .sk-p{left:50%;top:12px;width:56px;margin-left:-28px;border-width:3px;border-radius:var(--radius)}
+  .thumb.noshop .w{display:block;left:12px;top:16px;width:150px}
+  .thumb.noshop .sk-w{display:grid;left:12px;top:16px;width:150px}
+  .card.proto .thumb img{position:absolute;inset:0}
+  .pl{display:none}
+  .tag.pt{display:inline-flex}
+  .body{padding:12px 14px;min-width:0}
+  .card h3{font-size:16px}
+  .meta{padding-top:6px;min-height:0}
+  .paused ul{grid-template-columns:1fr}
+}
+</style></head><body>
+<a class="skip" href="#features">Bỏ qua tới danh sách tính năng</a>
+<main>
+<section class="hero" aria-labelledby="h1">
+  <nav class="dev" aria-label="Toàn bộ app cho dev"><a href="__NB__/admin/">Admin đầy đủ</a><a href="__NB__/store/">Storefront đầy đủ</a></nav>
+  <div class="wrap">
+    <div>
+      <a class="logo" href="/" aria-label="Joy Loyalty prototype, trang chủ"><img src="/home-assets/joy-logo.svg" alt="Joy" width="146" height="72"></a>
+      <h1 id="h1">Thử từng tính năng, từ admin tới tay khách.</h1>
+      <p class="sub">App Joy thật, chung dữ liệu shop mẫu North Bloom.</p>
+      <div class="cta">
+        <a class="btn primary" href="#features">Chọn tính năng<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+      </div>
+    </div>
+    <div class="stagewrap" aria-hidden="true">
+      <div class="stage">
+        <div class="art" id="art"></div>
+        <div class="win"><img src="/home-assets/hero-admin.webp" alt="" width="1152" height="675"></div>
+        <div class="phone"><img src="/home-assets/hero-phone.webp" alt="" width="390" height="844"></div>
+        <span class="lbl s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M4 9v11h16V9M3 9h18M9 20v-6h6v6"/></svg>Storefront</span>
+        <span class="lbl a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>Admin</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="features" aria-labelledby="fh" tabindex="-1"><div class="wrap">
+  <div class="shead">
+    <h2 id="fh">Tất cả prototype <span class="n" id="nLive"></span></h2>
+    <div class="chips" id="chips" role="group" aria-label="Lọc theo nhóm"></div>
+  </div>
+  <ul class="grid" id="grid"></ul>
+  <p class="empty" id="empty" hidden>Chưa có prototype nào trong nhóm này.</p>
+</div></section>
+
+</main>
+
+<footer class="foot"><div class="wrap"><p>Dữ liệu giả lưu trong trình duyệt của bạn, sửa thoải mái.</p></div></footer>
+
+<script>
+const FEATURES = __FEATURES_JSON__;
+const PROTOTYPES = __PROTOTYPES_JSON__;
+// The real builds (Joy master admin + North Bloom storefront, ~4.5 MB per page view) are hosted next to their data;
+// this home lists them together with the HTML designs.
+const NB = '__NB__';
+// Feature fields used here (all optional except slug/name): group, live ("DD/MM/YYYY"), store (false = admin only), thumb (false = never try screenshots).
+const ORDER = ['Tích điểm', 'Đổi điểm', 'Hạng & hội viên', 'Giới thiệu & tặng', 'Widget & trang', 'Báo cáo'];
+const GUESS = [   // only when a feature has no "group"
+  ['Giới thiệu & tặng', /refer|gift|whatsapp|share|invite/i], ['Hạng & hội viên', /vip|tier|member/i],
+  ['Đổi điểm', /redeem|coupon|reward|checkout/i], ['Tích điểm', /earn|milestone|quiz|birthday|review|social|signup/i],
+];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const groupOf = f => f.group || (GUESS.find(([, re]) => re.test(f.slug) || re.test(f.name)) || ['Khác'])[0];
+const liveDate = f => { const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(f.live || '').trim()); return m ? new Date(+m[3], m[2] - 1, +m[1]) : null; };
+const ddmm = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+function clip(s, n) { s = String(s || '').replace(/\s+/g, ' ').trim(); if (s.length <= n) return s; const cut = s.slice(0, n - 1); const sp = cut.lastIndexOf(' '); return (sp > n * .6 ? cut.slice(0, sp) : cut).replace(/[\s,;:·–-]+$/, '') + '…'; }
+// card text: the English name, then ONE short Vietnamese line (≤ 60): the part after " · " in name, else the first clause of desc
+function texts(f) {
+  const i = f.name.indexOf(' · ');
+  const title = i > 0 ? f.name.slice(0, i) : f.name;
+  const rest = i > 0 ? f.name.slice(i + 3) : String(f.desc || '').split(/[.;:]/)[0];
+  return [title, clip(cap(rest), 60)];
+}
+const icon = { ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>' };
+
+// ── hero art: Joy's radial dot system, the dot expanding outward from behind the phone (joy-brand visual-system.md).
+// Drawn once into a single SVG background image: brand art, not UI — so it is not counted as red UI elements.
+(function art() {
+  const el = document.getElementById('art'); const cx = 260, cy = 400; let html = '';
+  for (let k = 1; k <= 13; k++) {   // rings of dots; dots shrink and fade outward
+    const r = 40 * k, n = Math.round(2 * Math.PI * r / 38), size = Math.max(1.8, 5.6 - k * .3), op = Math.max(.34, 1 - k * .055);
+    let g = '<g opacity="' + op.toFixed(2) + '">';
+    for (let j = 0; j < n; j++) {
+      const a = j / n * Math.PI * 2 + k * .37, x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      const edge = Math.min(x + 20, 1020 - x, y + 20, 820 - y) / 160;   // fade dots near the art's edge: no hard cut line
+      if (edge <= 0) continue;
+      g += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + size.toFixed(1) + '"' + (edge < 1 ? ' opacity="' + edge.toFixed(2) + '"' : '') + '/>';
+    }
+    html += g + '</g>';
+  }
+  el.style.backgroundImage = 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800" fill="#E53935">' + html + '</svg>') + '")';
+})();
+
+// ── Alex 18/11: ONE list of every prototype — the real Joy app on North Bloom and the HTML designs — newest created
+// first, no status ("Bỏ đi k cần status lại update mệt" · "list đủ all prototypes sxep theo thời gian dc tạo").
+const ymd = s => { const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(String(s || '')); return m ? new Date(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)) : null; };
+const AREA = { 'Programs': 'Tích điểm', 'Reward programs': 'Đổi điểm', 'Membership': 'Hạng & hội viên', 'Referral': 'Giới thiệu & tặng',
+  'On-site content': 'Widget & trang', 'Navigation': 'Widget & trang', 'Analytics': 'Báo cáo', 'Dashboard': 'Báo cáo',
+  'Customers': 'Khác', 'Settings': 'Khác', 'Subscription': 'Khác', 'Integrations': 'Khác', 'Prototype': 'Khác' };
+const P = Array.isArray(PROTOTYPES) ? PROTOTYPES.filter(p => p && p.href && p.name) : [];
+const all = FEATURES.map((f, i) => ({ real: true, f, i, d: ymd(f.created) || liveDate(f), g: groupOf(f) }))
+  .concat(P.map((p, i) => ({ real: false, f: p, i: 1000 + i, d: ymd(p.created), g: AREA[p.area] || groupOf(p) })))
+  .sort((a, b) => (b.d ? b.d.getTime() : -Infinity) - (a.d ? a.d.getTime() : -Infinity) || a.i - b.i);
+const full = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+const grid = document.getElementById('grid');
+const items = all.map(({ real, f, d, g }) => {
+  const li = document.createElement('li'); li.dataset.group = g;
+  const date = d ? '<span class="tag dt" title="Tạo ngày ' + full(d) + '">' + ddmm(d) + '</span>' : '';
+  if (real) {
+    const hasStore = f.store !== false, [title, line] = texts(f);
+    li.className = 'card';
+    li.innerHTML = '<a href="' + NB + '/f/' + encodeURIComponent(f.slug) + '/" title="' + esc(f.name) + '">' +
+      '<div class="thumb' + (hasStore ? '' : ' noshop') + '"><div class="sk-w"><i></i><span></span></div><div class="sk-p"><b></b></div></div>' +
+      '<div class="body"><h3>' + esc(title) + '</h3>' + (line ? '<div class="line">' + esc(line) + '</div>' : '') +
+      '<div class="meta">' + date + (hasStore ? '' : '<span class="tag">Chỉ Admin</span>') + '</div></div></a>';
+    if (f.thumb !== false) li._t = { th: li.querySelector('.thumb'), slug: f.slug, want: hasStore ? ['store', 'admin'] : ['admin'] };
+  } else {
+    li.className = 'card proto';
+    li.innerHTML = '<a href="' + esc(f.href) + '" target="_blank" rel="noopener" title="Mở ' + esc(f.name) + ' ở tab mới">' +
+      '<div class="thumb"><div class="ph"><b></b></div></div>' +
+      '<div class="body"><h3>' + esc(f.name) + icon.ext + '</h3>' + (f.line ? '<div class="line">' + esc(f.line) + '</div>' : '') +
+      '<div class="meta">' + date + '</div></div></a>';
+    if (f.shot) { const th = li.querySelector('.thumb'), im = new Image(); im.alt = ''; im.decoding = 'async'; im.loading = 'lazy'; im.width = 640; im.height = 360;
+      im.onload = () => { im.classList.add('ok'); th.classList.add('has-img'); }; im.src = f.shot; th.appendChild(im); }
+  }
+  grid.appendChild(li); return li;
+});
+document.getElementById('nLive').textContent = all.length || '';
+
+// real screenshots: /home-assets/thumbs/index.json lists files that exist; a feature not listed keeps its outline (no 404)
+fetch('/home-assets/thumbs/index.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).catch(() => []).then(list => {
+  const have = new Set(Array.isArray(list) ? list : []);
+  items.forEach(li => {
+    const t = li._t; if (!t || !t.want.every(k => have.has(t.slug + '-' + k))) return;
+    let ok = 0; const boxes = [];
+    t.want.forEach(k => {
+      const box = document.createElement('div'); box.className = k === 'admin' ? 'w' : 'p';
+      const im = new Image(); im.alt = ''; im.decoding = 'async';
+      if (k === 'admin') { im.width = 800; im.height = 475; } else { im.width = 312; im.height = 675; }
+      im.onload = () => { im.classList.add('ok'); if (++ok === t.want.length) { t.th.classList.add('has-img'); boxes.forEach(b => t.th.appendChild(b)); } };
+      im.src = '/home-assets/thumbs/' + encodeURIComponent(t.slug) + '-' + k + '.webp';
+      box.appendChild(im); boxes.push(box);
+    });
+  });
+});
+
+function chipBar(el, entries, onPick) {
+  entries.forEach(([label, key, n], i) => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.innerHTML = esc(label) + ' <span>' + n + '</span>';
+    b.onclick = () => { el.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); onPick(key); };
+    el.appendChild(b);
+  });
+}
+// group chips (what the feature is about, not a status): known groups first, "Khác" last
+const present = [...new Set(all.map(x => x.g))];
+const rank = g => g === 'Khác' ? 999 : (ORDER.indexOf(g) + 1 || 100 + present.indexOf(g));
+const groups = present.sort((a, b) => rank(a) - rank(b));
+if (all.length > 4 && groups.length > 1) {
+  chipBar(document.getElementById('chips'), [['Tất cả', null, all.length]].concat(groups.map(g => [g, g, items.filter(li => li.dataset.group === g).length])), g => {
+    let shown = 0; items.forEach(li => { const on = !g || li.dataset.group === g; li.hidden = !on; if (on) shown++; });
+    document.getElementById('empty').hidden = shown > 0;
+  });
+}
+if (!all.length) { const e = document.getElementById('empty'); e.hidden = false; e.textContent = 'Chưa có prototype nào. Toàn bộ app vẫn mở được ở góc trên.'; }
+</script>
+</body></html>

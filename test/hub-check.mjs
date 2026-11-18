@@ -20,11 +20,17 @@ const variants = f => [...new Set([f.product,...(f.alsoIn || [])])];
 const targetFor = (f,p=f.product) => f.quarantined ? `${canonical(f,p)}/info` : f.alsoInUrls?.[p] || f.reviewUrl;
 const belongs = (f,p) => f.product === p || (f.alsoIn || []).includes(p);
 const products = {loyalty:'Joy Loyalty',wishlist:'Joy Wishlist'};
-const statuses = {review:'Đang review',todo:'Chờ dev',building:'Đang làm',live:'Đã live',paused:'Tạm dừng'};
+// Alex 18/11 "bỏ cái status đi" · "list đủ all prototypes sxep theo thời gian dc tạo": status stays internal only (paused = hidden).
+const statusWords = ['Đang review','Chờ dev','Đang làm','Đã live','Tạm dừng','Notion ·'];
+const createdOf = f => f.created || [...f.legacy.map(l=>l.updated),f.updated].filter(Boolean).sort()[0] || '';
+const byCreated = list => [...list].sort((a,b)=>createdOf(b).localeCompare(createdOf(a))||b.updated.localeCompare(a.updated)||a.name.localeCompare(b.name));
 const labels = {prototype:'Mở prototype','uat-note':'Mở ghi chú UAT',playground:'Mở playground'};
 // This oracle is independent of the UI search function.
 const fold = s => s.normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/đ/gi,'d').toLowerCase();
 const searchMatch = (f,q) => fold([f.name,f.area,f.slug,...(f.aliases||[]),...f.legacy.flatMap(l=>[l.label,new URL(l.url,base).hostname])].join(' ')).includes(fold(q.trim()));
+const NB = 'https://joy-north-bloom.vercel.app';
+const realBuilds = JSON.parse(await fs.readFile(path.join(root,'hub/home/north-bloom.json'),'utf8'));
+const homeCards = () => page.locator('#grid > li');
 const browser = await chromium.launch({headless:true});
 const context = await browser.newContext({viewport:{width:1440,height:900},colorScheme:'light'});
 const page = await context.newPage();
@@ -71,48 +77,34 @@ await check('Registry cũ/mới và dữ liệu public',async()=> {
   assert(!registryText.includes('statusEvidence'));
   for(const file of await fs.readdir(path.join(deploy,'assets'))) if(/\.(js|json)$/.test(file)) assert(!/["']?statusEvidence["']?\s*:\s*["']/.test(await fs.readFile(path.join(deploy,'assets',file),'utf8')),`Internal evidence value in ${file}`);
 });
-await check('Home: bốn bands, counts, card metadata và hai tabs',async()=> {
+await check('Home: trang Joy North Bloom, một danh sách mọi prototype theo ngày tạo, không trạng thái (Alex 18/11)',async()=> {
   await go('/');
-  for(const [product,label] of Object.entries(products)) {
-    const expected = features.filter(f=>belongs(f,product)&&f.status!=='paused');
-    const tab = page.getByRole('tab',{name:new RegExp(label)});
-    await tab.click(); await eventually(async()=>assert.equal(await tab.getAttribute('aria-selected'),'true'));
-    assert.equal(Number(await tab.locator('.count').textContent()),expected.length);
-    assert.equal(await page.locator('.feature-card').count(),expected.length);
-    const activeBands=['review','todo','building','live'].filter(status=>expected.some(f=>f.status===status));
-    assert.deepEqual(await page.locator('.bands h2').evaluateAll(nodes=>nodes.map(n=>n.id)),activeBands.map(s=>`band-${s}`));
-    for(const status of activeBands) {
-      const group=expected.filter(f=>f.status===status).sort((a,b)=>b.updated.localeCompare(a.updated)||(b.stage==='Ready')-(a.stage==='Ready')||(b.round??-1)-(a.round??-1)||a.name.localeCompare(b.name));
-      const section=page.locator('section').filter({has:page.locator(`#band-${status}`)});
-      assert.deepEqual(await section.locator('.feature-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.feature)),group.map(f=>f.slug));
-    }
-    for(const f of expected) {
-      const card=page.locator(`[data-feature="${f.slug}"]`);
-      assert.equal(await card.locator('.card-main').getAttribute('href'),canonical(f,product));
-      assert.equal(await card.locator('.card-area').textContent(),f.area);
-      assert.equal(await card.locator('.card-surfaces').textContent(),[...new Set(f.surfaces)].join(' · '));
-      assert.equal(await card.locator('.stage-chip').count(),f.stage?1:0);
-      if(f.stage) {
-        assert.equal(await card.locator('.card-meta .stage-chip').textContent(),`Notion · ${f.stage}`);
-        assert.equal(await card.locator('.stage-chip').getAttribute('title'),`Trạng thái trên Notion: ${f.stage}`);
-      }
-      assert.equal(await card.locator('.entry-note').count(),f.entryNote?1:0);
-      if(f.entryNote) assert.equal(await card.locator('.entry-note').textContent(),f.entryNote);
-      assert.equal(await card.locator('.card-meta i').count(),0);
-      assert.equal(await card.getByRole('link',{name:`Chi tiết ${f.name}`,exact:true}).count(),1);
-    }
-    // Alex 21/10: "bỏ cái code thật và tất cả bản dựng" — both home shortcuts are gone; the routes stay.
-    assert.equal(await page.getByRole('link',{name:/Tất cả bản dựng/}).count(),0);
-    assert.equal(await page.locator('a[href="/app/"]').count(),0);
-    // Alex 21/10: paused builds are hidden from the hub — no paused chip, line or count on home.
-    assert.equal(await page.locator('.paused-line,.chip-paused,.paused-results').count(),0);
-    assert(!(await page.locator('body').innerText()).includes('Tạm dừng'),`Tạm dừng visible on ${product}`);
-  }
-  assert.equal(await page.getByText('Link cũ',{exact:true}).count(),0);
-  assert.equal(await page.locator('#band-paused').count(),0);
-  await page.reload({waitUntil:'networkidle'}); assert.equal(await page.getByRole('tab',{name:/Joy Wishlist/}).getAttribute('aria-selected'),'true');
-  await page.getByRole('tab',{name:/Joy Wishlist/}).press('ArrowLeft');
-  await eventually(async()=>assert.equal(await page.getByRole('tab',{name:/Joy Loyalty/}).getAttribute('aria-selected'),'true'));
+  assert.equal(await page.locator('h1').textContent(),'Thử từng tính năng, từ admin tới tay khách.');
+  assert.equal(await page.locator('img[alt="Joy"]').count(),1,'Joy logo');
+  assert.deepEqual(await page.locator('nav.dev a').evaluateAll(n=>n.map(a=>a.getAttribute('href'))),[`${NB}/admin/`,`${NB}/store/`],'full admin + storefront');
+  const active=features.filter(f=>f.status!=='paused'&&!f.quarantined);
+  const expected=[...realBuilds.map(f=>({key:f.slug,created:f.created,href:`${NB}/f/${f.slug}/`})),...active.map(f=>({key:`proto-${f.product}-${f.slug}`,created:createdOf(f),href:canonical(f)}))]
+    .sort((a,b)=>b.created.localeCompare(a.created));
+  await eventually(async()=>assert.equal(await homeCards().count(),expected.length));
+  const got=await homeCards().evaluateAll(n=>n.map(li=>({href:li.querySelector('a').getAttribute('href'),date:(li.querySelector('.tag.dt')||{}).textContent||''})));
+  assert.deepEqual(got.map(c=>c.href),expected.map(c=>c.href),'one list, newest created first');
+  for(const [i,c] of got.entries()) assert.equal(c.date,`${expected[i].created.slice(8,10)}/${expected[i].created.slice(5,7)}`,`date of ${c.href}`);
+  assert.equal(await page.locator('#nLive').textContent(),String(expected.length));
+  const text=await page.locator('main').innerText();
+  for(const word of statusWords) assert(!text.includes(word),`${word} on home`);
+  for(const slug of ['earning-signup','redeem','vip-tiers']) assert.equal(await page.locator(`a[href="${NB}/f/${slug}/"]`).count(),0,`basic test build ${slug} listed`);
+  // Group chips filter by what a prototype is about (never by status), "Tất cả" first.
+  const chips=page.locator('#chips button');
+  assert.match(await chips.first().textContent(),/^Tất cả/);
+  await chips.nth(1).click();
+  const shown=await homeCards().evaluateAll(n=>n.filter(li=>!li.hidden).length);
+  assert(shown>0&&shown<expected.length,'a group chip narrows the list');
+  await chips.first().click(); assert.equal(await homeCards().evaluateAll(n=>n.filter(li=>!li.hidden).length),expected.length);
+  // Real builds show the admin + storefront screenshot pair; HTML designs show their card shot.
+  for(let y=0;y<14000;y+=800){await page.mouse.wheel(0,800);await page.waitForTimeout(60);}
+  await eventually(async()=>assert.equal(await page.locator('#grid > li .thumb.has-img').count(),expected.filter(c=>!c.key.startsWith('proto-')||active.find(f=>`proto-${f.product}-${f.slug}`===c.key)?.shot).length));
+  await go('/?product=wishlist');
+  assert.equal(await homeCards().count(),expected.length,'old ?product= links land on the same list');
 });
 await check('F4a: every product redirect and static info route',async()=> {
   const expectedRules=[];
@@ -202,8 +194,8 @@ await check('Info: title, stage, kind, current/history và pairing',async()=> {
       assert(Math.abs(dimensions.center-720)<=1,'Hero must be centered at 1440px');
     }
     assert.equal((await page.locator('.actions .primary').textContent()).replace('↗','').trim(),labels[f.kind]);
-    assert.equal(await page.locator('.detail-header .stage-chip').count(),f.stage?1:0);
-    if(f.stage) assert.equal(await page.locator('.detail-header .stage-chip').textContent(),`Notion: ${f.stage}`);
+    assert.equal(await page.locator('.detail-header .stage-chip,.detail-header .status').count(),0,'no status on info');
+    assert.equal(await page.locator('.detail-meta time').first().getAttribute('datetime'),createdOf(f).slice(0,10));
     for(const [key,label] of [['notion','Task Notion'],['prd','PRD']]) {
       const link=page.getByRole('link',{name:new RegExp(`^${label}`)});
       if(f[key]) assert.equal(await link.getAttribute('href'),f[key]); else assert.equal(await link.count(),0);
@@ -218,14 +210,12 @@ await check('Info: title, stage, kind, current/history và pairing',async()=> {
     assert.equal(await page.getByRole('heading',{name:'So với production',exact:true}).count(),f.slug!=='custom-plan'&&f.parity?.length?1:0);
     if(f.slug==='custom-plan'&&await page.locator('.pairing-row').count()) assert.equal(await page.locator('.pairing-row a').getAttribute('href'),'/app/#/customize_plan');
   }
-  // Navigate from the actual gallery action, including the shared Wishlist entry.
+  // The info back link opens the home list (a full page load: the home is not part of the React app).
   for(const product of Object.keys(products)) {
     const f=features.find(f=>belongs(f,product)&&f.status!=='paused');
     if(!f)continue;
-    await go(`/?product=${product}`); await page.getByRole('link',{name:`Chi tiết ${f.name}`,exact:true}).click();
-    await page.getByRole('heading',{name:f.name,exact:true}).waitFor();
-    await page.locator('.back-link').click(); await page.getByRole('heading',{name:'Joy Prototypes',exact:true}).waitFor();
-    assert.equal(await page.getByRole('tab',{name:new RegExp(products[product])}).getAttribute('aria-selected'),'true');
+    await go(`${canonical(f,product)}/info`);
+    await page.locator('.back-link').click(); await page.locator('#grid > li').first().waitFor();
   }
 });
 await check('Custom plan: source stays out of this repo, the card points at its standalone link',async()=> {
@@ -270,34 +260,18 @@ await check('Home search và all-builds filters/search/empty',async()=> {
     await page.getByRole('button',{name:label,exact:true}).click(); await rowCount(active.filter(f=>belongs(f,product)).length);
   }
   await page.getByRole('button',{name:'Tất cả sản phẩm',exact:true}).click(); await rowCount(active.length);
-  for(const [status,label] of Object.entries(statuses)) {
-    if(status==='paused') {assert.equal(await page.getByRole('button',{name:label,exact:true}).count(),0); continue;}
-    await page.getByRole('button',{name:label,exact:true}).click(); await rowCount(active.filter(f=>f.status===status).length);
-  }
-  await page.getByRole('button',{name:'Tất cả trạng thái',exact:true}).click(); await rowCount(active.length);
+  assert.equal(await page.getByRole('group',{name:'Lọc trạng thái'}).count(),0,'no status filter');
+  assert.deepEqual(await rows().evaluateAll(nodes=>nodes.map(n=>n.dataset.archiveFeature)),byCreated(active).map(f=>f.slug),'archive newest created first');
   const sample=active.find(f=>f.legacy.length);
   const queries=['quest',sample.name,sample.area,sample.slug,sample.legacy[0].label,new URL(sample.legacy[0].url,base).hostname,...features.flatMap(f=>f.aliases||[]),'zzzz-no-matching-feature'];
   for(const q of [...new Set(queries)]) {
     await page.getByRole('searchbox').fill(q); await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('q'),q)); await rowCount(active.filter(f=>searchMatch(f,q)).length);
   }
   await page.getByRole('status').waitFor();
-  for(const product of Object.keys(products)) {
-    await go(`/?product=${product}`);
-    for(const q of ['quest',sample.area,sample.slug,sample.legacy[0].label,new URL(sample.legacy[0].url,base).hostname,'zzzz-no-matching-feature','']) {
-      await page.getByRole('searchbox').fill(q);
-      const expected=active.filter(f=>belongs(f,product)&&searchMatch(f,q));
-      await eventually(async()=>assert.equal(await page.locator('.feature-card').count(),expected.length));
-      if(!expected.length) await page.getByRole('status').waitFor();
-    }
-  }
-  // Queries that only match paused builds ("pulse", "MED") now show the plain empty state, with no link into paused builds.
-  for(const product of Object.keys(products)) for(const q of ['pulse','MED','programs','']) {
-    await go(`/?product=${product}&q=${encodeURIComponent(q)}`);
-    const expected=active.filter(f=>belongs(f,product)&&searchMatch(f,q));
-    assert.equal(await page.locator('.feature-card').count(),expected.length);
-    assert.equal(await page.locator('.paused-results,.paused-line,.chip-paused').count(),0);
-    assert(!(await page.locator('body').innerText()).includes('Tạm dừng'),`Tạm dừng visible for ${product} q=${q}`);
-    if(!expected.length) assert.equal(await page.locator('.empty-state').count(),1);
+  for(const q of ['pulse','MED']) {
+    await go(`/archive?q=${encodeURIComponent(q)}`);
+    await rowCount(active.filter(f=>searchMatch(f,q)).length);
+    assert(!(await page.locator('main').innerText()).includes('Tạm dừng'),`Tạm dừng visible q=${q}`);
   }
   for(const route of ['/archive?status=archived','/archive?status=paused']) {
     await go(route); await rowCount(active.length);
@@ -307,7 +281,7 @@ await check('Home search và all-builds filters/search/empty',async()=> {
 await check('Regression B4: search keeps every key typed fast on home and archive',async()=> {
   // Review 26/10: typing "milestone" with no pause between keys came out as "ne" (controlled input vs router transition).
   const active=features.filter(f=>f.status!=='paused');
-  for(const [route,count,scope] of [['/',()=>page.locator('.feature-card').count(),f=>belongs(f,'loyalty')],['/archive',()=>rows().count(),()=>true]]) {
+  for(const [route,count,scope] of [['/archive',()=>rows().count(),()=>true]]) {
     for(const delay of [0,10,30]) {
       await go(route); const box=page.getByRole('searchbox'); await box.click();
       await box.pressSequentially('milestone',{delay});
@@ -317,14 +291,12 @@ await check('Regression B4: search keeps every key typed fast on home and archiv
       await eventually(async()=>assert.equal(await count(),expected));
     }
   }
-  // The URL still fills the box: a shared link with ?q= and the back button after a tab switch.
-  await go('/?q=quest'); assert.equal(await page.getByRole('searchbox').inputValue(),'quest');
-  await page.getByRole('tab',{name:'Joy Wishlist'}).click(); await eventually(async()=>assert.equal(new URL(page.url()).searchParams.get('product'),'wishlist'));
-  assert.equal(await page.getByRole('searchbox').inputValue(),'quest');
+  // The URL still fills the box: a shared link with ?q=.
+  await go('/archive?q=quest'); assert.equal(await page.getByRole('searchbox').inputValue(),'quest');
   return 'delay 0, 10 và 30 ms';
 });
 await check('Regression B4: shared queries, paste, clear and focused Back/Forward stay in sync',async()=> {
-  for(const route of ['/', '/archive']) {
+  for(const route of ['/archive']) {
     await go(`${route}?q=quest`);
     const input=page.getByRole('searchbox');
     assert.equal(await input.inputValue(),'quest');
@@ -348,21 +320,14 @@ await check('Regression B4: shared queries, paste, clear and focused Back/Forwar
     assert.equal(await input.inputValue(),'milestone');
   }
 });
-await check('Regression B5: all status chips fit at 375 without sideways scrolling',async()=> {
-  await page.setViewportSize({width:375,height:812});
-  try {
-    await go('/');
-    const chips=page.locator('.statusbar .chip');
-    assert(await chips.count()>1,'fixture needs multiple status groups');
-    for(const chip of await chips.all()) {
-      const box=await chip.boundingBox();
-      assert(box.x>=0 && box.x+box.width<=375,`${await chip.innerText()}: chip outside viewport`);
-    }
-    const dimensions=await page.locator('.statusbar .wrap').evaluate(n=>({scroll:n.scrollWidth,width:n.clientWidth}));
-    assert(dimensions.scroll<=dimensions.width,'status chips require hidden horizontal scrolling');
-    await page.getByRole('link',{name:/Đã live/}).click();
-    assert.equal(new URL(page.url()).hash,'#band-live');
-  } finally {await page.setViewportSize({width:1440,height:900});}
+await check('Không còn trạng thái ở home, archive và info (Alex 18/11)',async()=> {
+  const info=`${canonical(features.find(f=>!f.quarantined&&f.status!=='paused'))}/info`;
+  for(const route of ['/','/?product=wishlist','/archive','/archive?status=live',info]) {
+    await go(route);
+    const text=await page.locator('main').innerText();
+    for(const word of statusWords) assert(!text.includes(word),`${word} on ${route}`);
+    assert.equal(await page.locator('.statusbar,.band-heading,.stage-chip,.status,.chip').count(),0,route);
+  }
 });
 await check('Responsive, no /app/ link on home and /app/ not served (real Joy code stays out), hover và whole-card focus',async()=> {
   for(const width of [1440,768,375]) {
@@ -380,15 +345,10 @@ await check('Responsive, no /app/ link on home and /app/ not served (real Joy co
     }
   }
   await page.setViewportSize({width:1440,height:900}); await go('/');
-  const card=page.locator('.feature-card').first();
-  // The spotlight card is large; park the pointer first so a leftover hover from earlier clicks cannot pre-lift it.
-  await page.mouse.move(0,0); await page.waitForTimeout(250);
-  const before=await card.boundingBox(); await card.hover();
-  await eventually(async()=>assert((await card.boundingBox()).y<before.y,'Card hover should lift'));
-  await page.keyboard.press('Tab'); await card.locator('.card-main').focus();
-  assert.equal(await card.evaluate(n=>getComputedStyle(n).outlineStyle),'solid');
-  assert.equal(await card.evaluate(n=>getComputedStyle(n).outlineWidth),'2px');
-  await page.keyboard.press('Tab'); assert(await card.locator('.info-link').evaluate(n=>n===document.activeElement));
+  await page.keyboard.press('Tab'); const first=homeCards().first().locator('a'); await first.focus();
+  assert.equal(await first.evaluate(n=>getComputedStyle(n).outlineStyle),'solid','home card focus ring');
+  await go('/archive');
+  assert.equal(await page.locator('[data-archive-feature] a').first().evaluate(n=>n.tagName),'A');
 });
 await check('Hub font local, no external requests, no errors',async()=> {
   await go('/');
@@ -415,7 +375,7 @@ await check('Hub stays white on dark-mode devices (Alex 21/10)',async()=> {
   const info=`${canonical(features.find(f=>!f.quarantined))}/info`;
   for(const width of [1440,390]) {
     await p.setViewportSize({width,height:900});
-    for(const route of ['/','/?product=wishlist','/archive',info]) {
+    for(const route of ['/archive',info]) {
       const r=await p.goto(url(route),{waitUntil:'networkidle'}); assert(r?.ok(),route); await p.locator('h1').waitFor();
       const c=await p.evaluate(()=>{const cs=e=>e&&getComputedStyle(e);return {scheme:cs(document.documentElement).colorScheme,bg:cs(document.body).backgroundColor,text:cs(document.body).color,card:cs(document.querySelector('.feature-card:not(.text-card),.archive-table,.detail-shot'))?.backgroundColor,text_card:cs(document.querySelector('.text-card'))?.backgroundColor,band:cs(document.querySelector('.hb'))?.backgroundColor};});
       assert.equal(c.scheme,'light',`${route}@${width} color-scheme`);
@@ -429,15 +389,22 @@ await check('Hub stays white on dark-mode devices (Alex 21/10)',async()=> {
   }
   await dark.close();
 });
+await check('Home stays light on dark-mode devices',async()=> {
+  const look=async scheme=>{const ctx=await browser.newContext({colorScheme:scheme}); const lp=await ctx.newPage(); await lp.goto(url('/'),{waitUntil:'networkidle'});
+    const v=await lp.evaluate(()=>{const b=getComputedStyle(document.body),c=document.querySelector('#grid > li');return {bg:b.backgroundColor,text:b.color,card:c&&getComputedStyle(c).backgroundColor};}); await ctx.close(); return v;};
+  const light=await look('light'), dark=await look('dark');
+  assert.deepEqual(dark,light); assert.equal(light.bg,'rgb(250, 247, 246)');
+});
 await check('HTTP 404 branded fallback',async()=> {
-  assert.equal(await fs.readFile(path.join(deploy,'404.html'),'utf8'),await fs.readFile(path.join(deploy,'index.html'),'utf8'));
+  // 404.html is the React hub entry (same file as /archive/), the home is the static Joy page.
+  assert.equal(await fs.readFile(path.join(deploy,'404.html'),'utf8'),await fs.readFile(path.join(deploy,'archive/index.html'),'utf8'));
   const fresh=await browser.newContext(); const p=await fresh.newPage();
   try {
     for(const route of ['/loyalty/does-not-exist','/loyalty/does-not-exist/info','/wishlist/does-not-exist/info']) {
       const response=await p.goto(url(route),{waitUntil:'networkidle'});
       assert.equal(response.status(),404);
       await p.getByRole('heading',{name:'Không tìm thấy trang',exact:true}).waitFor({timeout:3000});
-      await p.getByRole('link',{name:'← Joy Prototypes',exact:true}).click(); await p.getByRole('heading',{name:'Joy Prototypes',exact:true}).waitFor();
+      await p.getByRole('link',{name:'← Joy Prototypes',exact:true}).click(); await p.locator('#grid > li').first().waitFor();
     }
   } finally {await fresh.close();}
 });
@@ -462,7 +429,7 @@ for(const scheme of process.env.CHECK_FILTER ? [] : ['light','dark']) {
   await page.emulateMedia({colorScheme:scheme});
   for(const width of [1440,768,375]) {
     await page.setViewportSize({width,height:900});
-    for(const [name,route] of [['home','/'],['info','/loyalty/custom-plan/info'],['archive','/archive'],['paused','/?q=pulse'],['sea','/loyalty/sea-survey/info'],['wishlist','/?product=wishlist']]) {
+    for(const [name,route] of [['home','/'],['info','/loyalty/custom-plan/info'],['archive','/archive'],['paused','/archive?q=pulse'],['sea','/loyalty/sea-survey/info'],['wishlist','/?product=wishlist']]) {
       await go(route);
       const file=path.join(evidence,`${name}-${width}-${scheme}.png`);
       await page.screenshot({path:file,animations:'disabled'});

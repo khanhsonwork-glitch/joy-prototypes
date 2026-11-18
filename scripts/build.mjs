@@ -9,6 +9,9 @@ requireNode();
 const only = process.argv[2];
 if (only && !SITES.includes(only)) fail(`Không có site "${only}". Chọn một trong: ${SITES.join(', ')}`);
 const HUB_ORIGIN = 'https://joy-prototypes.web.app';
+// The real Joy builds (Joy master admin in the Shopify frame + North Bloom storefront, one shared data set) are built
+// from the private Joy code on Alex's Mac and hosted there; this public repo only carries their list and card images.
+const NORTH_BLOOM = 'https://joy-north-bloom.vercel.app';
 const noindex = {source: '**', headers: [{key: 'X-Robots-Tag', value: 'noindex, nofollow'}]};
 
 function loadRegistry() {
@@ -78,7 +81,7 @@ function buildHub() {
     const sources = selfHosted ? [] : [route, `${route}/`];
     return sources.map(source => ({source, destination: selfHosted ? `${route}/${target.search}${target.hash}` : destination, type: 302}));
   }));
-  const rewrites = [{source: '/', destination: '/index.html'}, {source: '/archive', destination: '/index.html'}];
+  const rewrites = [{source: '/', destination: '/index.html'}, {source: '/archive', destination: '/archive/index.html'}];
   // Generated, never committed: redirects follow hub/data/registry.json, so nobody hand-edits deploy config.
   const hosting = {public: 'hub', ignore: ['firebase.json', '**/.*'], redirects, rewrites, headers: [noindex]};
   fs.writeFileSync(path.join(DIST, 'firebase.json'), JSON.stringify({hosting}, null, 2) + '\n');
@@ -88,7 +91,27 @@ function buildHub() {
     fs.mkdirSync(path.join(out, route), {recursive: true});
     fs.copyFileSync(path.join(out, 'index.html'), path.join(out, route, 'index.html'));
   }
+  buildHome(out, registry);
   console.log(`hub → ${path.relative(ROOT, out)} (${registry.features.length} features, ${registry.features.filter(f => f.migrated).length} built from demos/)`);
+}
+
+// Alex 18/11: the home is the Joy-branded North Bloom page — ONE list of every prototype, newest created first, no
+// status ("Bỏ đi k cần status lại update mệt" · "list đủ all prototypes sxep theo thời gian dc tạo" · "branding cũ đâu").
+// The React hub keeps /archive, /<product>/<slug>/info and the 404 page.
+function buildHome(out, registry) {
+  const tpl = fs.readFileSync(path.join(ROOT, 'hub/home/index.tpl.html'), 'utf8');
+  const real = JSON.parse(fs.readFileSync(path.join(ROOT, 'hub/home/north-bloom.json'), 'utf8'));
+  const protos = registry.features.filter(f => f.status !== 'paused' && !f.quarantined).map(f => {
+    const dates = [...f.legacy.map(l => l.updated), f.updated].filter(Boolean).sort();
+    return {slug: `proto-${f.product}-${f.slug}`, name: f.name, area: f.area,
+      line: [...new Set(f.surfaces)].join(' · ') + (f.product === 'wishlist' ? ' · Joy Wishlist' : ''),
+      created: f.created || dates[0] || '', href: canonical(f, f.product), shot: f.shot || ''};
+  });
+  const json = value => JSON.stringify(value).replace(/</g, '\\u003c');
+  for (const key of ['__FEATURES_JSON__', '__PROTOTYPES_JSON__', '__NB__']) if (!tpl.includes(key)) throw Error(`hub/home/index.tpl.html: missing ${key}`);
+  const html = tpl.replace('__FEATURES_JSON__', () => json(real)).replace('__PROTOTYPES_JSON__', () => json(protos)).replaceAll('__NB__', NORTH_BLOOM);
+  // The React hub entry moves to /archive/ (static copy made above); / and /?product= get the new home.
+  fs.writeFileSync(path.join(out, 'index.html'), html);
 }
 
 try {

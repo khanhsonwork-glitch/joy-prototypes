@@ -2,7 +2,7 @@ import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter, Link, Route, Routes, useLocation, useNavigationType, useParams, useSearchParams} from 'react-router-dom';
 import registry from '../data/registry.json';
-import {normalizeFeature, statuses, bands, kindLabels, canonical, featureProducts, reviewTarget, inProduct, matches} from './registry.mjs';
+import {normalizeFeature, kindLabels, canonical, featureProducts, reviewTarget, inProduct, matches} from './registry.mjs';
 import './tokens.css';
 import './style.css';
 
@@ -17,8 +17,8 @@ const date = (value, full = false) => {
   const [year, month, day] = value.slice(0, 10).split('-');
   return `${day}/${month}${full ? `/${year}` : ''}`;
 };
-const sorted = list => [...list].sort((a, b) => b.updated.localeCompare(a.updated) || (b.stage === 'Ready') - (a.stage === 'Ready') || (b.round ?? -1) - (a.round ?? -1) || a.name.localeCompare(b.name));
-function Status({status}) {return <span className={`status ${status}`}><i aria-hidden="true"/>{statuses[status]}</span>;}
+// Alex 18/11: one list, newest prototype first by the day it was created; no status labels to keep up to date.
+const sorted = list => [...list].sort((a, b) => b.created.localeCompare(a.created) || b.updated.localeCompare(a.updated) || a.name.localeCompare(b.name));
 function Arrow({diagonal = false}) {return <span aria-hidden="true">{diagonal ? '↗' : '→'}</span>;}
 // Keystrokes update local state immediately; URL replacements can finish later without rolling the box back.
 // POP/PUSH are actual navigation (including Back while focused), so those restore the shared query.
@@ -39,15 +39,15 @@ function Tabs({product, onChange}) {
     }
   }}>{label}<span className="count">{features.filter(f => inProduct(f, key) && f.status !== 'paused').length}</span></button>)}</div>;
 }
-function Card({feature: f, product, spot = false}) {
+function Card({feature: f, product}) {
   const [shotFailed, setShotFailed] = useState(false);
   const hasShot = f.shot && !shotFailed;
-  return <article className={`feature-card${hasShot ? '' : ' text-card'}${spot ? ' is-spot' : ''}`} data-feature={f.slug}>
+  return <article className={`feature-card${hasShot ? '' : ' text-card'}`} data-feature={f.slug}>
     <a className="card-main" href={canonical(f, product)} aria-label={`${kindLabels[f.kind]} ${f.name}`}>
       {hasShot && <span className="card-stage"><img className="card-shot" src={f.shot} alt={`Giao diện ${f.name}`} loading="lazy" width="1280" height="720" onError={() => setShotFailed(true)}/></span>}
-      <div className="card-content"><h3>{f.name}</h3><p className="card-area">{f.area}</p><p className="card-surfaces">{f.surfaces.join(' · ')}</p>{spot && <span className="spot-cta" aria-hidden="true">Mở bản dựng</span>}</div>
+      <div className="card-content"><h3>{f.name}</h3><p className="card-area">{f.area}</p><p className="card-surfaces">{f.surfaces.join(' · ')}</p></div>
     </a>
-    <div className="card-bottom"><div className="card-meta"><span className="card-stamp">{f.round != null && <>Vòng {f.round} · </>}<time dateTime={f.updated}>{date(f.updated)}</time></span>{f.stage && <span className="stage-chip" title={`Trạng thái trên Notion: ${f.stage}`}>Notion · {f.stage}</span>}{f.entryNote && <span className="entry-note">{f.entryNote}</span>}</div><Link className="info-link" to={`${canonical(f, product)}/info`} aria-label={`Chi tiết ${f.name}`}>Chi tiết</Link></div>
+    <div className="card-bottom"><div className="card-meta"><span className="card-stamp"><time dateTime={f.created.slice(0, 10)} title="Ngày tạo prototype">{date(f.created)}</time></span>{f.entryNote && <span className="entry-note">{f.entryNote}</span>}</div><Link className="info-link" to={`${canonical(f, product)}/info`} aria-label={`Chi tiết ${f.name}`}>Chi tiết</Link></div>
   </article>;
 }
 function Home() {
@@ -57,11 +57,10 @@ function Home() {
   const list = features.filter(f => inProduct(f, product));
   const visible = list.filter(f => f.status !== 'paused' && matches(f, query));
   const update = (key, value) => {const next = new URLSearchParams(search); value ? next.set(key, value) : next.delete(key); setSearch(next, {replace: key === 'q'});};
-  const groups = bands.map(status => [status, sorted(visible.filter(f => f.status === status))]).filter(([, group]) => group.length);
+  const ordered = sorted(visible);
   return <><header className="hb"><BrandPattern/><div className="hb-in wrap"><h1 className="brand"><img src="/brand/joy-wordmark-white.png" alt="Joy" width="815" height="407"/><span>Prototypes</span></h1><div className="home-controls"><Tabs product={product} onChange={value => update('product', value === 'loyalty' ? '' : value)}/><Search value={query} onChange={value => update('q', value)}/></div></div></header>
-    {groups.length > 0 && <nav className="statusbar" aria-label="Nhóm trạng thái"><div className="wrap">{groups.map(([status, group]) => <a key={status} className={`chip ${status}`} href={`#band-${status}`}><i aria-hidden="true"/>{statuses[status]} <b>{group.length}</b></a>)}</div></nav>}
     <div className="wrap home-body"><div id="feature-panel" role="tabpanel" aria-labelledby={`tab-${product}`} className="bands">
-      {groups.map(([status, group]) => <section key={status} className={`band band-${status}`} aria-labelledby={`band-${status}`}><h2 id={`band-${status}`} className={`band-heading ${status}`}><i aria-hidden="true"/>{statuses[status]}<span className="section-count">{group.length}</span></h2><div className={`feature-grid${status === 'review' ? ` grid-review${group.length === 1 ? ' solo' : ''}` : ''}`}>{group.map((f, index) => <Card key={`${f.product}/${f.slug}`} feature={f} product={product} spot={status === 'review' && index === 0}/>)}</div></section>)}
+      {ordered.length > 0 && <div className="feature-grid">{ordered.map(f => <Card key={`${f.product}/${f.slug}`} feature={f} product={product}/>)}</div>}
       {!visible.length && <p className="empty-state" role="status">{query ? 'Không tìm thấy tính năng phù hợp.' : `Chưa có prototype đang hoạt động cho ${products[product]}.`}</p>}
     </div><footer className="home-footer"><img src="/brand/joyso-logo-red.svg" alt="Joy.so" width="2840" height="820"/><a className="starter-link" href="/starter/">Bộ khung để dựng prototype mới (starter)</a>{runtime && <span>Joy master {runtime.sha.slice(0,7)} · {date(runtime.date, true)}</span>}</footer></div></>;
 }
@@ -105,7 +104,7 @@ function Info() {
   const returnProduct = search.get('product') === 'wishlist' && inProduct(f, 'wishlist') ? 'wishlist' : product;
   const current = f.legacy.filter(link => link.current).map(link => ({...link, url: reviewTarget(f, product)}));
   const previous = f.legacy.filter(link => !link.current);
-  return <div className="detail"><Link className="back-link" to={home(returnProduct)}>← {products[returnProduct]}</Link><header className="detail-header"><div><div className="title-row"><h1>{f.name}</h1><Status status={f.status}/>{f.stage && <span className="stage-chip">Notion: {f.stage}</span>}</div><p className="detail-area">{f.area}</p><p className="detail-surfaces">{f.surfaces.join(' · ')}</p><p className="detail-meta" title="Ngày deploy hoặc ngày sửa file gần nhất, có thể lệch ±1 ngày">Bản dựng gần nhất khoảng <time dateTime={f.updated}>{date(f.updated, true)}</time>{f.round != null && <> · Vòng {f.round}</>}</p></div>{f.quarantined ? <p className="quarantine-note muted">{quarantineMessage}</p> : <div className="detail-actions"><div className="actions"><div className="primary-action"><a className="button primary" href={canonical(f, product)}>{kindLabels[f.kind]} <Arrow diagonal/></a>{f.entryNote && <p className="entry-note">{f.entryNote}</p>}</div>{f.notion && <a className="button" href={f.notion}>Task Notion <Arrow diagonal/></a>}{f.prd && <a className="button" href={f.prd}>PRD <Arrow diagonal/></a>}</div></div>}</header>
+  return <div className="detail"><Link reloadDocument className="back-link" to={home(returnProduct)}>← {products[returnProduct]}</Link><header className="detail-header"><div><div className="title-row"><h1>{f.name}</h1></div><p className="detail-area">{f.area}</p><p className="detail-surfaces">{f.surfaces.join(' · ')}</p><p className="detail-meta" title="Ngày deploy hoặc ngày sửa file, có thể lệch ±1 ngày">Tạo ngày <time dateTime={f.created.slice(0, 10)}>{date(f.created, true)}</time> · bản dựng gần nhất khoảng <time dateTime={f.updated}>{date(f.updated, true)}</time></p></div>{f.quarantined ? <p className="quarantine-note muted">{quarantineMessage}</p> : <div className="detail-actions"><div className="actions"><div className="primary-action"><a className="button primary" href={canonical(f, product)}>{kindLabels[f.kind]} <Arrow diagonal/></a>{f.entryNote && <p className="entry-note">{f.entryNote}</p>}</div>{f.notion && <a className="button" href={f.notion}>Task Notion <Arrow diagonal/></a>}{f.prd && <a className="button" href={f.prd}>PRD <Arrow diagonal/></a>}</div></div>}</header>
       {f.slug === 'custom-plan' && runtime && <div className="pairing-row"><a href="/app/#/customize_plan">Màn này hôm nay (code thật) <Arrow/></a></div>}
       <DetailShot key={f.shot} feature={f} product={product}/>
       <div className="detail-sections">{!f.quarantined && <><Versions title="Bản hiện tại" links={current.length ? current : [{url: reviewTarget(f, product), label: kindLabels[f.kind], updated: f.updated}]}/><Versions title="Các bản trước" links={previous}/></>}
@@ -115,16 +114,16 @@ function Info() {
 }
 function Archive() {
   const [search, setSearch] = useSearchParams();
-  const product = search.get('product') || 'all'; const requestedStatus = search.get('status') || 'all';
+  const product = search.get('product') || 'all';
   // Alex 21/10: "Mấy cái tạm dừng bỏ đi" — paused builds are hidden from hub lists; their info pages and links stay.
-  const status = ['archived', 'paused'].includes(requestedStatus) ? 'all' : requestedStatus === 'approved' ? 'todo' : requestedStatus;
+  // Alex 18/11: "bỏ cái status đi" — no status filter or column; old ?status= links just show everything.
   const query = search.get('q') || '';
   const update = (key, value) => {const next = new URLSearchParams(search); value && value !== 'all' ? next.set(key, value) : next.delete(key); setSearch(next, {replace: true});};
-  const rows = sorted(features.filter(f => f.status !== 'paused' && (product === 'all' || inProduct(f, product)) && (status === 'all' || f.status === status) && matches(f, query)));
-  return <><Link className="back-link" to={home(product)}>← Joy Prototypes</Link><header className="archive-header"><h1>Tất cả bản dựng</h1><Search value={query} onChange={value => update('q', value)}/></header><div className="filters"><div role="group" aria-label="Lọc sản phẩm">{Object.entries({all: 'Tất cả sản phẩm', ...products}).map(([key,label]) => <button key={key} aria-pressed={product === key} onClick={() => update('product',key)}>{label}</button>)}</div><div role="group" aria-label="Lọc trạng thái">{Object.entries({all: 'Tất cả trạng thái', ...statuses}).filter(([key]) => key !== 'paused').map(([key,label]) => <button key={key} aria-pressed={status === key} onClick={() => update('status',key)}>{label}</button>)}</div></div>
-      <div className="archive-table" role="table" aria-label="Tất cả bản dựng"><div className="archive-row table-head" role="row">{['Tính năng','Sản phẩm','Trạng thái','Bản dựng gần nhất','Các bản dựng'].map(x => <span role="columnheader" key={x}>{x}</span>)}</div>{rows.map(f => <div className="archive-row" role="row" data-archive-feature={f.slug} key={`${f.product}/${f.slug}`}><div role="cell"><Link className="feature-name" to={`${canonical(f, product === 'all' ? f.product : product)}/info`}>{f.name}</Link><span className="row-area">{f.area}</span></div><div role="cell" className="row-product">{[...new Set([f.product, ...f.alsoIn])].map(p => products[p]).join(' · ')}</div><div role="cell"><Status status={f.status}/></div><time role="cell" dateTime={f.updated}>{date(f.updated,true)}</time><div role="cell" className="archive-links">{f.quarantined ? <span className="muted">{quarantineMessage}</span> : <><a href={canonical(f, product === 'all' ? f.product : product)}>{kindLabels[f.kind]}<Arrow diagonal/></a><Link to={`${canonical(f, product === 'all' ? f.product : product)}/info`}>Lịch sử bản dựng <Arrow/></Link></>}</div></div>)}</div>{!rows.length && <p className="empty-state" role="status">Không tìm thấy tính năng phù hợp.</p>}</>;
+  const rows = sorted(features.filter(f => f.status !== 'paused' && (product === 'all' || inProduct(f, product)) && matches(f, query)));
+  return <><Link reloadDocument className="back-link" to={home(product)}>← Joy Prototypes</Link><header className="archive-header"><h1>Tất cả bản dựng</h1><Search value={query} onChange={value => update('q', value)}/></header><div className="filters"><div role="group" aria-label="Lọc sản phẩm">{Object.entries({all: 'Tất cả sản phẩm', ...products}).map(([key,label]) => <button key={key} aria-pressed={product === key} onClick={() => update('product',key)}>{label}</button>)}</div></div>
+      <div className="archive-table" role="table" aria-label="Tất cả bản dựng"><div className="archive-row table-head" role="row">{['Tính năng','Sản phẩm','Ngày tạo','Các bản dựng'].map(x => <span role="columnheader" key={x}>{x}</span>)}</div>{rows.map(f => <div className="archive-row" role="row" data-archive-feature={f.slug} key={`${f.product}/${f.slug}`}><div role="cell"><Link className="feature-name" to={`${canonical(f, product === 'all' ? f.product : product)}/info`}>{f.name}</Link><span className="row-area">{f.area}</span></div><div role="cell" className="row-product">{[...new Set([f.product, ...f.alsoIn])].map(p => products[p]).join(' · ')}</div><time role="cell" dateTime={f.created.slice(0, 10)}>{date(f.created,true)}</time><div role="cell" className="archive-links">{f.quarantined ? <span className="muted">{quarantineMessage}</span> : <><a href={canonical(f, product === 'all' ? f.product : product)}>{kindLabels[f.kind]}<Arrow diagonal/></a><Link to={`${canonical(f, product === 'all' ? f.product : product)}/info`}>Lịch sử bản dựng <Arrow/></Link></>}</div></div>)}</div>{!rows.length && <p className="empty-state" role="status">Không tìm thấy tính năng phù hợp.</p>}</>;
 }
-function NotFound() {return <><h1>Không tìm thấy trang</h1><Link className="back-link" to="/">← Joy Prototypes</Link></>;}
+function NotFound() {return <><h1>Không tìm thấy trang</h1><Link reloadDocument className="back-link" to="/">← Joy Prototypes</Link></>;}
 function App() {
   const location = useLocation();
   useEffect(() => {

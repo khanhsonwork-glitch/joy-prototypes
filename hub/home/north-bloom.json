@@ -1,0 +1,145 @@
+[
+  {
+    "slug": "referral-tiers",
+    "name": "Referral · thưởng theo hạng VIP / theo giá trị đơn",
+    "desc": "Merchant chọn cách thưởng người giới thiệu: số điểm cố định, mỗi hạng VIP một mức, hoặc điểm theo giá trị đơn của người được giới thiệu. Khách thấy đúng mức của mình ở thẻ Refer a Friend trong widget.",
+    "group": "Giới thiệu & tặng",
+    "created": "2026-11-17T15:00"
+  },
+  {
+    "slug": "whatsapp",
+    "name": "WhatsApp · điểm khi tham gia nhóm WhatsApp",
+    "desc": "Chương trình earning «Join WhatsApp» (social): merchant dán link nhóm/kênh WhatsApp và đặt số điểm; khách thấy dòng Join Whatsapp trong danh sách Earn của widget, bấm để mở link và nhận điểm.",
+    "group": "Tích điểm",
+    "created": "2026-11-17T15:10"
+  },
+  {
+    "slug": "sandbox-test-list",
+    "name": "Sandbox mode · Test list (chạy thử trước khi mở cho mọi khách)",
+    "desc": "Ở Reward programs, merchant chuyển Live mode ↔ Sandbox mode. Khi Sandbox bật, chỉ email trong «Test list» mới tích/đổi điểm và mới thấy widget; khách khác (kể cả khách đã đăng nhập không nằm trong list) không thấy widget. Đúng logic master: canShowWidgetInTestMode + canUserEarnPointsInTestMode.",
+    "group": "Khác",
+    "created": "2026-11-17T15:20"
+  },
+  {
+    "slug": "milestones",
+    "name": "Milestones · thưởng theo mốc (số đơn / số tiền)",
+    "desc": "Merchant đặt các mốc (ví dụ đơn thứ 1, 3, 12) và phần thưởng từng mốc: điểm, mã giảm, free shipping. Khách thấy mục Milestones trong widget, tiến độ của mình (Maya đã có 9 đơn) và phần thưởng từng mốc.",
+    "group": "Tích điểm",
+    "created": "2026-11-17T15:30"
+  },
+  {
+    "slug": "send-gift",
+    "name": "Send gift · tặng phần thưởng cho bạn",
+    "desc": "Ở phần thưởng Free product, merchant bật «Send to friend». Khách đổi điểm lấy quà xong thấy nút «Send to a friend», nhập email bạn + lời nhắn; bạn nhận mã qua email Joy. Không bật thì nút không hiện.",
+    "group": "Giới thiệu & tặng",
+    "created": "2026-11-17T15:40"
+  },
+  {
+    "slug": "vip-launch",
+    "name": "VIP Tier Launch · hỏi trước khi phát quà vào hạng",
+    "desc": "Đổi mốc hạng rồi Launch: modal hỏi có phát quà vào hạng không, bỏ qua người đã nhận, ghi chú thay đổi.",
+    "group": "Hạng & hội viên",
+    "created": "2026-11-18T13:00"
+  },
+  {
+    "slug": "vip-free-shipping-limit",
+    "name": "VIP Tier · giới hạn số lần free shipping theo hạng",
+    "desc": "Ở perk Free shipping của hạng, merchant bật «Set limit»: mỗi thành viên dùng tối đa N lần mỗi kỳ.",
+    "group": "Hạng & hội viên",
+    "created": "2026-11-18T13:10"
+  },
+  {
+    "slug": "quiz",
+    "name": "Quiz · chuỗi câu hỏi có thưởng",
+    "desc": "Merchant dựng quiz trên canvas: câu hỏi, bước earn, màn cảm ơn kèm thưởng. Khách làm ngay trong widget.",
+    "group": "Tích điểm",
+    "created": "2026-11-18T17:10"
+  },
+  {
+    "slug": "analytics-emails",
+    "name": "Analytics · tab Emails (hiệu quả email)",
+    "desc": "Email loyalty gửi, mở, bấm theo từng notification.",
+    "group": "Báo cáo",
+    "created": "2026-11-18T18:30",
+    "store": false
+  },
+  {
+    "slug": "tier-assessment",
+    "name": "Tier Assessment · xét lại hạng theo chu kỳ",
+    "desc": "Xét lại hạng định kỳ; khách thấy còn thiếu bao nhiêu",
+    "group": "Hạng & hội viên",
+    "created": "2026-11-18T18:40",
+    "store": true
+  },
+  {
+    "slug": "line",
+    "name": "Join LINE · chỉ cộng điểm khi khách follow OA",
+    "desc": "Khách phải follow tài khoản LINE của shop mới nhận điểm.",
+    "group": "Tích điểm",
+    "created": "2026-11-18T17:00"
+  },
+  {
+    "slug": "widget-faq",
+    "name": "FAQ trong Unified widget",
+    "desc": "Sửa câu hỏi thường gặp ngay trong trình sửa widget",
+    "group": "Widget & trang",
+    "created": "2026-11-18T19:00",
+    "store": true
+  },
+  {
+    "slug": "widget-perk-labels",
+    "name": "Widget V4 · nhãn Entry reward / Referral reward",
+    "desc": "Thẻ hạng ghi rõ quà vào hạng và quà giới thiệu",
+    "group": "Widget & trang",
+    "created": "2026-11-18T19:10",
+    "store": true
+  },
+  {
+    "slug": "referral-claim-bonus",
+    "name": "Referral · thưởng người giới thiệu khi bạn nhận quà",
+    "desc": "Bạn nhận mã giới thiệu là người mời được điểm ngay.",
+    "group": "Giới thiệu & tặng",
+    "created": "2026-11-18T19:20",
+    "store": true
+  },
+  {
+    "slug": "social-language-links",
+    "name": "Social activity · mỗi ngôn ngữ một link",
+    "desc": "Follow Instagram: khách tiếng Pháp tới đúng tài khoản tiếng Pháp",
+    "group": "Tích điểm",
+    "created": "2026-11-18T19:30",
+    "store": true
+  },
+  {
+    "slug": "submit-form",
+    "name": "Submit Form · gửi form nhận điểm (template, ai được gửi)",
+    "desc": "Khách gửi bằng chứng qua form, duyệt xong được điểm",
+    "group": "Tích điểm",
+    "created": "2026-11-18T20:10",
+    "store": true
+  },
+  {
+    "slug": "loyalty-hub",
+    "name": "Loyalty Hub · trang loyalty trong tài khoản khách",
+    "desc": "Sửa trang Loyalty Hub, xem trước rồi khách thấy",
+    "group": "Widget & trang",
+    "created": "2026-11-18T20:20",
+    "store": true
+  },
+  {
+    "slug": "mobile-app-shopney",
+    "name": "Mobile app engagement · thưởng hành động trong app Shopney",
+    "desc": "Thưởng khách đăng nhập app lần đầu, bật thông báo",
+    "group": "Tích điểm",
+    "created": "2026-11-18T22:20",
+    "store": true
+  },
+  {
+    "slug": "ai-banner",
+    "name": "AI banner · Joy vẽ ảnh banner widget từ sản phẩm của shop",
+    "desc": "Joy vẽ ảnh banner widget từ sản phẩm của shop",
+    "group": "Widget & trang",
+    "created": "2026-11-18T22:25",
+    "store": true
+  }
+]
