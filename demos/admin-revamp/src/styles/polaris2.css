@@ -220,8 +220,13 @@
 .Polaris-Select__Backdrop {
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 1px 2px #0000000d, 0 0 0 1px var(--p-color-border, #ddd);
+  /* Resting edge: thin light line + soft shadow (real new admin). Polaris draws its own border from
+     --p-color-input-border (#8c8c8c); neutralise it at rest, keep error and focus states. */
+  border-color: var(--p-color-border, #ddd);
+  box-shadow: 0 1px 2px #0000000d;
 }
+.Polaris-TextField--error .Polaris-TextField__Backdrop,
+.Polaris-Select--error .Polaris-Select__Backdrop {border-color: var(--p-color-border-critical);}
 .Polaris-TextField__Input,
 .Polaris-Select__Input {min-height: 30px;}
 .Polaris-TextField__Input:focus-visible ~ .Polaris-TextField__Backdrop,

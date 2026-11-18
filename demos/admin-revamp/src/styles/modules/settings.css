@@ -19,3 +19,6 @@
 @media(max-width:1000px){.rv-settings-plans{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:800px){.rv-settings-layout{grid-template-columns:220px minmax(0,1fr)}}
 @media(max-width:600px){.rv-settings-layout{display:block}.rv-settings-nav{position:static;margin-bottom:var(--p-space-400)}.rv-settings-nav-desktop{display:none}.rv-settings-nav-mobile{display:block}.rv-settings-plans{grid-template-columns:1fr}.rv-settings-main .rv-item{flex-wrap:wrap}.rv-settings-main .rv-item__meta{width:100%;justify-content:space-between}}
+
+/* Review r1/r2: the form column ran 864px wide at 1440, so each question drifted; cap the reading width like the real General screen. */
+.rv-settings-main{max-width:720px}
