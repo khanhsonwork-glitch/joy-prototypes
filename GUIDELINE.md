@@ -8,7 +8,7 @@ Xem mẫu chuẩn đang chạy: https://joy-prototypes.web.app/starter/ (dựng 
 
 | Phần | File | Dùng để |
 |---|---|---|
-| Khung admin | `src/shell/AdminChrome.jsx` | Thanh trên Shopify, menu trái (thành drawer trên điện thoại), header app Joy. Đổi tên app/menu ở `src/demo.config.js` và mảng menu trong file này |
+| Khung admin | `src/shell/AdminChrome.jsx` | Nav đen toàn chiều cao (thành drawer trên điện thoại), panel trắng và hàng tiêu đề Joy. Đổi tên app/menu ở `src/demo.config.js` và mảng menu trong file này |
 | Điều hướng | `src/shell/router.jsx` | Routing bằng hash: `#/demo`, `#/demo/<id>`. Dùng `url: '/demo/x'` của Polaris hoặc `useNavigate()` |
 | Thông báo | `src/shell/ShellContext.jsx` | `notify('Reward saved')`, `notify('Couldn’t save', {error: true})` |
 | 9 trạng thái | `src/kit/scenario.jsx`, `src/kit/ProtoControls.jsx` | `useScenario().state` + nút **Prototype** góc dưới để đổi trạng thái; `?state=empty` trong URL để gửi link đúng trạng thái |
@@ -18,7 +18,7 @@ Xem mẫu chuẩn đang chạy: https://joy-prototypes.web.app/starter/ (dựng 
 | Màn mẫu | `src/pages/RewardsList.jsx`, `RewardEdit.jsx` | Danh sách (tabs, tìm kiếm, bảng, phân trang) và form tạo/sửa (validate, toast, modal xoá, drawer). Thay "rewards" bằng tính năng của bạn, **giữ cấu trúc** |
 | Bảng component | `src/pages/KitPage.jsx` (`#/kit`) | Nút, badge, banner, form, tabs, bảng, overlay, token: xem trước khi tự chế |
 
-Component: **Polaris 12** (`@shopify/polaris`) là bộ duy nhất. Thứ Polaris có (Page, Card, IndexTable, Modal, Toast, Banner, Tabs, TextField…) thì dùng Polaris, không tự vẽ.
+Component: **Polaris 12 React** (`@shopify/polaris`) là bộ duy nhất; diện mạo là **Polaris 2 / Shopify admin mới** qua `src/styles/polaris2.css`. Demo mới chép template nên tự nhận nav đen toàn chiều cao, panel trắng bo góc và control mới. Không dựng lại canvas xám cũ, top bar đen hay nút vát cạnh. Thứ Polaris có (Page, Card, IndexTable, Modal, Toast, Banner, Tabs, TextField…) thì dùng Polaris, không tự vẽ.
 
 ## 2. Token
 

@@ -14,7 +14,7 @@ import {MEMBERS, REWARDS, num, typeLabel} from '../data/index.js';
 const COLOR_TOKENS = [
   '--p-color-bg', '--p-color-bg-surface', '--p-color-bg-surface-secondary', '--p-color-bg-fill-brand', '--p-color-bg-fill-critical',
   '--p-color-bg-fill-success', '--p-color-bg-fill-warning', '--p-color-text', '--p-color-text-secondary', '--p-color-border', '--p-color-border-focus',
-  '--chrome-topbar', '--chrome-nav-bg', '--chrome-joy-red',
+  '--chrome-nav-bg', '--chrome-nav-selected', '--chrome-joy-red',
 ];
 const SPACE_TOKENS = ['--p-space-100', '--p-space-200', '--p-space-300', '--p-space-400', '--p-space-600', '--p-space-800'];
 

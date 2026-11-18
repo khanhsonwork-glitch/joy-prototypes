@@ -69,6 +69,36 @@ await check('Routes: list, create, edit, components, not found — no errors, no
   } finally {await context.close();}
 });
 
+await check('New admin look: white panel, dark full-height nav, pill primary, 20px card, no old top bar', async () => {
+  const {context, page} = await session(1440, 1000);
+  try {
+    await open(page, '/kit');
+    const styles = await page.evaluate(() => {
+      const css = selector => getComputedStyle(document.querySelector(selector));
+      return {
+        panel: css('.adm-main').backgroundColor,
+        nav: css('.adm-nav').backgroundColor,
+        navTop: document.querySelector('.adm-nav').getBoundingClientRect().top,
+        navHeight: document.querySelector('.adm-nav').getBoundingClientRect().height,
+        buttonRadius: parseFloat(css('.Polaris-Button--variantPrimary').borderTopLeftRadius),
+        buttonBackground: css('.Polaris-Button--variantPrimary').backgroundColor,
+        cardRadius: parseFloat(css('.Polaris-ShadowBevel').borderTopLeftRadius),
+        boxedCardRadius: parseFloat(css('.Polaris-Box[style*="--pc-box-border-width"]').borderTopLeftRadius),
+        oldTop: document.querySelectorAll('.adm-top').length,
+      };
+    });
+    assert.equal(styles.panel, 'rgb(255, 255, 255)');
+    assert.equal(styles.nav, 'rgb(10, 10, 10)');
+    assert.equal(styles.navTop, 0);
+    assert.equal(styles.navHeight, 1000);
+    assert(styles.buttonRadius >= 999, `primary button radius ${styles.buttonRadius}`);
+    assert.equal(styles.buttonBackground, 'rgb(12, 12, 12)');
+    assert.equal(styles.cardRadius, 20);
+    assert.equal(styles.boxedCardRadius, 20);
+    assert.equal(styles.oldTop, 0);
+  } finally {await context.close();}
+});
+
 await check('Nine states: default, empty, loading, error, disabled, overflow, worst (+ hover, focus below) on desktop and phone', async () => {
   const expectations = {
     default: async page => assert.equal(await page.locator('[data-primary-link]').count(), 5),

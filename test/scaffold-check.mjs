@@ -64,7 +64,8 @@ check('creates a demo from the starter and registers it on the hub', () => {
   const result = scaffold('birthday-reward', 'Birthday reward', '--area', 'Programs');
   assert.equal(result.status, 0, result.stderr);
   const dir = path.join(tmp, 'demos/birthday-reward');
-  for (const file of ['index.html', 'package.json', 'package-lock.json', 'vite.config.js', 'src/App.jsx', 'src/kit/Drawer.jsx', 'src/pages/RewardsList.jsx', 'src/fonts/inter-var.woff2', 'public/img/icon.png']) assert(fs.existsSync(path.join(dir, file)), `missing ${file}`);
+  for (const file of ['index.html', 'package.json', 'package-lock.json', 'vite.config.js', 'src/App.jsx', 'src/kit/Drawer.jsx', 'src/pages/RewardsList.jsx', 'src/styles/polaris2.css', 'src/fonts/inter-var.woff2', 'public/img/icon.png']) assert(fs.existsSync(path.join(dir, file)), `missing ${file}`);
+  assert.match(fs.readFileSync(path.join(dir, 'src/main.jsx'), 'utf8'), /styles\.css';\nimport '\.\/styles\/polaris2\.css'/, 'Polaris 2 look loads after Polaris React');
   assert(!fs.existsSync(path.join(dir, 'README.md')), 'template README must not be copied');
   assert.match(fs.readFileSync(path.join(dir, 'REFERENCE.md'), 'utf8'), /^Menu: </m, 'REFERENCE.md written, still to fill in');
   assert(!fs.existsSync(path.join(dir, 'node_modules')), 'node_modules must not be copied');
