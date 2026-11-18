@@ -674,6 +674,32 @@
     },
     {
       "product": "loyalty",
+      "slug": "points-number-format",
+      "name": "Points number format",
+      "area": "Settings",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-18",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-points-number-format.jpg",
+      "reviewUrl": "/loyalty/points-number-format/#/settings",
+      "kind": "prototype",
+      "aliases": [
+        "Number format",
+        "Thousands separator",
+        "Points added via API"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "quiz-builder",
       "name": "Quiz builder",
       "area": "Programs",

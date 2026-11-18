@@ -1,0 +1,95 @@
+/* Points number format: layout pieces Polaris React does not draw. Polaris tokens only; amber = prototype-only. */
+
+.pnf-page {box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding: 0 var(--p-space-500);}
+.pnf-grow {flex: 1; min-width: 0;}
+.pnf-half {max-width: 50%;}
+.pnf-grid-2 {display: grid; grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr)); gap: var(--p-space-400);}
+.pnf-anchor {scroll-margin-top: calc(var(--chrome-appbar-height) + var(--p-space-400));}
+
+/* Settings: side menu card 1/3, section 2/3 (Setting.js s-grid 'minmax(0, 1fr) minmax(0, 2fr)'). */
+.pnf-settings {max-width: 1000px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--p-space-400); align-items: start;}
+.pnf-settings__search {padding: var(--p-space-200);}
+.pnf-settings__list {list-style: none; margin: 0; padding: 0 var(--p-space-200) var(--p-space-200); display: flex; flex-direction: column; gap: var(--p-space-050);}
+.pnf-settings__item {
+  display: flex; align-items: center; gap: var(--p-space-200); width: 100%; box-sizing: border-box;
+  padding: var(--p-space-200) var(--p-space-300); border: 0; border-radius: var(--p-border-radius-200);
+  background: transparent; color: var(--p-color-text); font: inherit; text-align: left; cursor: pointer;
+}
+.pnf-settings__item .Polaris-Icon {margin: 0; flex: none;}
+.pnf-settings__item:hover {background: var(--p-color-bg-surface-hover);}
+.pnf-settings__item.is-selected {background: var(--p-color-bg-surface-secondary-active);}
+.pnf-settings__item:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: -2px;}
+
+/* "New" marker on the rows this prototype adds: amber, so it never reads as product UI. */
+.pnf-new {
+  display: inline-flex; align-items: center; padding: 0 var(--p-space-150); border-radius: var(--p-border-radius-full);
+  background: var(--proto-amber-bg); border: var(--p-border-width-025) solid var(--proto-amber-border); color: var(--proto-amber-text);
+  font-size: var(--p-font-size-275); line-height: var(--p-font-line-height-400); font-weight: var(--p-font-weight-medium);
+}
+/* Children of a radio choice sit under its label, like WcChoiceList renderChildren. */
+.pnf-choice-child {padding-block: var(--p-space-100) var(--p-space-100); max-width: 26rem;}
+.pnf-choice-child:has(.Polaris-Banner) {max-width: none;}
+
+/* Translations › language table (TranslationEditorTable): grey header, list of surfaces. */
+.pnf-lang__header {padding: var(--p-space-400); background: var(--p-color-bg-fill-disabled); border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);}
+.pnf-lang__items {list-style: none; margin: 0; padding: 0;}
+.pnf-lang__items li + li {border-top: var(--p-border-width-025) solid var(--p-color-border-secondary);}
+.pnf-lang__item {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box;
+  padding: var(--p-space-300) var(--p-space-400) var(--p-space-300) var(--p-space-600);
+  border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.pnf-lang__item .Polaris-Icon {margin: 0;}
+.pnf-lang__item:hover {background: var(--p-color-bg-surface-hover);}
+.pnf-lang__item:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: -2px;}
+
+/* Unified widget editor: header with the two pickers on the right (Sections/index.js primaryAction grid). */
+.pnf-editor {max-width: 1000px;}
+.pnf-editor__head {display: flex; align-items: flex-start; justify-content: space-between; gap: var(--p-space-400);}
+.pnf-editor__pickers {display: grid; grid-template-columns: 1fr 1fr; gap: var(--p-space-200); min-width: 22rem;}
+
+/* Label · Original · Translation rows (TranslationsPanel.scss). */
+.pnf-tr__head {display: flex; gap: var(--p-space-200); padding-bottom: var(--p-space-200); border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);
+  font-size: var(--p-font-size-325); font-weight: var(--p-font-weight-semibold); color: var(--p-color-text-secondary);}
+.pnf-tr__head .pnf-tr__col {text-align: center;}
+.pnf-tr__label {width: 200px; flex-shrink: 0; padding-top: var(--p-space-150); overflow-wrap: anywhere; display: flex; flex-wrap: wrap; align-items: center; gap: var(--p-space-100); align-content: flex-start;}
+.pnf-tr__col {flex: 1; min-width: 0;}
+.pnf-tr__section {border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);}
+.pnf-tr__section:last-child {border-bottom: 0;}
+.pnf-tr__toggle {display: flex; align-items: center; justify-content: space-between; width: 100%; padding: var(--p-space-300) 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;}
+.pnf-tr__toggle .Polaris-Icon {margin: 0;}
+.pnf-tr__toggle:hover {opacity: .8;}
+.pnf-tr__toggle:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: 2px; border-radius: var(--p-border-radius-100);}
+.pnf-tr__fields {padding-bottom: var(--p-space-300);}
+.pnf-tr__row {display: flex; align-items: flex-start; gap: var(--p-space-200); padding: var(--p-space-150) 0; border-radius: var(--p-border-radius-200); transition: background-color 400ms;}
+.pnf-tr__row.is-flash {background: var(--proto-amber-bg);}
+.pnf-tr__none {padding: var(--p-space-400) 0;}
+
+@media (max-width: 990px) {
+  .pnf-settings {grid-template-columns: minmax(0, 1fr);}
+}
+@media (max-width: 768px) {
+  .pnf-page {padding: 0 var(--p-space-300);}
+  .pnf-editor__head {flex-direction: column; align-items: stretch;}
+  .pnf-editor__pickers {min-width: 0;}
+  .pnf-half {max-width: none;}
+}
+@media (max-width: 600px) {
+  /* Rows stack: label, then Original, then Translation (no sideways scroll). */
+  .pnf-tr__head {display: none;}
+  .pnf-tr__row {flex-direction: column; gap: var(--p-space-100); padding: var(--p-space-200) 0;}
+  .pnf-tr__label {width: auto; padding-top: 0;}
+  .pnf-tr__col {width: 100%;}
+  .pnf-tr__row .pnf-tr__col:nth-child(2)::before {content: 'Original'; display: block; font-size: var(--p-font-size-300); color: var(--p-color-text-secondary);}
+  .pnf-tr__row .pnf-tr__col:nth-child(3)::before {content: 'Translation'; display: block; font-size: var(--p-font-size-300); color: var(--p-color-text-secondary);}
+  .pnf-editor__pickers {grid-template-columns: 1fr;}
+}
+
+/* Save bar that replaces the title row while there are unsaved changes. */
+.adm-savebar {gap: var(--p-space-300);}
+.adm-savebar__msg {font-weight: var(--p-font-weight-semibold);}
+.adm-savebar__actions {margin-left: auto; display: inline-flex; gap: var(--p-space-200);}
+
+/* Without the Prototype chip (?shot=1) the window scrolls: overflow: clip keeps the rounded sheet but, unlike hidden,
+   does not make .adm-main a scroll box, so the sticky title row (and the save bar in it) stays in view. */
+.adm-main {overflow: clip;}
