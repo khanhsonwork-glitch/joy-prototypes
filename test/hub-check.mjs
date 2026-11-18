@@ -362,6 +362,13 @@ await check('Hub font local, no external requests, no errors',async()=> {
   assert.deepEqual([...requests].filter(origin=>origin!==base.origin),[]);
   assert.deepEqual(errors,[]);
   assert(config.headers.find(h=>h.source==='**')?.headers.some(h=>h.key==='X-Robots-Tag'&&h.value==='noindex, nofollow'));
+  // Pages revalidate on every visit so a deploy shows at once (Alex 19/11 still saw the old hub an hour after the
+  // merge); hashed assets keep the default cache.
+  const freshRule=config.headers.find(h=>h.regex);
+  assert.equal(freshRule?.headers.find(h=>h.key==='Cache-Control')?.value,'no-cache');
+  const pageRule=new RegExp(freshRule.regex);
+  for(const u of ['/','/archive','/loyalty/points-giveaway/']) assert(pageRule.test(u),u);
+  for(const u of ['/assets/index.js','/home-assets/hero-admin.webp','/fonts/be-vietnam-pro-regular.woff2']) assert(!pageRule.test(u),u);
 });
 await check('Hub stays white on dark-mode devices (Alex 21/10)',async()=> {
   const lightTextCard={};
