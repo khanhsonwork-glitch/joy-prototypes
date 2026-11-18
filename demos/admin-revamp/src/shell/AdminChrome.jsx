@@ -83,10 +83,24 @@ function Navigation({open, onClose}) {
           <NavSection label="Apps" onClick={stub} />
           <NavRow app={<JoyIcon size={18} tone="grey" />} label={APP_NAME} href="#/home" selected={atAppHome} onClick={onClose} />
           <div className="adm-sub">
-            {APP_MENU.map((item, index) => <a key={item.id} href={item.href || '#'}
-              className={cx('adm-sub__item', index === selected && 'is-selected')}
-              aria-current={index === selected ? 'page' : undefined}
-              onClick={event => {if (!item.href) {event.preventDefault(); stub();} else onClose();}}>{item.label}</a>)}
+            {APP_MENU.map((item, index) => {
+              const open = index === selected && item.children?.length;
+              // Longest matching child wins: #/programs/points/earn/x → Points, #/programs → All programs.
+              const path = route.segments.join('/');
+              const child = open ? [...item.children]
+                .filter(c => c.match.some(m => path === m || path.startsWith(`${m}/`)))
+                .sort((a, b) => Math.max(...b.match.map(m => m.length)) - Math.max(...a.match.map(m => m.length)))[0] : null;
+              return <React.Fragment key={item.id}>
+                <a href={item.href || '#'}
+                  className={cx('adm-sub__item', index === selected && !open && 'is-selected', open && 'is-open')}
+                  aria-current={index === selected && !open ? 'page' : undefined}
+                  aria-expanded={item.children ? Boolean(open) : undefined}
+                  onClick={event => {if (!item.href) {event.preventDefault(); stub();} else onClose();}}>{item.label}</a>
+                {open ? item.children.map(c => <a key={c.id} href={c.href}
+                  className={cx('adm-sub__item adm-sub__item--child', c === child && 'is-selected')}
+                  aria-current={c === child ? 'page' : undefined} onClick={onClose}>{c.label}</a>) : null}
+              </React.Fragment>;
+            })}
           </div>
         </div>
       </div>

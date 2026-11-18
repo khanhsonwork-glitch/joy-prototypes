@@ -1,12 +1,12 @@
 import React, {useMemo, useState} from 'react';
-import {BlockStack, Box, Button, Card, Checkbox, InlineGrid, InlineStack, Select, Tabs, Text, TextField, Banner} from '@shopify/polaris';
-import {TIER_ART} from '../../assets/index.js';
+import {BlockStack, Button, Card, Checkbox, InlineStack, Select, Tabs, Text, TextField} from '@shopify/polaris';
 import {useStore, newId} from '../../state/store.jsx';
 import {useNavigate} from '../../shell/router.jsx';
 import {useShell} from '../../shell/ShellContext.jsx';
 import {PageFrame} from '../../ui/page.jsx';
-import {Section, StatusBadge, Switch, useConfirm, NumberField, EmptyCard, num, money, points} from '../../ui/kit.jsx';
+import {Section, StatusBadge, useConfirm, NumberField, EmptyCard, num} from '../../ui/kit.jsx';
 import {Question, EditorGrid, Rail, DeleteButton, NotFound, amount, periodText, rewardText, rewardTypes, choices, useVipState, useVipDraft} from './common.jsx';
+import {TierTabs} from './TierExtra.jsx';
 
 const COLORS = ['#d9d9d9','#c0c6cf','#e3b44f','#1f1f1f','#9caac4','#b69a8a'];
 const PRESETS = ['Free shipping', 'Early access', 'Birthday gift', 'Exclusive products', 'Priority support'];
@@ -15,9 +15,8 @@ const periodOptions = choices([['rolling12','Rolling 12 months'],['calendar','Ca
 const tierSort = (a,b) => Number(a.threshold) - Number(b.threshold);
 
 export function TiersHome() {
-  const {db, upsert, merge} = useStore();
+  const {db} = useStore();
   const navigate = useNavigate();
-  const notify = useShell().notify;
   const {empty, overflow, locked} = useVipState();
   const tiers = empty ? [] : [...(db.tiers || [])].sort(tierSort);
   const settings = db.tierSettings || {};
@@ -30,6 +29,7 @@ export function TiersHome() {
     width="wide">
     <BlockStack gap="500">
       <Question detail="Customers move through the ladder automatically. Each tier adds benefits to the one below it.">How do customers move up, and what does each tier get?</Question>
+      <TierTabs selected="Tiers"/>
       <Section title="Level-up rule" action={<Button url="/vip/tiers/settings">Edit</Button>}>
         <Text as="p">Customers move up based on {ruleLine.toLowerCase()} over {periodText(settings.period)}. Counting starts {settings.startDate || 'when you launch'}.</Text>
       </Section>
@@ -124,12 +124,9 @@ export function TierEditor({id}) {
           <Select label="Reward type" value={pre.type} options={rewardTypes.filter(x=>x.value!=='none')} disabled={locked} onChange={v=>set('preReward',{...pre,type:v})}/>
           <NumberField label="Reward value" value={pre.value} onChange={v=>set('preReward',{...pre,value:v})} disabled={locked}/></>}
         </BlockStack></Section>
-        <Section title="Storefront identity"><BlockStack gap="300">
+        <Section title="Customer tag"><BlockStack gap="300">
           <TextField label="Shopify customer tag" {...field('tag')} autoComplete="off" disabled={locked}/>
-          <Select label="Tier colour" value={d.color} options={COLORS.map((color,i)=>({value:color,label:['Cloud','Silver','Gold','Black','Blue grey','Warm sand'][i]}))} disabled={locked} onChange={v=>set('color',v)}/>
-          <InlineStack gap="200" blockAlign="center"><span className="rv-vip-swatch" style={{background:d.color}}/><Text as="span" variant="bodySm" tone="subdued">Storefront tier colour preview</Text></InlineStack>
-          <Select label="Tier icon" value={d.icon || 'silver'} options={choices([['bronze','Bronze'],['silver','Silver'],['gold','Gold'],['black','Black']])} disabled={locked} onChange={v=>set('icon',v)}/>
-          <img className="rv-vip-tier-art" src={TIER_ART[d.icon] || TIER_ART.silver} alt="Tier card preview"/>
+          <Text as="p" variant="bodySm" tone="subdued">To change how this tier looks to customers, open Design from the tier list.</Text>
         </BlockStack></Section>
       </>} rail={<Rail status={d.status || 'active'} onStatus={v=>set('status',v?'active':'inactive')} summary={summary} who={d.exclusive?'Assigned manually':'Members who reach '+amount(d.threshold,settings.rule)} limits={d.keep?'Keeps this tier for '+d.keep+' months':'Keeps this tier forever'} locked={locked}>
         <Section title="Members"><Text as="p">{num(d.members)} members in this tier</Text></Section>
@@ -148,17 +145,13 @@ export function TierSettings() {
   const source = db.tierSettings || {};
   const form = useVipDraft(source,{onSave:d=>storeSet(['tierSettings'],d),message:'Tier settings saved',locked});
   const {draft:d,set} = form;
-  const update = (key,patch)=>set(key,{...(d[key] || {}),...patch});
-  const tabs = ['Rules','Demotion','Launch','Sync','Design','Notifications'].map((content,id)=>({id:String(id),content}));
+  const tabs = ['Configuration','Launch','Sync','Notifications'].map((content,id)=>({id:String(id),content}));
   const selected = [...(db.tiers || [])].sort(tierSort);
-  const previewTier = selected[2] || selected[0];
-  const nextTier = selected.find(t=>Number(t.threshold)>Number(previewTier?.threshold));
-  const previewCustomer = (db.customers||[]).find(c=>c.tierId===previewTier?.id);
-  const progress = nextTier && previewCustomer ? Math.max(0,Math.min(100,100*(Number(previewCustomer.tierProgress)-Number(previewTier.threshold))/(Number(nextTier.threshold)-Number(previewTier.threshold)))) : 100;
   const prediction = selected.slice(1,3).map(t=>num(t.members)+' customers move to '+t.name).join(', ') || 'Customer tiers will be recalculated';
   return <PageFrame title="VIP tier settings" backUrl="/vip/tiers" width="wide">
     <BlockStack gap="500">
       <Question detail="These rules decide when customers move up or down. Review the effect before relaunching.">How should the tier ladder run?</Question>
+      <TierTabs selected="Rules"/>
       <Tabs tabs={tabs} selected={tab} onSelect={setTab} fitted={false}/>
       {tab===0 && <EditorGrid main={<>
         <Section title="Level-up rule"><BlockStack gap="300">
@@ -171,32 +164,10 @@ export function TierSettings() {
         <Section title="Customer management"><BlockStack gap="300">
           <Checkbox label="Automatically tag VIP customers based on their tier" checked={Boolean(d.syncTags)} disabled={locked} onChange={v=>set('syncTags',v)}/>
           <TextField label="Customize tag prefix" value={d.tagPrefix || ''} autoComplete="off" disabled={locked || !d.syncTags} onChange={v=>set('tagPrefix',v)}/>
-          <Checkbox label="Allow giving entry reward again after being downgraded" checked={Boolean(d.entryRewardRepeat)} disabled={locked} onChange={v=>set('entryRewardRepeat',v)}/>
           <Checkbox label="Enable tier point editing" checked={Boolean(d.tierPointEditing)} disabled={locked} onChange={v=>set('tierPointEditing',v)}/>
         </BlockStack></Section>
       </>} rail={<Section title="How this works"><Text as="p">Customers move up from {d.startDate || 'launch'} based on {d.rule === 'spent' ? 'money spent' : d.rule === 'points' ? 'points earned' : 'orders placed'} over {periodText(d.period)}. {d.excludeRefunds ? 'Refunded orders do not count.' : 'Refunded orders still count.'}</Text></Section>}/>}
-      {tab===1 && <EditorGrid main={<>
-        <Section title="Tier demotion"><BlockStack gap="300">
-          <Select label="When a tier ends" value={d.demotion?.mode || 'end_of_period'} options={choices([['end_of_period','At the end of the period'],['never','Never'],['inactive','After no orders']])} disabled={locked} onChange={mode=>update('demotion',{mode})}/>
-          {d.demotion?.mode==='inactive' && <TextField label="Demote after no orders for" type="number" suffix="days" value={String(d.inactiveDays || 180)} autoComplete="off" disabled={locked} onChange={v=>set('inactiveDays',Number(v))}/>}
-          {d.demotion?.mode !== 'never' && <TextField label="Grace days" type="number" value={String(d.demotion?.graceDays ?? 30)} autoComplete="off" disabled={locked} onChange={v=>update('demotion',{graceDays:Number(v)})}/>}
-          <Checkbox label="Notify customers before demotion" checked={Boolean(d.demotionNotify)} disabled={locked} onChange={v=>set('demotionNotify',v)}/>
-          {d.demotion?.mode==='inactive' && <Select label="Choose the action" value={d.demotionAction||'previous'} options={choices([['previous','Downgrade to previous tier'],['lowest','Reset to lowest tier']])} disabled={locked} onChange={v=>set('demotionAction',v)}/>}
-          {d.demotionNotify && <TextField label="Send warning email before" type="number" suffix="days" value={String(d.warningDays??14)} autoComplete="off" disabled={locked} onChange={v=>set('warningDays',Number(v))}/>}
-        </BlockStack></Section>
-        <Section title="Tier assessment"><BlockStack gap="300">
-          <Checkbox label="Assess tiers on a cycle" checked={Boolean(d.tierAssessment)} disabled={locked || db.shop?.plan!=='ultimate'} onChange={v=>set('tierAssessment',v)}/>
-          {db.shop?.plan!=='ultimate' && <Text as="p" variant="bodySm" tone="subdued">Available on Ultimate.</Text>}
-          {d.tierAssessment && <><TextField label="Assessment cycle" type="number" suffix="months" value={String(d.assessmentCycle||12)} autoComplete="off" disabled={locked} onChange={v=>set('assessmentCycle',Number(v))}/><TextField label="Assessment offset" type="number" suffix="months" value={String(d.assessmentOffset||0)} autoComplete="off" disabled={locked} onChange={v=>set('assessmentOffset',Number(v))}/></>}
-        </BlockStack></Section>
-        <Section title="Scheduled tier reset"><BlockStack gap="300">
-          <Checkbox label="Reset tier progress on a schedule" checked={Boolean(d.scheduledReset)} disabled={locked} onChange={v=>set('scheduledReset',v)}/>
-          {d.scheduledReset && <><Select label="Reset frequency" value={d.resetFrequency || 'yearly'} options={choices([['monthly','Monthly'],['quarterly','Quarterly'],['halfyear','Half-yearly'],['yearly','Yearly'],['custom','Custom']])} disabled={locked} onChange={v=>set('resetFrequency',v)}/>
-          {d.resetFrequency==='custom' && <TextField label="Every" type="number" value={String(d.resetEvery || 12)} suffix="months" autoComplete="off" disabled={locked} onChange={v=>set('resetEvery',Number(v))}/>}
-          <TextField label="Anchor date" type="date" value={d.anchorDate || d.startDate || ''} autoComplete="off" disabled={locked} onChange={v=>set('anchorDate',v)}/></>}
-        </BlockStack></Section>
-      </>} rail={<Section title="What changes"><Text as="p">{d.demotion?.mode==='never'?'Customers keep their highest tier.':'Customers can move down after their assessment period.'} A grace period gives them time to qualify again.</Text></Section>}/>}
-      {tab===2 && <EditorGrid main={<Section title="Launch or relaunch"><BlockStack gap="300">
+      {tab===1 && <EditorGrid main={<Section title="Launch or relaunch"><BlockStack gap="300">
         <Text as="p">Recalculate everyone now using the saved level-up rule. {prediction}.</Text>
         <Checkbox label="Give entry rewards again on relaunch" checked={Boolean(d.entryRewardOnRelaunch)} disabled={locked} onChange={v=>set('entryRewardOnRelaunch',v)}/>
         {d.entryRewardOnRelaunch && <Select label="Give rewards to" value={d.rewardAudience||'skip'} options={choices([['skip','Skip customers already rewarded'],['everyone','Everyone in the tier']])} disabled={locked} onChange={v=>set('rewardAudience',v)}/>}
@@ -204,28 +175,12 @@ export function TierSettings() {
         <div><Button variant="primary" disabled={locked || form.dirty} onClick={()=>confirm({title:d.launchStatus==='launched'?'Relaunch VIP tiers?':'Launch VIP tiers?',body:prediction+'. '+(d.entryRewardOnRelaunch?'Entry rewards will be granted again.':'Existing entry rewards will not be granted again.'),action:d.launchStatus==='launched'?'Relaunch':'Launch',destructive:false,onConfirm:()=>{merge(['tierSettings'],{launchStatus:'launched',enabled:true});notify('VIP tiers launched');}})}>{d.launchStatus==='launched'?'Relaunch program':'Launch program'}</Button></div>
         {form.dirty && <Text as="p" tone="subdued">Save your rule changes before relaunching.</Text>}
       </BlockStack></Section>} rail={<Section title="Estimated movement"><Text as="p">{prediction}.</Text></Section>}/>}
-      {tab===3 && <EditorGrid main={<Section title="Keep Shopify in sync"><BlockStack gap="300">
+      {tab===2 && <EditorGrid main={<Section title="Keep Shopify in sync"><BlockStack gap="300">
         <Checkbox label="Sync customer tier tags" checked={Boolean(d.syncTags)} disabled={locked} onChange={v=>set('syncTags',v)}/>
         <Checkbox label="Sync tier metafields" checked={Boolean(d.syncMetafields)} disabled={locked} onChange={v=>set('syncMetafields',v)}/>
         <Button disabled={locked} onClick={()=>confirm({title:'Sync tier data now?',body:'Shopify customer tags and metafields will be updated from the current tier ladder.',action:'Sync now',destructive:false,onConfirm:()=>notify('Tier data synced')})}>Sync now</Button>
       </BlockStack></Section>} rail={<Section title="What sync updates"><Text as="p">Shopify customer records receive the current tier tag and metafield. Your tier rules stay the same.</Text></Section>}/>}
-      {tab===4 && <EditorGrid main={<Section title="Tier card design"><BlockStack gap="300">
-        <Select label="Preview for" value={d.design?.view||'after'} options={choices([['before','Before sign in'],['after','After sign in']])} disabled={locked} onChange={v=>update('design',{view:v})}/>
-        <Select label="Badge style" value={d.design?.badgeStyle || 'rounded'} options={choices([['rounded','Rounded'],['square','Square'],['minimal','Minimal']])} disabled={locked} onChange={v=>update('design',{badgeStyle:v})}/>
-        <Checkbox label="Show progress bar" checked={Boolean(d.design?.showProgress)} disabled={locked} onChange={v=>update('design',{showProgress:v})}/>
-        <Checkbox label="Display store credit" checked={Boolean(d.design?.showStoreCredit)} disabled={locked} onChange={v=>update('design',{showStoreCredit:v})}/>
-        <Select label="Balance layout" value={d.design?.balanceLayout || 'columns'} options={choices([['columns','Columns'],['centered','Centered'],['pill','Pill'],['rows','Rows']])} disabled={locked} onChange={v=>update('design',{balanceLayout:v})}/>
-        <Select label="Balance order" value={d.design?.balanceOrder || 'points'} options={choices([['points','Points first'],['credit','Store credit first']])} disabled={locked} onChange={v=>update('design',{balanceOrder:v})}/>
-        <Checkbox label="Hide zero store credit" checked={Boolean(d.design?.hideZeroCredit)} disabled={locked} onChange={v=>update('design',{hideZeroCredit:v})}/>
-        <Select label="Card footer" value={d.design?.cardFooter || 'background'} options={choices([['background','Use background color'],['plain','Do not use background']])} disabled={locked} onChange={v=>update('design',{cardFooter:v})}/>
-        <Select label="Content alignment" value={d.design?.alignment || 'center'} options={choices([['center','Center'],['left','Left'],['right','Right']])} disabled={locked} onChange={v=>update('design',{alignment:v})}/>
-        <TextField label="Card opacity" type="number" suffix="%" value={String(d.design?.opacity ?? 100)} autoComplete="off" disabled={locked} onChange={v=>update('design',{opacity:Number(v)})}/>
-        <TextField label="Box color" value={d.design?.boxColor||''} autoComplete="off" disabled={locked} onChange={v=>update('design',{boxColor:v})}/>
-        <TextField label="Text color" value={d.design?.textColor||''} autoComplete="off" disabled={locked} onChange={v=>update('design',{textColor:v})}/>
-        <TextField label="Icon color" value={d.design?.iconColor||''} autoComplete="off" disabled={locked} onChange={v=>update('design',{iconColor:v})}/>
-        <TextField label="Button color" value={d.design?.buttonColor||''} autoComplete="off" disabled={locked} onChange={v=>update('design',{buttonColor:v})}/>
-      </BlockStack></Section>} rail={<Section title="Storefront preview"><Card><BlockStack gap="200"><Text as="h3" variant="headingSm">{previewTier?.name || 'Tier'}</Text><Text as="p">{previewTier?.multiplier || 1}× points · {rewardText(previewTier?.entryReward)} on arrival</Text>{d.design?.showProgress && <div className="rv-vip-bar"><span style={{width:progress+'%'}}/></div>}</BlockStack></Card></Section>}/>}
-      {tab===5 && <Section title="Customer notifications"><BlockStack gap="200"><Text as="p">Choose what customers hear when their tier changes.</Text><div><Button url="/settings/notifications/n-tierup">Tier upgrade notification</Button></div><div><Button url="/settings/notifications/n-tierdown">Tier demotion notification</Button></div></BlockStack></Section>}
+      {tab===3 && <Section title="Customer notifications"><BlockStack gap="200"><Text as="p">Choose what customers hear when their tier changes.</Text><div><Button url="/settings/notifications/n-tierup">Tier upgrade notification</Button></div><div><Button url="/settings/notifications/n-tierdown">Tier demotion notification</Button></div></BlockStack></Section>}
     </BlockStack>{modal}
   </PageFrame>;
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import {VipHome} from './Home.jsx';
 import {TiersHome, TierEditor, TierSettings} from './Tiers.jsx';
+import {TierDesign, TierDemotion} from './TierExtra.jsx';
 import {DealsList, DealEditor} from './Deals.jsx';
 import {PaidList, PaidEditor} from './Paid.jsx';
 import {PartnersList, PartnerEditor} from './Partners.jsx';
@@ -19,6 +20,8 @@ export function resolve(segments, query) {
   if (!segments[1]) return <VipState><VipHome/></VipState>;
   if (segments[1] === 'tiers') {
     if (segments[2] === 'settings') return <VipState><TierSettings/></VipState>;
+    if (segments[2] === 'design') return <VipState><TierDesign/></VipState>;
+    if (segments[2] === 'demotion') return <VipState><TierDemotion/></VipState>;
     return <VipState>{segments[2] ? <TierEditor id={segments[2]}/> : <TiersHome/>}</VipState>;
   }
   if (segments[1] === 'deals') return <VipState>{segments[2] ? <DealEditor id={segments[2]} query={query}/> : <DealsList/>}</VipState>;

@@ -82,6 +82,8 @@ export const earn = [
       "per": 1
     },
     "rounding": "down",
+    "rewardPriority": 1,
+    "stopFurtherRules": false,
     "excludeTax": true,
     "excludeShipping": true,
     "minOrder": 0,
@@ -333,6 +335,8 @@ export const earn = [
 export const redeem = [
   {
     "id": "r-5off",
+    "refundPoints": true,
+    "purchaseType": "both",
     "type": "amount",
     "name": "$5 off",
     "status": "active",
@@ -351,6 +355,8 @@ export const redeem = [
   },
   {
     "id": "r-10pct",
+    "refundPoints": true,
+    "purchaseType": "both",
     "type": "percent",
     "name": "10% off your order",
     "status": "active",
@@ -368,6 +374,8 @@ export const redeem = [
   },
   {
     "id": "r-ship",
+    "refundPoints": true,
+    "purchaseType": "both",
     "type": "free_shipping",
     "name": "Free shipping",
     "status": "active",
@@ -395,6 +403,8 @@ export const redeem = [
   },
   {
     "id": "r-mini",
+    "refundPoints": true,
+    "purchaseType": "both",
     "type": "free_product",
     "name": "Free Cloud Cream mini",
     "status": "active",
@@ -414,6 +424,8 @@ export const redeem = [
   },
   {
     "id": "r-set",
+    "refundPoints": true,
+    "purchaseType": "both",
     "type": "free_product",
     "name": "Free Glow Getter Set",
     "status": "active",
@@ -456,6 +468,8 @@ export const redeem = [
   },
   {
     "id": "r-bxgy",
+    "refundPoints": true,
+    "purchaseType": "both",
     "type": "bxgy",
     "name": "Buy 2 serums, get 1 free",
     "status": "inactive",

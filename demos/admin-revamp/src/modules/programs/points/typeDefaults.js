@@ -6,6 +6,8 @@ export const earnDefault = type => ({
   eligibility: {mode: 'all'}, schedule: {start: '', end: ''}, limit: {on: false, times: 1, per: 'lifetime'},
   icon: 'Star', url: '', shareMessage: '', joinMethod: 'link',
   rounding: 'down', excludeTax: true, excludeShipping: true, excludeDiscounts: false,
+  ...(['place_order', 'place_order_sub'].includes(type)
+    ? {rewardPriority: 1, stopFurtherRules: false} : {}),
   minOrder: 0, productScope: 'all', products: '', rewardType: 'points', orderSources: ['online'],
   tierRates: false, tierPoints: {}, collectFrom: 'both', oncePerYear: true,
   photoBonus: 0, minChars: 0, approval: 'auto', questionCount: 1, formFields: ['Email'],
@@ -17,6 +19,8 @@ export const redeemDefault = type => ({
   description: '', status: 'inactive', cost: 500, value: type === 'percent' ? 10 : 5,
   eligibility: {mode: 'all'}, schedule: {start: '', end: ''}, limit: {on: false, times: 1, per: 'lifetime'},
   minOrder: 0, appliesTo: 'order', products: '', combines: [], expiresDays: 90,
+  ...(['amount', 'percent', 'free_shipping', 'free_product', 'bxgy'].includes(type)
+    ? {refundPoints: true, purchaseType: 'both'} : {}),
   flexible: false, flexibleEvery: 100, flexibleValue: 1, minPoints: 100, maxPoints: 5000,
   maxDiscount: 30, maxShipping: 15, countries: 'all', countryList: '',
   product: '', variant: '', photo: '', quantityLimit: 1, buy: 2, get: 1,

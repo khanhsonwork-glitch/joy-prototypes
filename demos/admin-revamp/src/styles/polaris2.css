@@ -220,7 +220,7 @@
 .Polaris-Select__Backdrop {
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 1px 2px #00000012, 0 0 0 1px #8c8c8c;
+  box-shadow: 0 1px 2px #0000000d, 0 0 0 1px var(--p-color-border, #ddd);
 }
 .Polaris-TextField__Input,
 .Polaris-Select__Input {min-height: 30px;}

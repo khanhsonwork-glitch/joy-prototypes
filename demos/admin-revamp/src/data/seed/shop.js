@@ -28,10 +28,11 @@ export const tiers = [
 export const tierSettings = {
   enabled: true, rule: 'spent', // spent | points | orders
   period: 'rolling12', startDate: '2025-04-01', demotion: {mode: 'end_of_period', graceDays: 30},
+  scheduledReset: false, resetFrequency: 'yearly', resetEvery: 1, resetUnit: 'years', resetDay: '1', resetMonth: '1', resetStartDate: '2026-01-01',
   syncTags: true, syncMetafields: true, tagPrefix: 'joy', pointsFrom: 'paid', excludeRefunds: true,
   entryRewardOnRelaunch: false, entryRewardRepeat: false, launchStatus: 'launched',
-  demotionNotify: true, demotionGraceDays: 30, inactiveDays: 180,
-  design: {view:'after',badgeStyle: 'rounded', showProgress: true, showStoreCredit: true, balanceLayout: 'columns', balanceOrder: 'points', hideZeroCredit: true, cardFooter: 'background', alignment: 'center', opacity: 100, boxColor:'#ffffff', textColor:'#101010', iconColor:'#101010', buttonColor:'#0c0c0c'},
+  demotionNotify: true, demotionGraceDays: 30, inactiveDays: 180, keepEntryRewards: true,
+  design: {view:'after',badgeStyle: 'rounded', showProgress: true, showStoreCredit: true, balanceLayout: 'columns', balanceOrder: 'points', hideZeroCredit: true, cardFooter: 'background', alignment: 'center', opacity: 100, boxColor:'#ffffff', textColor:'#101010', iconColor:'#101010', buttonColor:'#0c0c0c', buttonTextColor:'#ffffff', progressColor:'#e3b44f', cardBackground:'#ffffff', boxNameColor:'#101010'},
   tierPointEditing:false, demotionAction:'previous', warningDays:14, tierAssessment:false, assessmentCycle:12, assessmentOffset:0, rewardAudience:'skip', launchNotes:'',
   partnerB2B: {rule:'spent',startDate:'2025-04-01',status:'active',syncTags:true,launchStatus:'launched'},
 };

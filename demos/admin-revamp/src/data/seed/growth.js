@@ -14,6 +14,8 @@ export const referral = {
     "expiresDays": 30
   },
   "regions": [],
+  "accessByTags": {"on": false, "tags": []},
+  "autoRevoke": false,
   "maxPerCustomer": {
     "on": true,
     "times": 20

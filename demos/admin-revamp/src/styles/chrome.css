@@ -37,6 +37,8 @@
 .adm-nav__section .Polaris-Icon {--p-color-icon: var(--chrome-nav-sub); width: 12px; height: 12px;}
 .adm-sub {display: flex; flex-direction: column;}
 .adm-sub__item {display: flex; align-items: center; padding: 0 8px 0 32px; color: var(--chrome-nav-sub);}
+.adm-sub__item.is-open {color: var(--chrome-nav-text); font-weight: 600;}
+.adm-sub__item--child {padding-left: 44px; min-height: 27px; font-size: 12.5px;}
 .adm-nav__footer {flex: none; padding-top: 4px; border-top: 1px solid var(--chrome-nav-hover);}
 .adm-store {display: flex; align-items: center; gap: 7px; width: 100%; min-height: 32px; padding: 0 7px; border: 0; border-radius: 8px; background: transparent; color: var(--chrome-nav-text); font-size: 12px; text-align: left;}
 .adm-store__avatar {display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex: none; border-radius: 5px; background: var(--chrome-avatar); color: var(--chrome-nav-selected-text); font-size: 9px;}
