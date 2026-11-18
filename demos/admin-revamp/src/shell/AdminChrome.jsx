@@ -47,6 +47,7 @@ function Navigation({open, onClose}) {
   const route = useRoute();
   const {notYet} = useShell();
   const selected = APP_MENU.findIndex(item => item.routes?.includes(route.segments[0]));
+  const atAppHome = ['home', 'demo'].includes(route.segments[0] || 'demo');
   const stub = () => {notYet(); onClose();};
   return <>
     {open && <div className="adm-scrim" onClick={onClose} aria-hidden="true" />}
@@ -78,7 +79,7 @@ function Navigation({open, onClose}) {
         </div>
         <div className="adm-nav__group">
           <NavSection label="Apps" onClick={stub} />
-          <NavRow app={<JoyIcon size={18} tone="grey" />} label={APP_NAME} href="#/demo" onClick={onClose} />
+          <NavRow app={<JoyIcon size={18} tone="grey" />} label={APP_NAME} href="#/home" selected={atAppHome} onClick={onClose} />
           <div className="adm-sub">
             {APP_MENU.map((item, index) => <a key={item.id} href={item.href || '#'}
               className={cx('adm-sub__item', index === selected && 'is-selected')}
@@ -102,11 +103,12 @@ function AppTitleBar({onMenu}) {
   const route = useRoute();
   const {notYet} = useShell();
   const title = route.segments[0] === 'kit' ? 'Components and tokens'
+    : route.segments.length === 1 && DEMO.titles?.[route.segments[0] || 'demo'] ? DEMO.titles[route.segments[0] || 'demo']
     : route.segments.length > 1 ? (DEMO.detailTitle ?? 'Reward details')
       : (DEMO.pageTitle ?? (DEMO.name === 'Starter kit' ? 'Rewards' : DEMO.name));
   return <div className="adm-appbar">
     <button type="button" className="adm-appbar__menu" aria-label="Open navigation" onClick={onMenu}><Icon source={MenuIcon} /></button>
-    <HashLink className="adm-appbar__back" url="/demo" aria-label="Back to rewards"><Icon source={ChevronLeftIcon} /></HashLink>
+    <HashLink className="adm-appbar__back" url="/home" aria-label="Back to home"><Icon source={ChevronLeftIcon} /></HashLink>
     <JoyIcon size={18} /> <span className="adm-appbar__divider">/</span>
     <span className="adm-appbar__title">{title}</span>
     <button type="button" className="adm-appbar__more" aria-label="More" onClick={notYet}><Icon source={MenuHorizontalIcon} /></button>
