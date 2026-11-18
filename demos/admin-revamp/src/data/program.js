@@ -43,10 +43,26 @@ export const tierById = id => TIERS.find(t => t.id === id) ?? TIERS[0];
 export const tierIndex = id => TIERS.findIndex(t => t.id === id);
 
 /** Points a tier earns for every $1: the base rate times the tier multiplier. */
-export const pointsPerDollar = tier => (BASE_RATE.points / BASE_RATE.per) * tier.multiplier;
+export const pointsPerDollar = (tier, base = BASE_RATE) => (base.points / base.per) * tier.multiplier;
 
-/** Share of spend that comes back as rewards, in %: points per $ × $ value of a point. */
-export const rewardsRate = tier => pointsPerDollar(tier) * POINT_VALUE * 100;
+/**
+ * Estimated rewards rate, in %: points per $ × the reference value of a point ($1 per 100 points, the rate of the
+ * cheapest reward). An estimate: what a customer really gets back depends on which reward they redeem (review r1 #12).
+ */
+export const rewardsRate = (tier, base = BASE_RATE) => pointsPerDollar(tier, base) * POINT_VALUE * 100;
+
+/** Points a rule really gives a tier: "300 points" × 1.5 → 450 (review r1 #13). */
+export function rulePoints(rule, tier) {
+  const base = Number(String(rule.reward).replace(/[^0-9]/g, '')) || 0;
+  return rule.scales ? Math.round(base * tier.multiplier) : base;
+}
+export const ruleLabel = (rule, tier) => {
+  const pts = rulePoints(rule, tier);
+  const prefix = rule.reward.trim().startsWith('+') ? '+' : '';
+  return `${prefix}${num(pts)} points`;
+};
+export const ruleHint = (rule, tier) =>
+  rule.scales && tier.multiplier !== 1 ? `${rule.reward.replace(/^\+/, '')} × ${tier.multiplier}` : null;
 
 export function rateLabel(rate) {
   if (rate < 3) return 'Light';
@@ -56,9 +72,17 @@ export function rateLabel(rate) {
 }
 
 export const pct = n => `${n.toFixed(1)}%`;
-export const money = n => `$${Math.round(n).toLocaleString('en-US')}`;
+export const money = n => (Math.abs(n) < 100 && n % 1 !== 0
+  ? `$${n.toFixed(2)}`
+  : `$${Math.round(n).toLocaleString('en-US')}`);
 export const num = n => Math.round(n).toLocaleString('en-US');
-export const reachLabel = tier => (tier.reach == null ? 'Joins when they sign up' : `Spend ${money(tier.reach)} in 12 months`);
+export const RULES = {
+  money: {label: 'Money spent', unit: v => money(v), verb: 'Spend', prefix: '$'},
+  points: {label: 'Points earned', unit: v => `${num(v)} points`, verb: 'Earn', prefix: null},
+  orders: {label: 'Number of orders', unit: v => `${num(v)} orders`, verb: 'Place', prefix: null},
+};
+export const reachLabel = (tier, rule = 'money') =>
+  tier.reach == null ? 'Joins when they sign up' : `${RULES[rule].verb} ${RULES[rule].unit(tier.reach)} in 12 months`;
 
 /** Rewards available to a tier: everything whose minimum tier is this tier or lower. */
 export const rewardsFor = tier => REWARDS.filter(r => tierIndex(r.minTier) <= tierIndex(tier.id));
@@ -68,16 +92,20 @@ export const rewardsFor = tier => REWARDS.filter(r => tierIndex(r.minTier) <= ti
  * and how much comes back as rewards. Tiers are reached on 12-month spend, points use the tier
  * they are in that month. Same formula as rewardsRate, month by month.
  */
-export function simulateYear(monthly) {
+export function simulateYear(monthly, tiers = TIERS, base = BASE_RATE, rule = 'money', ordersPerMonth = 1) {
   let spent = 0;
   let points = 0;
+  let orders = 0;
   const reached = [];
-  let current = TIERS[0];
+  let current = tiers[0];
+  const idx = id => tiers.findIndex(t => t.id === id);
   for (let month = 1; month <= 12; month++) {
-    points += monthly * pointsPerDollar(current);
+    points += monthly * pointsPerDollar(current, base);
     spent += monthly;
-    const next = [...TIERS].reverse().find(t => t.reach != null && spent >= t.reach);
-    if (next && tierIndex(next.id) > tierIndex(current.id)) {
+    orders += ordersPerMonth;
+    const progress = rule === 'points' ? points : rule === 'orders' ? orders : spent;
+    const next = [...tiers].reverse().find(t => t.reach != null && progress >= Number(t.reach));
+    if (next && idx(next.id) > idx(current.id)) {
       current = next;
       reached.push({tier: next, month});
     }

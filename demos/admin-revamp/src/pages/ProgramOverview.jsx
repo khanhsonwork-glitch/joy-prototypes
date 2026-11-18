@@ -7,8 +7,9 @@ import {useNavigate} from '../shell/router.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {IconChip} from '../components/parts.jsx';
+import {useProgram} from '../state/program.jsx';
 import {
-  EARN_RULES, REWARDS, TIERS, money, num, pct, pointsPerDollar, reachLabel, rewardsRate, tierIndex,
+  EARN_RULES, REWARDS, money, num, pct, pointsPerDollar, reachLabel, rewardsRate, ruleLabel,
 } from '../data/program.js';
 
 const cx = (...parts) => parts.filter(Boolean).join(' ');
@@ -20,6 +21,8 @@ function Group({label, span}) {
 export function ProgramOverview() {
   const navigate = useNavigate();
   const {state, setState} = useScenario();
+  const {tiers: TIERS, base, rule: levelRule} = useProgram();
+  const tierIndex = id => TIERS.findIndex(t => t.id === id);
   const header = {title: 'All tiers side by side', backAction: {content: 'Loyalty program', url: '/program'}};
   if (state === 'loading') return <Page {...header}><LoadingView rows={12} /></Page>;
   if (state === 'error') return <Page {...header}><ErrorView title="Couldn't load your program" onRetry={() => setState('default')}>Nothing was changed. Try again in a moment.</ErrorView></Page>;
@@ -27,7 +30,7 @@ export function ProgramOverview() {
   const open = id => navigate(`/program?tier=${id}`);
   const differs = (values, index) => index > 0 && values[index] !== values[0];
 
-  const scaled = rule => TIERS.map(t => (rule.scales && t.multiplier !== 1 ? `${rule.reward} · ${t.multiplier}×` : rule.reward));
+  const scaled = rule => TIERS.map(t => ruleLabel(rule, t));
   return (
     <Page {...header}>
       <div className="rv-wrap">
@@ -49,12 +52,12 @@ export function ProgramOverview() {
             </thead>
             <tbody>
               <Group label="Tier" span={span} />
-              <tr><th scope="row">How to reach</th>{TIERS.map(t => <td key={t.id}>{reachLabel(t)}</td>)}</tr>
-              <tr><th scope="row">Rewards rate</th>{TIERS.map((t, i) => <td key={t.id} className={cx(i > 0 && 'is-diff')}>{pct(rewardsRate(t))}</td>)}</tr>
+              <tr><th scope="row">How to reach</th>{TIERS.map(t => <td key={t.id}>{reachLabel(t, levelRule)}</td>)}</tr>
+              <tr><th scope="row">Est. rewards rate</th>{TIERS.map((t, i) => <td key={t.id} className={cx(i > 0 && 'is-diff')}>{pct(rewardsRate(t, base))}</td>)}</tr>
               <Group label="Ways to earn" span={span} />
               <tr>
                 <th scope="row"><InlineStack gap="200" blockAlign="center" wrap={false}><IconChip icon="order" /><span>Place an order</span></InlineStack></th>
-                {TIERS.map((t, i) => <td key={t.id} className={cx(i > 0 && 'is-diff')}>{pointsPerDollar(t)} points per $1</td>)}
+                {TIERS.map((t, i) => <td key={t.id} className={cx(i > 0 && 'is-diff')}>{pointsPerDollar(t, base)} points per $1</td>)}
               </tr>
               {EARN_RULES.map(rule => {
                 const values = scaled(rule);
@@ -88,7 +91,7 @@ export function ProgramOverview() {
           </table>
         </div>
         <BlockStack gap="100">
-          <Text as="p" tone="subdued">Rewards rate = points per $1 × {money(1)} for every 100 points. Badge <Badge>From Silver</Badge> rewards are hidden from lower tiers in the widget.</Text>
+          <Text as="p" tone="subdued">Est. rewards rate = points per $1 × {money(1)} for every 100 points (your cheapest reward). An estimate: the real value depends on the reward a customer picks. Badge <Badge>From Silver</Badge> rewards are hidden from lower tiers in the widget.</Text>
         </BlockStack>
       </div>
     </Page>

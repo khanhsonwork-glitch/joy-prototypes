@@ -9,7 +9,8 @@ import {useShell} from '../shell/ShellContext.jsx';
 import {useScenario} from '../kit/scenario.jsx';
 import {ErrorView, LoadingView} from '../kit/StateView.jsx';
 import {MKT_ART} from '../assets/index.js';
-import {PROGRAM, money, num} from '../data/program.js';
+import {money, num} from '../data/program.js';
+import {useProgram} from '../state/program.jsx';
 
 const STEPS = [
   {id: 's1', label: 'Pick your rewards rate', done: true},
@@ -35,6 +36,8 @@ export function Home() {
   const {notify} = useShell();
   const {state, setState} = useScenario();
   const [showNews, setShowNews] = useState(true);
+  const {status, tiers} = useProgram();
+  const members = state === 'empty' ? 0 : tiers.reduce((sum, t) => sum + t.members, 0);
   const header = {title: 'Home'};
   if (state === 'loading') return <Page {...header}><LoadingView rows={10} /></Page>;
   if (state === 'error') return <Page {...header}><ErrorView title="Couldn't load your dashboard" onRetry={() => setState('default')}>Your program keeps running. Try again in a moment.</ErrorView></Page>;
@@ -47,8 +50,8 @@ export function Home() {
         <div className="rv-card rv-status">
           <InlineStack align="space-between" blockAlign="center" gap="300">
             <InlineStack gap="200" blockAlign="center">
-              <Badge tone="success">Live</Badge>
-              <Text as="p" variant="bodyMd">{num(PROGRAM.members)} members earning on Pomelo Park</Text>
+              {status === 'live' ? <Badge tone="success">Live</Badge> : <Badge tone="warning">Paused</Badge>}
+              <Text as="p" variant="bodyMd">{status === 'live' ? `${num(members)} members earning on Pomelo Park` : 'Customers are not earning points until you resume'}</Text>
             </InlineStack>
             <Button onClick={() => navigate('/program')}>Edit program</Button>
           </InlineStack>

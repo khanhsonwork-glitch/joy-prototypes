@@ -8,6 +8,7 @@ import {ScenarioProvider} from './kit/scenario.jsx';
 import {ProtoControls} from './kit/ProtoControls.jsx';
 import {EmptyView} from './kit/StateView.jsx';
 import {RewardsProvider} from './state/rewards.jsx';
+import {ProgramProvider} from './state/program.jsx';
 import {KitPage} from './pages/KitPage.jsx';
 import {Home} from './pages/Home.jsx';
 import {ProgramBuilder} from './pages/ProgramBuilder.jsx';
@@ -50,12 +51,14 @@ export default function App() {
       <RouterProvider>
         <ScenarioProvider>
           <RewardsProvider>
+            <ProgramProvider>
             <Frame>
               <ShellProvider>
                 <Screen />
                 <ProtoControls />
               </ShellProvider>
             </Frame>
+            </ProgramProvider>
           </RewardsProvider>
         </ScenarioProvider>
       </RouterProvider>

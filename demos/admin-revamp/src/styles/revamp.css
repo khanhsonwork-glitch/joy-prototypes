@@ -101,6 +101,8 @@
 
 /* Overview table */
 .rv-ov-scroll {overflow-x: auto;}
+.rv-ov tbody th, .rv-ov thead th:first-child {position: sticky; left: 0; z-index: 1; background: var(--p-color-bg-surface);}
+.rv-ov__group th {position: sticky; left: 0;}
 .rv-ov {width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 720px;}
 .rv-ov th, .rv-ov td {padding: 10px 14px; text-align: left; border-top: 1px solid var(--p-color-border-secondary, #ebebeb); font-weight: 400; white-space: nowrap;}
 .rv-ov thead th {border-top: 0; vertical-align: bottom; padding-block: 14px;}
@@ -173,7 +175,9 @@
   .rv-tierbar {flex-direction: column;}
   .rv-overview-btn {width: auto; height: 40px;}
   .rv-pass {max-width: 340px;}
-  .rv-tier {min-width: 112px;}
+  .rv-tier {min-width: 128px;}
+  .rv-tierstrip {scroll-snap-type: x mandatory; mask-image: linear-gradient(90deg, #000 85%, transparent);}
+  .rv-tier {scroll-snap-align: start;}
   .rv-row__value {max-width: 50%;}
   .rv-newscard {flex-direction: column;}
   .rv-newscard__art {aspect-ratio: 3 / 2;}
