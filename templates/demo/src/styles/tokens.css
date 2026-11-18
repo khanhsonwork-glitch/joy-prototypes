@@ -9,24 +9,27 @@
 
 /* Colours that are NOT Polaris tokens live here, as variables. Everything else uses var(--p-…). */
 :root {
-  /* Shopify admin chrome, sampled from refs/membership.png */
-  --chrome-topbar: #0a0a0a;
-  --chrome-topbar-field: #282828;
-  --chrome-topbar-field-border: #3a3a3a;
-  --chrome-topbar-pill: #3a3a3a;
-  --chrome-topbar-muted: #a8a8a8;
-  --chrome-nav-bg: #ebebeb;
-  --chrome-nav-hover: #e3e3e3;
-  --chrome-nav-selected: #fafafa;
-  --chrome-nav-text: #303030;
-  --chrome-nav-sub: #616161;
-  --chrome-nav-icon: #4a4a4a;
-  --chrome-tree: #a8a8a8;
+  /* Non-Polaris Shopify frame, sampled from the 17 Nov new admin screenshots. */
+  --chrome-nav-bg: #0a0a0a;
+  --chrome-nav-hover: #222;
+  --chrome-nav-selected: #303030;
+  --chrome-nav-text: #f2f2f2;
+  --chrome-nav-sub: #b9b9b9;
+  --chrome-nav-icon: #909090;
+  --chrome-search-bg: #333;
+  --chrome-search-border: #444;
+  --chrome-nav-muted: #969696;
+  --chrome-panel-bg: #fff;
+  --chrome-content-bg: #f1f2f4;
+  --chrome-panel-border: #e6e6e6;
+  --chrome-shopify-green: #69d159;
+  --chrome-nav-selected-text: #fff;
+  --chrome-scrim: #0006;
   --chrome-joy-red: #e53935;
-  --chrome-avatar: #9474ff;
-  --chrome-topbar-height: 56px;
-  --chrome-nav-width: 240px;
-  --chrome-radius: 12px;
+  --chrome-avatar: #10a8d1;
+  --chrome-nav-width: 220px;
+  --chrome-panel-radius: 18px;
+  --chrome-appbar-height: 54px;
 
   /* Prototype controls: visibly not product UI */
   --proto-amber-bg: #fff4d6;

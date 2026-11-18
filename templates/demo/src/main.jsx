@@ -1,6 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import '@shopify/polaris/build/esm/styles.css';
+import './styles/polaris2.css';
 import './styles/tokens.css';
 import './styles/chrome.css';
 import './kit/kit.css';

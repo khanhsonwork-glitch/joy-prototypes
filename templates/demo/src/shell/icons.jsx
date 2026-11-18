@@ -15,7 +15,7 @@ export function JoyIcon({size = 20, tone = 'red'}) {
         fontWeight="700"
         fontStyle="italic"
         letterSpacing="-0.3"
-        fill="var(--p-color-text-inverse)"
+        fill="var(--chrome-nav-text)"
       >
         Joy
       </text>
@@ -23,7 +23,7 @@ export function JoyIcon({size = 20, tone = 'red'}) {
   );
 }
 
-/** Wordmark for the admin top bar: a bag mark plus "shopify" set in bold italic. */
+/** Shopify bag mark for the top of the full-height navigation. */
 export function ShopifyWordmark() {
   return (
     <span className="adm-wordmark" aria-label="Shopify">
@@ -34,7 +34,7 @@ export function ShopifyWordmark() {
         />
         <path
           d="M12.2 7.6c-.3-.1-.9-.3-1.7-.3-1.6 0-2.3.9-2.3 1.8 0 1.2 1 1.6 1.9 2 .7.3 1.2.5 1.2 1 0 .5-.4.8-1.1.8-.9 0-1.8-.4-2.2-.7l-.4 1.5c.5.3 1.4.6 2.5.6 1.8 0 2.8-.9 2.8-2.1 0-1.1-.9-1.6-1.8-2-.7-.3-1.2-.5-1.2-1 0-.4.4-.7.9-.7.7 0 1.2.2 1.6.4z"
-          fill="var(--chrome-topbar)"
+          fill="var(--chrome-nav-bg)"
         />
       </svg>
       <span className="adm-wordmark__text">shopify</span>

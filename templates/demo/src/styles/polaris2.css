@@ -1,0 +1,276 @@
+/* Polaris 2 admin-next values from Joy’s generated override sheet, mapped to the token names Polaris React 12 consumes.
+ * Keep this after the Polaris React stylesheet. Inter is self-hosted in tokens.css because ShopifyInter is not public. */
+:root {
+  --p-font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --p-color-bg: #fff;
+  --p-color-text-ai: oklch(.2658 .1635 279.85);
+  --p-border-radius-050: .125rem;
+  --p-border-radius-100: .25rem;
+  --p-border-radius-150: .375rem;
+  --p-border-radius-200: .5rem;
+  --p-border-radius-300: .75rem;
+  --p-border-width-0165: .04125rem;
+  --p-border-width-025: .0625rem;
+  --p-border-width-050: .125rem;
+  --p-color-backdrop-bg: #000000b5;
+  --p-color-bg-fill: #f2f2f2;
+  --p-color-bg-fill-brand: #f7f7f7;
+  --p-color-bg-fill-brand-disabled: #00000008;
+  --p-color-bg-fill-brand-hover: #f2f2f2;
+  --p-color-bg-fill-caution-secondary: oklch(.9167 .1785 98.00);
+  --p-color-bg-fill-critical: oklch(.9470 .0300 20.50);
+  --p-color-bg-fill-critical-secondary: oklch(.8970 .0609 23.88);
+  --p-color-bg-fill-disabled: #00000008;
+  --p-color-bg-fill-emphasis: #f2f2f2;
+  --p-color-bg-fill-hover: #ebebeb;
+  --p-color-bg-fill-info: oklch(.9500 .0448 212.63);
+  --p-color-bg-fill-info-secondary: oklch(.8637 .1018 216.95);
+  --p-color-bg-fill-inverse: #1b1b1b;
+  --p-color-bg-fill-inverse-active: #606060;
+  --p-color-bg-fill-magic: oklch(.9376 .0337 299.07);
+  --p-color-bg-fill-secondary: #ebebeb;
+  --p-color-bg-fill-selected: #ddd;
+  --p-color-bg-fill-success: oklch(.9672 .0599 131.73);
+  --p-color-bg-fill-success-secondary: oklch(.9053 .1942 133.49);
+  --p-color-bg-fill-tertiary: #ddd;
+  --p-color-bg-fill-transparent-hover: #00000014;
+  --p-color-bg-fill-transparent-selected: #00000021;
+  --p-color-bg-fill-warning-secondary: oklch(.8497 .1229 65.04);
+  --p-color-bg-inverse: #0a0a0a;
+  --p-color-bg-surface: #fff;
+  --p-color-bg-surface-active: #f2f2f2;
+  --p-color-bg-surface-brand: #f7f7f7;
+  --p-color-bg-surface-brand-selected: #ebebeb;
+  --p-color-bg-surface-critical: oklch(.9470 .0300 20.50);
+  --p-color-bg-surface-disabled: #00000008;
+  --p-color-bg-surface-hover: #f7f7f7;
+  --p-color-bg-surface-info: oklch(.9500 .0448 212.63);
+  --p-color-bg-surface-info-hover: #b2e9f6;
+  --p-color-bg-surface-inverse: #1b1b1b;
+  --p-color-bg-surface-magic: oklch(.9376 .0337 299.07);
+  --p-color-bg-surface-magic-hover: oklch(.8760 .0571 297.82);
+  --p-color-bg-surface-secondary: #f7f7f7;
+  --p-color-bg-surface-secondary-active: #ebebeb;
+  --p-color-bg-surface-secondary-hover: #f2f2f2;
+  --p-color-bg-surface-selected: #f2f2f2;
+  --p-color-bg-surface-success: oklch(.9672 .0599 131.73);
+  --p-color-bg-surface-tertiary: #f2f2f2;
+  --p-color-bg-surface-warning: oklch(.9557 .0350 67.45);
+  --p-color-border: rgba(221,221,221,1);
+  --p-color-border-brand: #d0d0d0;
+  --p-color-border-critical: oklch(.5849 .2543 28.97);
+  --p-color-border-emphasis: rgba(242,242,242,1);
+  --p-color-border-focus: oklch(.6289 .2036 263.44);
+  --p-color-border-hover: rgba(208,208,208,1);
+  --p-color-border-info: oklch(.8637 .1018 216.95);
+  --p-color-border-inverse: rgba(97,97,97,1);
+  --p-color-border-magic: oklch(.9376 .0337 299.07);
+  --p-color-border-magic-secondary: rgba(148,116,255,1);
+  --p-color-border-secondary: rgba(242,242,242,1);
+  --p-color-border-success: oklch(.9147 .1488 133.17);
+  --p-color-border-tertiary: rgba(192,192,192,1);
+  --p-color-icon: #101010;
+  --p-color-icon-info: oklch(.3508 .0747 222.15);
+  --p-color-icon-secondary: #606060;
+  --p-color-icon-warning: oklch(.3168 .0962 48.79);
+  --p-color-input-bg-surface: #fff;
+  --p-color-input-border: rgba(140,140,140,1);
+  --p-color-text: #101010;
+  --p-color-text-brand: #101010;
+  --p-color-text-caution: oklch(.2708 .0638 90.28);
+  --p-color-text-critical: oklch(.2121 .0942 30.90);
+  --p-color-text-disabled: #a6a6a6;
+  --p-color-text-emphasis: #101010;
+  --p-color-text-info: oklch(.2715 .0576 221.37);
+  --p-color-text-inverse: #d0d0d0;
+  --p-color-text-link: oklch(.4840 .2413 262.80);
+  --p-color-text-secondary: rgba(74,74,74,1);
+  --p-color-text-success: oklch(.2334 .0796 134.14);
+  --p-color-text-warning: oklch(.2475 .0726 51.49);
+  --p-font-size-275: .6875rem;
+  --p-font-size-300: .75rem;
+  --p-font-size-325: .8125rem;
+  --p-font-weight-bold: 600;
+  --p-font-weight-medium: 500;
+  --p-font-weight-regular: 400;
+  --p-font-weight-semibold: 600;
+  --p-motion-ease: cubic-bezier(.25, .1, .25, 1);
+  --p-motion-ease-out: cubic-bezier(.19, .91, .38, 1);
+  --p-shadow-100: 0rem .3125rem .3125rem -.15625rem rgba(0,0,0,.03), 0rem .1875rem .1875rem -.09375rem #00000005, 0rem .125rem .125rem -.0625rem #00000005, 0rem .0625rem .0625rem -.03125rem #00000008, 0rem .03125rem .03125rem 0rem #0000000a, 0rem 0rem 0rem .0625rem #0000000f;
+  --p-shadow-200: 0rem .5rem .625rem -.3125rem rgba(0,0,0,.08), 0rem .3125rem .3125rem -.15625rem #00000008, 0rem .1875rem .1875rem -.09375rem #00000005, 0rem .125rem .125rem -.0625rem #00000005, 0rem .0625rem .0625rem -.03125rem #00000008, 0rem .03125rem .03125rem 0rem #0000000a, 0rem 0rem 0rem .0625rem #0000000f;
+  --p-shadow-300: 0rem .5rem 1.5rem -.5rem #00000047, 0rem .5rem 1rem -.25rem #0000000d, 0rem .1875rem .375rem 0rem #0000000d, 0rem .125rem .25rem 0rem #0000000d, 0rem .0625rem .125rem 0rem #0000000d, 0rem 0rem 0rem .0625rem #0000000f;
+  --p-shadow-400: 0rem 1.25rem 2rem -.75rem #00000033, 0rem .625rem 1rem -.375rem #00000014, 0rem .1875rem .375rem 0rem #00000014, 0rem .125rem .25rem 0rem #00000014, 0rem .0625rem .125rem 0rem #0000000d, 0rem 0rem 0rem .0625rem #0000000f;
+  --p-shadow-600: 0rem 1.5rem 3.5rem -.75rem #0000003d, 0rem 1.5rem 1.5rem -.75rem #0000001f, 0rem .1875rem .375rem 0rem #0000000d, 0rem .125rem .25rem 0rem #0000000d, 0rem .0625rem .125rem 0rem #0000000d, 0rem 0rem 0rem .0625rem #00000012;
+  --p-shadow-bevel-100: .0625rem 0rem 0rem 0rem #00000021 inset, -.0625rem 0rem 0rem 0rem #00000021 inset, 0rem -.0625rem 0rem 0rem #0000002b inset, 0rem .0625rem 0rem 0rem #cccccc80 inset;
+  --p-shadow-button: none;
+  --p-space-025: .0625rem;
+  --p-space-050: .125rem;
+  --p-space-100: .25rem;
+  --p-space-150: .375rem;
+  --p-space-200: .5rem;
+  --p-space-300: .75rem;
+  --p-text-body-lg-font-letter-spacing: 0;
+  --p-text-body-lg-font-line-height: 1.25rem;
+  --p-text-body-lg-font-size: .875rem;
+  --p-text-body-lg-font-weight: 400;
+  --p-text-body-md-font-letter-spacing: 0;
+  --p-text-body-md-font-line-height: 1.25rem;
+  --p-text-body-md-font-size: .8125rem;
+  --p-text-body-md-font-weight: 400;
+  --p-text-body-sm-font-letter-spacing: 0;
+  --p-text-body-sm-font-line-height: 1rem;
+  --p-text-body-sm-font-size: .75rem;
+  --p-text-body-sm-font-weight: 400;
+  --p-text-body-xs-font-line-height: .75rem;
+  --p-text-body-xs-font-size: .6875rem;
+  --p-text-body-xs-font-weight: 400;
+  --p-text-heading-2xl-font-letter-spacing: 0;
+  --p-text-heading-2xl-font-line-height: 2.5rem;
+  --p-text-heading-2xl-font-size: 1.875rem;
+  --p-text-heading-2xl-font-weight: 500;
+  --p-text-heading-3xl-font-letter-spacing: 0;
+  --p-text-heading-3xl-font-line-height: 3rem;
+  --p-text-heading-3xl-font-size: 2.25rem;
+  --p-text-heading-3xl-font-weight: 500;
+  --p-text-heading-lg-font-letter-spacing: 0;
+  --p-text-heading-lg-font-line-height: 1.5rem;
+  --p-text-heading-lg-font-size: 1.25rem;
+  --p-text-heading-lg-font-weight: 500;
+  --p-text-heading-md-font-letter-spacing: 0;
+  --p-text-heading-md-font-line-height: 1.25rem;
+  --p-text-heading-md-font-size: .875rem;
+  --p-text-heading-md-font-weight: 500;
+  --p-text-heading-sm-font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  --p-text-heading-sm-font-letter-spacing: 0;
+  --p-text-heading-sm-font-line-height: 1.25rem;
+  --p-text-heading-sm-font-size: .8125rem;
+  --p-text-heading-sm-font-weight: 500;
+  --p-text-heading-xl-font-letter-spacing: 0;
+  --p-text-heading-xl-font-line-height: 2rem;
+  --p-text-heading-xl-font-size: 1.5rem;
+  --p-text-heading-xl-font-weight: 500;
+  --p-text-heading-xs-font-letter-spacing: 0;
+  --p-text-heading-xs-font-line-height: 1rem;
+  --p-text-heading-xs-font-size: .75rem;
+  --p-text-heading-xs-font-weight: 500;
+}
+
+/* React 12 still hard-codes some Polaris 1 geometry and bevels. Keep these
+ * selectors limited to components the starter actually uses. */
+.Polaris-Button,
+.Polaris-Button:focus-visible {
+  border-radius: 9999px;
+}
+.Polaris-Button--variantSecondary:not(.Polaris-Button--toneCritical),
+.Polaris-Button--variantSecondary:not(.Polaris-Button--toneCritical):hover {
+  background: #f3f3f3;
+  box-shadow: none;
+  border: 0;
+}
+.Polaris-Button--variantSecondary:not(.Polaris-Button--toneCritical):hover {background: #ebebeb;}
+.Polaris-Button--variantPrimary:not(.Polaris-Button--toneCritical):not(.Polaris-Button--toneSuccess):not(.Polaris-Button--disabled):not(:disabled) {
+  background: radial-gradient(ellipse 80% 120% at 50% -60%, #454545 0%, #0c0c0c 85%);
+  background-color: #0c0c0c;
+  box-shadow: none;
+}
+.Polaris-Button--variantPrimary:not(.Polaris-Button--toneCritical):not(.Polaris-Button--toneSuccess):not(.Polaris-Button--disabled):not(:disabled):hover {
+  background: radial-gradient(ellipse 80% 120% at 50% -60%, #333 0%, #000 85%);
+  background-color: #000;
+}
+/* Disabled = flat light grey with grey text, so it never reads as the active primary (review r1 #2). */
+.Polaris-Button--variantPrimary.Polaris-Button--disabled,
+.Polaris-Button--variantPrimary:disabled {
+  background: #0000000d;
+  color: #b5b5b5;
+  box-shadow: none;
+}
+.Polaris-Button--variantPrimary.Polaris-Button--disabled .Polaris-Text--root,
+.Polaris-Button--variantPrimary:disabled .Polaris-Text--root {color: #b5b5b5;}
+/* Loading primary sits on the disabled grey: the white spinner would vanish (review r2, 1.12:1) → grey spinner, 5.6:1. */
+.Polaris-Button--variantPrimary.Polaris-Button--loading .Polaris-Spinner svg {fill: var(--p-color-icon-secondary, #606060);}
+/* Critical primary keeps a solid red with white text (review r1 #1: the pastel critical token is for banners). */
+.Polaris-Button--variantPrimary.Polaris-Button--toneCritical:not(.Polaris-Button--disabled):not(:disabled) {
+  background: #e51c00;
+  color: #fff;
+  box-shadow: none;
+}
+.Polaris-Button--variantPrimary.Polaris-Button--toneCritical:not(.Polaris-Button--disabled):not(:disabled):hover {background: #c41800;}
+.Polaris-Button--variantPrimary.Polaris-Button--toneCritical:not(.Polaris-Button--disabled):not(:disabled) .Polaris-Text--root {color: #fff;}
+.Polaris-Button:focus-visible::after {border-radius: inherit;}
+
+/* Card is built from ShadowBevel > Box in Polaris React 12. Keep the rounded
+ * white surface on all card variants, including the older LegacyCard. */
+.Polaris-ShadowBevel,
+.Polaris-LegacyCard {
+  border-radius: 20px;
+  /* polaris-2.js s-section card (18/11/2026): a soft 24% 2px edge and wide faint drops — lighter than shadow-200. */
+  box-shadow: 0 0 2px #0000003d, 0 2px 12px #00000005, 0 4px 16px #00000005, 0 4px 48px #00000005;
+  overflow: hidden;
+}
+.Polaris-ShadowBevel::before {box-shadow: none;}
+.Polaris-ShadowBevel > .Polaris-Box,
+.Polaris-LegacyCard > .Polaris-Box {border-radius: inherit;}
+.Polaris-ShadowBevel::before {border-radius: inherit;}
+/* A standalone bordered Box can also be used as a small card. */
+.Polaris-Box[style*="--pc-box-border-width"] {border-radius: 20px;}
+
+/* Flat, white form fields with a soft resting shadow. Polaris's backdrop owns
+ * the visible field edge; keep the error and focus states intact. */
+.Polaris-TextField,
+.Polaris-Select {border-radius: 12px;}
+/* Numbers read from Shopify's polaris-2.js s-text-field / s-select (18/11/2026): a 13% black hairline ring plus two
+ * soft drops, never a solid grey border. The old #8c8c8c ring read as a dark, heavy outline next to the real admin. */
+.Polaris-TextField__Backdrop,
+.Polaris-Select__Backdrop {
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 3px -1px #0000000a, 0 3px 4px -1.5px #0000000a, 0 0 0 1px #00000021;
+}
+.Polaris-TextField__Backdrop::after,
+.Polaris-Select__Backdrop::after {border-radius: 12px;}
+/* Disabled (the "Original" column): still white, lighter 10% ring, grey text — polaris-2.js disabled input-wrapper. */
+.Polaris-TextField--disabled .Polaris-TextField__Backdrop,
+.Polaris-Select--disabled .Polaris-Select__Backdrop {
+  background: #fff;
+  box-shadow: 0 0 0 1px #0000001a;
+}
+.Polaris-TextField--disabled .Polaris-TextField__Input,
+.Polaris-TextField--disabled .Polaris-TextField__Input::placeholder,
+.Polaris-Select--disabled .Polaris-Select__Content {color: #a6a6a6; -webkit-text-fill-color: #a6a6a6;}
+.Polaris-TextField__Input,
+.Polaris-Select__Input {min-height: 30px;}
+.Polaris-TextField__Input:focus-visible ~ .Polaris-TextField__Backdrop,
+.Polaris-Select__Input:focus-visible ~ .Polaris-Select__Backdrop {
+  outline: 0;
+  box-shadow: 0 0 0 2px var(--p-color-border-focus), 0 2px 5px #00000018;
+}
+.Polaris-Checkbox__Backdrop,
+.Polaris-RadioButton__Backdrop {border-radius: 4px; width: 14px; height: 14px; border: 0;
+  box-shadow: 0 2px 3px -1px #0000000a, 0 3px 4px -1.5px #0000000a, 0 0 0 1px #00000033;}
+.Polaris-RadioButton__Backdrop {border-radius: 50%;}
+.Polaris-Checkbox__Input:checked + .Polaris-Checkbox__Backdrop,
+.Polaris-RadioButton__Input:checked + .Polaris-RadioButton__Backdrop {background: #0c0c0c; border-color: #0c0c0c;}
+.Polaris-RadioButton .Polaris-RadioButton__Input:checked + .Polaris-RadioButton__Backdrop {background-color: #0c0c0c;}
+
+/* Polaris 2's higher saturation semantic badges and pastel banners. */
+.Polaris-Badge {border-radius: 9999px; padding: 1px 8px;}
+.Polaris-Badge--toneSuccess {background: #b3f782; color: #306b06;}
+.Polaris-Badge--toneInfo {background: #a8eaff; color: #025e8d;}
+.Polaris-Badge--toneWarning,
+.Polaris-Badge--toneAttention {background: #ffc87a; color: #b95d00;}
+.Polaris-Banner {border-radius: 16px; overflow: hidden;}
+.Polaris-Banner--textSuccessOnBgFill {background: #edfadf; color: #183c07;}
+.Polaris-Banner--textInfoOnBgFill {background: #d9f7fc; color: #123d50;}
+.Polaris-Banner--textWarningOnBgFill {background: #fff0c1; color: #543b00;}
+.Polaris-Banner--textCriticalOnBgFill {background: #ffe8e6; color: #611b1b;}
+.Polaris-Banner .Polaris-Button {border-radius: 9999px;}
+
+.Polaris-Modal-Dialog__Modal,
+.Polaris-Modal-Dialog__Container {border-radius: 24px; box-shadow: var(--p-shadow-400);}
+.Polaris-Popover__Content {border-radius: 16px; box-shadow: var(--p-shadow-300);}
+.Polaris-Tabs__Tab {border-radius: 10px;}
+.Polaris-Tabs__Tab--active {color: var(--p-color-text);}
+.Polaris-IndexTable {color: var(--p-color-text);}
+.Polaris-IndexTable__TableHeading,
+.Polaris-IndexTable__TableCell {border-color: #e6e6e6;}
