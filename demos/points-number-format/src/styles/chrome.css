@@ -50,12 +50,28 @@
 .adm-appbar__menu {display: none;}
 .adm-appbar__back .Polaris-Icon, .adm-appbar__more .Polaris-Icon, .adm-appbar__menu .Polaris-Icon {--p-color-icon: var(--p-color-icon); width: 16px; height: 16px;}
 .adm-appbar__divider {color: var(--p-color-text-secondary);}
-.adm-appbar__title {font-weight: 600;}
+.adm-appbar__title {font-weight: 500; /* real app title bar reads medium, not semibold (admin screenshot 18/11/2026) */}
 .adm-appbar__more {margin-left: auto;}
 .adm-content {box-sizing: border-box; min-height: calc(100vh - var(--chrome-appbar-height) - 4px); padding: 18px 0 84px; background: var(--chrome-content-bg); overflow-anchor: none;}
 .adm-sidekick {position: fixed; z-index: 210; left: calc(var(--chrome-nav-width) + (100vw - var(--chrome-nav-width))/2); bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; width: 375px; max-width: calc(100vw - var(--chrome-nav-width) - 44px); height: 50px; padding: 0 13px; border: 1px solid var(--chrome-panel-border); border-radius: 20px; background: var(--chrome-panel-bg); box-shadow: var(--p-shadow-200); color: var(--p-color-text-secondary); font-size: 12px; text-align: left;}
-.adm-sidekick > span:nth-of-type(1) {flex: 1;}
-.adm-sidekick .Polaris-Icon {color: var(--p-color-text-ai); width: 20px; height: 20px;}
+.adm-sidekick {border-color: #ebebeb; box-shadow: 0 0 2px #0000001f, 0 4px 16px #0000000a; border-radius: 24px; gap: 8px; padding: 0 12px;}
+.adm-sidekick__face {display: inline-flex; flex: none;}
+.adm-sidekick__text {flex: 1; color: #8a8a8a; font-size: 13px;}
+.adm-sidekick__tools {display: inline-flex; align-items: center; gap: 12px; color: #4a4a4a;}
+.adm-sidekick__tools .Polaris-Icon {width: 18px; height: 18px; margin: 0; color: #4a4a4a;}
+.adm-sidekick__tools .Polaris-Icon svg {fill: #4a4a4a;}
+.adm-sidekick__wave {display: inline-flex;}
+.adm-sidekick__tools svg {color: #4a4a4a;}
+/* Joy AiAgentButton.css: 40px white circle, two soft shadows, 20px from the frame's bottom-left. */
+.adm-joy-ai {position: absolute; left: 20px; bottom: 20px; z-index: 30; display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: #fff; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .08), 0 4px 12px rgba(0, 0, 0, .08);}
+.adm-joy-ai .Polaris-Icon {margin: 0; width: 20px; height: 20px;}
+.adm-appbar__crumb {color: var(--p-color-text-secondary, #616161); text-decoration: none; white-space: nowrap;}
+.adm-appbar__crumb:hover {color: var(--p-color-text, #303030); text-decoration: underline;}
+.adm-search {justify-content: flex-start;}
+.adm-search > span {flex: 1; text-align: left;}
+.adm-sidekick__sep {width: 1px; height: 16px; background: #e3e3e3;}
 .adm-scrim {position: fixed; z-index: 450; inset: 0; background: var(--chrome-scrim);}
 .adm-nav button:focus-visible, .adm-nav a:focus-visible, .adm-appbar button:focus-visible, .adm-appbar a:focus-visible, .adm-sidekick:focus-visible {outline: 2px solid var(--p-color-border-focus); outline-offset: -2px;}
 @media (max-width: 768px) {
@@ -70,7 +86,9 @@
   .adm-appbar {gap: 6px; padding: 0 10px;}
   .adm-appbar__title {overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
   .adm-sidekick {width: 185px; height: 40px; border-radius: 15px; bottom: 12px;}
-  .adm-sidekick > span:last-child {display: none;}
+  .adm-sidekick__tools {display: none;}
+  .adm-joy-ai {display: none;}
+  .adm-appbar__crumb, .adm-appbar__crumb + .adm-appbar__divider {display: none;}
 }
 /* Reserve a reviewer control lane at every width so the floating amber chip does not cover product rows. */
 body:has(.kit-proto) {--proto-lane: calc(64px + env(safe-area-inset-bottom, 0px));}

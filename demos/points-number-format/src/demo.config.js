@@ -22,6 +22,8 @@ export const DEMO = {
     if (segments[0] === 'settings' && segments.length === 1) return 'General';
     return 'Page not found';
   },
+  // Parent crumb before the title, as the real title bar shows 'Back to Translations / Unified widget' (18/11/2026).
+  crumbFor: (segments) => (segments[0] === 'translations' || segments[2] === 'editor' ? 'Back to Translations' : null),
   // Back chevron: the editor goes back to Settings › Translations (backAction in Translations/Sections/index.js).
   backFor: (segments) => (segments[0] === 'translations' || segments[2] === 'editor' ? '/settings/translations' : null),
 };

@@ -43,11 +43,12 @@ function AiAssistant({disabled}) {
   return (
     <Card>
       <InlineStack gap="200" blockAlign="center" wrap={false}>
+        <span className="pnf-ask__icon" aria-hidden="true"><Icon source={MagicIcon} /></span>
         <div className="pnf-grow">
           <TextField label="Ask AI" labelHidden autoComplete="off" disabled={disabled} value={ask} onChange={setAsk}
             placeholder={'Ask AI to edit text, e.g. "make the Earn button say Get rewards"'} />
         </div>
-        <Button icon={SendIcon} accessibilityLabel="Send" disabled={disabled || !ask.trim()} onClick={() => {setAsk(''); notify('The AI assistant answers here in the app');}} />
+        <Button variant="tertiary" icon={SendIcon} accessibilityLabel="Send" disabled={disabled || !ask.trim()} onClick={() => {setAsk(''); notify('The AI assistant answers here in the app');}} />
       </InlineStack>
     </Card>
   );
@@ -205,7 +206,7 @@ export function TranslationEditor() {
                   <div key={section.id} className="pnf-tr__section">
                     <button type="button" className="pnf-tr__toggle" aria-expanded={isOpen} aria-controls={`section-${section.id}`}
                       onClick={() => setOpen((prev) => ({...prev, [section.id]: !prev[section.id]}))}>
-                      <Text as="span" fontWeight="semibold">{section.title}</Text>
+                      <Text as="span">{section.title}</Text>
                       <Icon source={isOpen ? ChevronUpIcon : ChevronDownIcon} />
                     </button>
                     <div id={`section-${section.id}`} hidden={!isOpen}>
@@ -226,11 +227,10 @@ export function TranslationEditor() {
   return (
     <div className="pnf-page pnf-editor">
       <BlockStack gap="400">
+        {/* Real editor (admin screenshot 18/11/2026): no page heading — the title bar carries "Unified widget";
+            only the two pickers sit at the top right. */}
+        <h1 className="pnf-visually-hidden">Unified widget</h1>
         <div className="pnf-editor__head">
-          <BlockStack gap="100">
-            <Text as="h1" variant="headingLg">Unified widget</Text>
-            <Text as="p" tone="subdued">Translate unified loyalty widget labels into your preferred language</Text>
-          </BlockStack>
           <div className="pnf-editor__pickers">
             <Select label="Translations" labelHidden options={SURFACE_OPTIONS} value="Unified widget"
               onChange={(v) => v !== 'Unified widget' && notify(`${v} translations aren't part of this prototype`)} />

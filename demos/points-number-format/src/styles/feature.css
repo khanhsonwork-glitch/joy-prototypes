@@ -45,8 +45,11 @@
 
 /* Unified widget editor: header with the two pickers on the right (Sections/index.js primaryAction grid). */
 .pnf-editor {max-width: 1000px;}
-.pnf-editor__head {display: flex; align-items: flex-start; justify-content: space-between; gap: var(--p-space-400);}
-.pnf-editor__pickers {display: grid; grid-template-columns: 1fr 1fr; gap: var(--p-space-200); min-width: 22rem;}
+.pnf-editor__head {display: flex; align-items: flex-start; justify-content: flex-end; gap: var(--p-space-400);}
+.pnf-visually-hidden {position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;}
+.pnf-ask__icon {display: inline-flex; flex: none;}
+.pnf-ask__icon .Polaris-Icon {margin: 0;}
+.pnf-editor__pickers {display: flex; gap: var(--p-space-200);}
 
 /* Label · Original · Translation rows (TranslationsPanel.scss). */
 .pnf-tr__head {display: flex; gap: var(--p-space-200); padding-bottom: var(--p-space-200); border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);
@@ -56,7 +59,7 @@
 .pnf-tr__col {flex: 1; min-width: 0;}
 .pnf-tr__section {border-bottom: var(--p-border-width-025) solid var(--p-color-border-secondary);}
 .pnf-tr__section:last-child {border-bottom: 0;}
-.pnf-tr__toggle {display: flex; align-items: center; justify-content: space-between; width: 100%; padding: var(--p-space-300) 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;}
+.pnf-tr__toggle {display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 18px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;}
 .pnf-tr__toggle .Polaris-Icon {margin: 0;}
 .pnf-tr__toggle:hover {opacity: .8;}
 .pnf-tr__toggle:focus-visible {outline: var(--p-border-width-050) solid var(--p-color-border-focus); outline-offset: 2px; border-radius: var(--p-border-radius-100);}
