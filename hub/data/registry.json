@@ -1265,6 +1265,653 @@
         }
       ],
       "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "referral-tiers",
+      "name": "Referral rewards by VIP tier and order value",
+      "area": "Referral",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-17T15:00",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-referral-tiers.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/referral-tiers/",
+      "kind": "prototype",
+      "aliases": [
+        "Referral tiers",
+        "thưởng giới thiệu theo hạng"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/referral-tiers/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "whatsapp",
+      "name": "Join WhatsApp group",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-17T15:10",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-whatsapp.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/whatsapp/",
+      "kind": "prototype",
+      "aliases": [
+        "WhatsApp",
+        "điểm khi tham gia nhóm WhatsApp"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/whatsapp/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "sandbox-test-list",
+      "name": "Sandbox mode test list",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-17T15:20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-sandbox-test-list.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/sandbox-test-list/",
+      "kind": "prototype",
+      "aliases": [
+        "Sandbox",
+        "chạy thử trước khi mở chương trình"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/sandbox-test-list/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "milestones",
+      "name": "Milestones",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-17T15:30",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-milestones.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/milestones/",
+      "kind": "prototype",
+      "aliases": [
+        "Milestone",
+        "thưởng theo mốc"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/milestones/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "send-gift",
+      "name": "Send gift",
+      "area": "Referral",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-17T15:40",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-send-gift.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/send-gift/",
+      "kind": "prototype",
+      "aliases": [
+        "Gift",
+        "tặng phần thưởng cho bạn"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/send-gift/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "vip-launch",
+      "name": "VIP tier launch",
+      "area": "Membership",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T13:00",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-vip-launch.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/vip-launch/",
+      "kind": "prototype",
+      "aliases": [
+        "VIP launch",
+        "hỏi trước khi phát quà vào hạng"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/vip-launch/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "vip-free-shipping-limit",
+      "name": "Free shipping limit per VIP tier",
+      "area": "Membership",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T13:10",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-vip-free-shipping-limit.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/vip-free-shipping-limit/",
+      "kind": "prototype",
+      "aliases": [
+        "Free shipping",
+        "giới hạn số lần free shipping"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/vip-free-shipping-limit/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "line",
+      "name": "Join LINE",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T17:00",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-line.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/line/",
+      "kind": "prototype",
+      "aliases": [
+        "LINE",
+        "cộng điểm khi follow OA"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/line/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "quiz",
+      "name": "Quiz",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T17:10",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-quiz.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/quiz/",
+      "kind": "prototype",
+      "aliases": [
+        "Quest",
+        "chuỗi câu hỏi có thưởng"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/quiz/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "analytics-emails",
+      "name": "Analytics Emails tab",
+      "area": "Analytics",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T18:30",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-analytics-emails.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/analytics-emails/",
+      "kind": "prototype",
+      "aliases": [
+        "Email analytics",
+        "hiệu quả email"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/analytics-emails/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "tier-assessment",
+      "name": "Tier assessment",
+      "area": "Membership",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T18:40",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-tier-assessment.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/tier-assessment/",
+      "kind": "prototype",
+      "aliases": [
+        "Tier demotion",
+        "xét lại hạng theo chu kỳ"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/tier-assessment/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "widget-faq",
+      "name": "FAQ in the unified widget",
+      "area": "On-site content",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T19:00",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-widget-faq.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/widget-faq/",
+      "kind": "prototype",
+      "aliases": [
+        "FAQ",
+        "câu hỏi thường gặp"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/widget-faq/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "widget-perk-labels",
+      "name": "Entry and referral reward labels",
+      "area": "On-site content",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T19:10",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-widget-perk-labels.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/widget-perk-labels/",
+      "kind": "prototype",
+      "aliases": [
+        "Perk labels",
+        "nhãn Entry reward"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/widget-perk-labels/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "referral-claim-bonus",
+      "name": "Referral claim bonus",
+      "area": "Referral",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T19:20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-referral-claim-bonus.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/referral-claim-bonus/",
+      "kind": "prototype",
+      "aliases": [
+        "Referral bonus",
+        "thưởng khi bạn nhận quà"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/referral-claim-bonus/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "social-language-links",
+      "name": "Social links per language",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T19:30",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-social-language-links.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/social-language-links/",
+      "kind": "prototype",
+      "aliases": [
+        "Social activity",
+        "mỗi ngôn ngữ một link"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/social-language-links/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "submit-form",
+      "name": "Submit form",
+      "area": "Programs",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T20:10",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-submit-form.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/submit-form/",
+      "kind": "prototype",
+      "aliases": [
+        "Form",
+        "gửi form nhận điểm"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/submit-form/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "loyalty-hub",
+      "name": "Loyalty Hub",
+      "area": "On-site content",
+      "surfaces": [
+        "Admin",
+        "Loyalty page"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T20:20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-loyalty-hub.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/loyalty-hub/",
+      "kind": "prototype",
+      "aliases": [
+        "Account page",
+        "trang loyalty trong tài khoản khách"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/loyalty-hub/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "mobile-app-shopney",
+      "name": "Mobile app engagement (Shopney)",
+      "area": "Integrations",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T22:20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-mobile-app-shopney.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/mobile-app-shopney/",
+      "kind": "prototype",
+      "aliases": [
+        "Shopney",
+        "Mobile app",
+        "thưởng hành động trong app"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/mobile-app-shopney/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
+      "slug": "ai-banner",
+      "name": "AI banner",
+      "area": "On-site content",
+      "surfaces": [
+        "Admin",
+        "Widget"
+      ],
+      "status": "live",
+      "stage": null,
+      "updated": "2026-11-18",
+      "created": "2026-11-18T22:25",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": false,
+      "shot": "/shots/loyalty-ai-banner.jpg",
+      "reviewUrl": "https://joy-north-bloom.vercel.app/f/ai-banner/",
+      "kind": "prototype",
+      "aliases": [
+        "Banner",
+        "AI image",
+        "vẽ ảnh banner từ sản phẩm"
+      ],
+      "legacy": [
+        {
+          "url": "https://joy-north-bloom.vercel.app/f/ai-banner/",
+          "label": "Admin + Storefront (North Bloom)",
+          "updated": "2026-11-18",
+          "current": true
+        }
+      ],
+      "parity": null
     }
   ]
 }

@@ -93,7 +93,7 @@ h3 { font-size: var(--type-section); font-weight: 600; letter-spacing: -.02em; }
 .filters button:hover { background: var(--color-surface); }
 .filters button[aria-pressed=true] { background: var(--color-surface-alt); color: var(--color-text); font-weight: 550; }
 .archive-table { background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-ambient); overflow: hidden; }
-.archive-row { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,.65fr) minmax(0,1fr) minmax(0,.6fr) minmax(0,1fr); align-items: start; gap: var(--space-5); padding: var(--space-5) var(--space-6); font-size: var(--type-ui); color: var(--color-text-secondary); transition: background var(--duration-normal) var(--ease); }
+.archive-row { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(0,.7fr) minmax(0,.6fr) minmax(0,1fr); align-items: start; gap: var(--space-5); padding: var(--space-5) var(--space-6); font-size: var(--type-ui); color: var(--color-text-secondary); transition: background var(--duration-normal) var(--ease); }
 .archive-row>div { min-width: 0; }
 .archive-row:hover { background: var(--color-card-hover); }
 .table-head,.table-head:hover { background: var(--color-surface); color: var(--color-text-secondary); text-transform: uppercase; font-size: var(--type-badge); font-weight: 600; letter-spacing: .05em; }

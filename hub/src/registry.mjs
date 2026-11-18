@@ -24,11 +24,13 @@ export function normalizeFeature(source) {
     ? (['Doing', 'In progress', 'Testing', 'QA/UAT', 'Waiting to live'].includes(stage) ? 'building' : 'todo')
     : feature.status;
   const legacy = feature.legacy || [];
+  // Created = first day this prototype existed: an explicit `created`, else the oldest dated build.
+  const created = feature.created || [...legacy.map(link => link.updated), feature.updated].filter(Boolean).sort()[0] || '';
   const exactCurrent = legacy.findIndex(link => link.url === reviewUrl);
   const markedCurrent = legacy.findIndex(link => link.current);
   const currentIndex = exactCurrent >= 0 ? exactCurrent : markedCurrent;
   return {
-    ...feature, status, stage, ...(!feature.quarantined && {reviewUrl}), kind: feature.kind || 'prototype',
+    ...feature, status, stage, created, ...(!feature.quarantined && {reviewUrl}), kind: feature.kind || 'prototype',
     area: (feature.area || '').split('·')[0].trim(),
     surfaces: unique(feature.surfaces || []),
     alsoIn: feature.alsoIn || [], aliases: feature.aliases || [],

@@ -20,7 +20,10 @@ const variants = f => [...new Set([f.product,...(f.alsoIn || [])])];
 const targetFor = (f,p=f.product) => f.quarantined ? `${canonical(f,p)}/info` : f.alsoInUrls?.[p] || f.reviewUrl;
 const belongs = (f,p) => f.product === p || (f.alsoIn || []).includes(p);
 const products = {loyalty:'Joy Loyalty',wishlist:'Joy Wishlist'};
-const statuses = {review:'Đang review',todo:'Chờ dev',building:'Đang làm',live:'Đã live',paused:'Tạm dừng'};
+// Alex 18/11 "bỏ cái status đi" · "list đủ all prototypes sxep theo thời gian dc tạo": status stays internal only (paused = hidden).
+const statusWords = ['Đang review','Chờ dev','Đang làm','Đã live','Tạm dừng','Notion ·'];
+const createdOf = f => f.created || [...f.legacy.map(l=>l.updated),f.updated].filter(Boolean).sort()[0] || '';
+const byCreated = list => [...list].sort((a,b)=>createdOf(b).localeCompare(createdOf(a))||b.updated.localeCompare(a.updated)||a.name.localeCompare(b.name));
 const labels = {prototype:'Mở prototype','uat-note':'Mở ghi chú UAT',playground:'Mở playground'};
 // This oracle is independent of the UI search function.
 const fold = s => s.normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/đ/gi,'d').toLowerCase();
@@ -71,45 +74,33 @@ await check('Registry cũ/mới và dữ liệu public',async()=> {
   assert(!registryText.includes('statusEvidence'));
   for(const file of await fs.readdir(path.join(deploy,'assets'))) if(/\.(js|json)$/.test(file)) assert(!/["']?statusEvidence["']?\s*:\s*["']/.test(await fs.readFile(path.join(deploy,'assets',file),'utf8')),`Internal evidence value in ${file}`);
 });
-await check('Home: bốn bands, counts, card metadata và hai tabs',async()=> {
+await check('Home: một danh sách theo ngày tạo, không trạng thái, counts, card metadata và hai tabs',async()=> {
   await go('/');
   for(const [product,label] of Object.entries(products)) {
-    const expected = features.filter(f=>belongs(f,product)&&f.status!=='paused');
+    const expected = byCreated(features.filter(f=>belongs(f,product)&&f.status!=='paused'));
     const tab = page.getByRole('tab',{name:new RegExp(label)});
     await tab.click(); await eventually(async()=>assert.equal(await tab.getAttribute('aria-selected'),'true'));
     assert.equal(Number(await tab.locator('.count').textContent()),expected.length);
-    assert.equal(await page.locator('.feature-card').count(),expected.length);
-    const activeBands=['review','todo','building','live'].filter(status=>expected.some(f=>f.status===status));
-    assert.deepEqual(await page.locator('.bands h2').evaluateAll(nodes=>nodes.map(n=>n.id)),activeBands.map(s=>`band-${s}`));
-    for(const status of activeBands) {
-      const group=expected.filter(f=>f.status===status).sort((a,b)=>b.updated.localeCompare(a.updated)||(b.stage==='Ready')-(a.stage==='Ready')||(b.round??-1)-(a.round??-1)||a.name.localeCompare(b.name));
-      const section=page.locator('section').filter({has:page.locator(`#band-${status}`)});
-      assert.deepEqual(await section.locator('.feature-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.feature)),group.map(f=>f.slug));
-    }
+    assert.deepEqual(await page.locator('.feature-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.feature)),expected.map(f=>f.slug),'one list, newest created first');
+    assert.equal(await page.locator('.feature-grid').count(),expected.length?1:0);
+    assert.equal(await page.locator('.bands h2,.statusbar,.stage-chip,.status,.is-spot').count(),0,'no status groups, chips or spotlight');
+    const text=await page.locator('main').innerText();
+    for(const word of statusWords) assert(!text.includes(word),`${word} visible on ${product}`);
     for(const f of expected) {
       const card=page.locator(`[data-feature="${f.slug}"]`);
       assert.equal(await card.locator('.card-main').getAttribute('href'),canonical(f,product));
       assert.equal(await card.locator('.card-area').textContent(),f.area);
       assert.equal(await card.locator('.card-surfaces').textContent(),[...new Set(f.surfaces)].join(' · '));
-      assert.equal(await card.locator('.stage-chip').count(),f.stage?1:0);
-      if(f.stage) {
-        assert.equal(await card.locator('.card-meta .stage-chip').textContent(),`Notion · ${f.stage}`);
-        assert.equal(await card.locator('.stage-chip').getAttribute('title'),`Trạng thái trên Notion: ${f.stage}`);
-      }
+      assert.equal(await card.locator('.card-stamp time').getAttribute('datetime'),createdOf(f).slice(0,10));
       assert.equal(await card.locator('.entry-note').count(),f.entryNote?1:0);
       if(f.entryNote) assert.equal(await card.locator('.entry-note').textContent(),f.entryNote);
-      assert.equal(await card.locator('.card-meta i').count(),0);
       assert.equal(await card.getByRole('link',{name:`Chi tiết ${f.name}`,exact:true}).count(),1);
     }
     // Alex 21/10: "bỏ cái code thật và tất cả bản dựng" — both home shortcuts are gone; the routes stay.
     assert.equal(await page.getByRole('link',{name:/Tất cả bản dựng/}).count(),0);
     assert.equal(await page.locator('a[href="/app/"]').count(),0);
-    // Alex 21/10: paused builds are hidden from the hub — no paused chip, line or count on home.
-    assert.equal(await page.locator('.paused-line,.chip-paused,.paused-results').count(),0);
-    assert(!(await page.locator('body').innerText()).includes('Tạm dừng'),`Tạm dừng visible on ${product}`);
   }
   assert.equal(await page.getByText('Link cũ',{exact:true}).count(),0);
-  assert.equal(await page.locator('#band-paused').count(),0);
   await page.reload({waitUntil:'networkidle'}); assert.equal(await page.getByRole('tab',{name:/Joy Wishlist/}).getAttribute('aria-selected'),'true');
   await page.getByRole('tab',{name:/Joy Wishlist/}).press('ArrowLeft');
   await eventually(async()=>assert.equal(await page.getByRole('tab',{name:/Joy Loyalty/}).getAttribute('aria-selected'),'true'));
@@ -202,8 +193,8 @@ await check('Info: title, stage, kind, current/history và pairing',async()=> {
       assert(Math.abs(dimensions.center-720)<=1,'Hero must be centered at 1440px');
     }
     assert.equal((await page.locator('.actions .primary').textContent()).replace('↗','').trim(),labels[f.kind]);
-    assert.equal(await page.locator('.detail-header .stage-chip').count(),f.stage?1:0);
-    if(f.stage) assert.equal(await page.locator('.detail-header .stage-chip').textContent(),`Notion: ${f.stage}`);
+    assert.equal(await page.locator('.detail-header .stage-chip,.detail-header .status').count(),0,'no status on info');
+    assert.equal(await page.locator('.detail-meta time').first().getAttribute('datetime'),createdOf(f).slice(0,10));
     for(const [key,label] of [['notion','Task Notion'],['prd','PRD']]) {
       const link=page.getByRole('link',{name:new RegExp(`^${label}`)});
       if(f[key]) assert.equal(await link.getAttribute('href'),f[key]); else assert.equal(await link.count(),0);
@@ -270,11 +261,8 @@ await check('Home search và all-builds filters/search/empty',async()=> {
     await page.getByRole('button',{name:label,exact:true}).click(); await rowCount(active.filter(f=>belongs(f,product)).length);
   }
   await page.getByRole('button',{name:'Tất cả sản phẩm',exact:true}).click(); await rowCount(active.length);
-  for(const [status,label] of Object.entries(statuses)) {
-    if(status==='paused') {assert.equal(await page.getByRole('button',{name:label,exact:true}).count(),0); continue;}
-    await page.getByRole('button',{name:label,exact:true}).click(); await rowCount(active.filter(f=>f.status===status).length);
-  }
-  await page.getByRole('button',{name:'Tất cả trạng thái',exact:true}).click(); await rowCount(active.length);
+  assert.equal(await page.getByRole('group',{name:'Lọc trạng thái'}).count(),0,'no status filter');
+  assert.deepEqual(await rows().evaluateAll(nodes=>nodes.map(n=>n.dataset.archiveFeature)),byCreated(active).map(f=>f.slug),'archive newest created first');
   const sample=active.find(f=>f.legacy.length);
   const queries=['quest',sample.name,sample.area,sample.slug,sample.legacy[0].label,new URL(sample.legacy[0].url,base).hostname,...features.flatMap(f=>f.aliases||[]),'zzzz-no-matching-feature'];
   for(const q of [...new Set(queries)]) {
@@ -348,21 +336,14 @@ await check('Regression B4: shared queries, paste, clear and focused Back/Forwar
     assert.equal(await input.inputValue(),'milestone');
   }
 });
-await check('Regression B5: all status chips fit at 375 without sideways scrolling',async()=> {
-  await page.setViewportSize({width:375,height:812});
-  try {
-    await go('/');
-    const chips=page.locator('.statusbar .chip');
-    assert(await chips.count()>1,'fixture needs multiple status groups');
-    for(const chip of await chips.all()) {
-      const box=await chip.boundingBox();
-      assert(box.x>=0 && box.x+box.width<=375,`${await chip.innerText()}: chip outside viewport`);
-    }
-    const dimensions=await page.locator('.statusbar .wrap').evaluate(n=>({scroll:n.scrollWidth,width:n.clientWidth}));
-    assert(dimensions.scroll<=dimensions.width,'status chips require hidden horizontal scrolling');
-    await page.getByRole('link',{name:/Đã live/}).click();
-    assert.equal(new URL(page.url()).hash,'#band-live');
-  } finally {await page.setViewportSize({width:1440,height:900});}
+await check('Không còn trạng thái ở home, archive và info (Alex 18/11)',async()=> {
+  const info=`${canonical(features.find(f=>!f.quarantined&&f.status!=='paused'))}/info`;
+  for(const route of ['/','/?product=wishlist','/archive','/archive?status=live',info]) {
+    await go(route);
+    const text=await page.locator('main').innerText();
+    for(const word of statusWords) assert(!text.includes(word),`${word} on ${route}`);
+    assert.equal(await page.locator('.statusbar,.band-heading,.stage-chip,.status,.chip').count(),0,route);
+  }
 });
 await check('Responsive, no /app/ link on home and /app/ not served (real Joy code stays out), hover và whole-card focus',async()=> {
   for(const width of [1440,768,375]) {
