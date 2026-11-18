@@ -10,6 +10,7 @@ const features = registry.features.map(normalizeFeature);
 const runtime = __RUNTIME__;
 const quarantineMessage = 'Link tạm ẩn: bản dựng cũ còn dữ liệu mẫu cần làm sạch.';
 const products = {loyalty: 'Joy Loyalty', wishlist: 'Joy Wishlist'};
+const storefrontLabels = {has: 'Màn khách: có', none: 'Màn khách: không cần', building: 'Màn khách: đang bổ sung', missing: 'Màn khách: chưa có'};
 const parityLabels = {matched: 'Khớp', missing: 'Còn thiếu', wrong: 'Khác production', stale: 'Cần cập nhật', 'not-measured': 'Chưa đo', deliberate: 'Khác có chủ đích'};
 const home = product => product === 'wishlist' ? '/?product=wishlist' : '/';
 const date = (value, full = false) => {
@@ -47,7 +48,7 @@ function Card({feature: f, product, spot = false}) {
       {hasShot && <span className="card-stage"><img className="card-shot" src={f.shot} alt={`Giao diện ${f.name}`} loading="lazy" width="1280" height="720" onError={() => setShotFailed(true)}/></span>}
       <div className="card-content"><h3>{f.name}</h3><p className="card-area">{f.area}</p><p className="card-surfaces">{f.surfaces.join(' · ')}</p>{spot && <span className="spot-cta" aria-hidden="true">Mở bản dựng</span>}</div>
     </a>
-    <div className="card-bottom"><div className="card-meta"><span className="card-stamp">{f.round != null && <>Vòng {f.round} · </>}<time dateTime={f.updated}>{date(f.updated)}</time></span>{f.stage && <span className="stage-chip" title={`Trạng thái trên Notion: ${f.stage}`}>Notion · {f.stage}</span>}{f.entryNote && <span className="entry-note">{f.entryNote}</span>}</div><Link className="info-link" to={`${canonical(f, product)}/info`} aria-label={`Chi tiết ${f.name}`}>Chi tiết</Link></div>
+    <div className="card-bottom"><div className="card-meta"><span className="card-stamp">{f.round != null && <>Vòng {f.round} · </>}<time dateTime={f.updated}>{date(f.updated)}</time></span>{f.stage && <span className="stage-chip" title={`Trạng thái trên Notion: ${f.stage}`}>Notion · {f.stage}</span>}{f.entryNote && <span className="entry-note">{f.entryNote}</span>}{f.storefront && <span className={`sf-chip sf-${f.storefront.state}`} title={f.storefront.note}>{storefrontLabels[f.storefront.state]}</span>}</div><Link className="info-link" to={`${canonical(f, product)}/info`} aria-label={`Chi tiết ${f.name}`}>Chi tiết</Link></div>
   </article>;
 }
 function Home() {
@@ -109,6 +110,7 @@ function Info() {
       {f.slug === 'custom-plan' && runtime && <div className="pairing-row"><a href="/app/#/customize_plan">Màn này hôm nay (code thật) <Arrow/></a></div>}
       <DetailShot key={f.shot} feature={f} product={product}/>
       <div className="detail-sections">{!f.quarantined && <><Versions title="Bản hiện tại" links={current.length ? current : [{url: reviewTarget(f, product), label: kindLabels[f.kind], updated: f.updated}]}/><Versions title="Các bản trước" links={previous}/></>}
+        {f.storefront && <section className="storefront-section"><h2>Màn khách (storefront)</h2><p><span className={`sf-chip sf-${f.storefront.state}`}>{storefrontLabels[f.storefront.state]}</span></p><p className="storefront-note">{f.storefront.note}</p>{f.storefront.url && !f.quarantined && <p><a className="storefront-link" href={f.storefront.url}>Mở màn khách <Arrow diagonal/></a></p>}</section>}
         {f.slug !== 'custom-plan' && f.parity?.length > 0 && <section className="parity-section"><h2>So với production</h2><table className="parity-table"><thead><tr><th>Màn hình</th><th>Đánh giá</th><th>Nguồn</th></tr></thead><tbody>{f.parity.map((p, index) => <tr key={index}><th scope="row">{p.screen}</th><td><span className={`parity-state ${p.state === 'matched' ? 'live' : 'review'}`}>{parityLabels[p.state]}</span><p>{p.note}</p></td><td>{p.sourceCommit && <code>{p.sourceCommit.slice(0,7)}</code>}<time dateTime={p.checkedAt}>{date(p.checkedAt, true)}</time></td></tr>)}</tbody></table></section>}
       </div>
     </div>;

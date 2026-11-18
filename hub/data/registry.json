@@ -50,7 +50,11 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: báo cáo trong admin, khách không thấy gì mới."
+      }
     },
     {
       "product": "loyalty",
@@ -84,7 +88,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: chỉ chuyển dữ liệu từ app cũ sang; khách thấy điểm và hạng trong widget như bình thường."
+      }
     },
     {
       "product": "loyalty",
@@ -124,6 +132,10 @@
       "parity": null,
       "alsoInUrls": {
         "wishlist": "https://joy-cross-app-menu.vercel.app/?s=wishlist"
+      },
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: menu chuyển app trong admin."
       }
     },
     {
@@ -159,7 +171,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: gói cước của merchant, khách không thấy."
+      }
     },
     {
       "product": "loyalty",
@@ -193,7 +209,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: Ways to earn hiện mức điểm theo market của khách."
+      }
     },
     {
       "product": "loyalty",
@@ -240,7 +260,12 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Phần khách nhận là email; gallery hiện đúng các email khách thấy.",
+        "url": "https://joy-email-v2-preview.vercel.app"
+      }
     },
     {
       "product": "loyalty",
@@ -304,7 +329,11 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: trang Home trong admin."
+      }
     },
     {
       "product": "loyalty",
@@ -338,7 +367,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "missing",
+        "note": "Chưa có: khách nhận DM trên Instagram; bản tạm dừng nên chưa bổ sung."
+      }
     },
     {
       "product": "loyalty",
@@ -378,7 +411,12 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Bản này là màn khách (widget trên điện thoại).",
+        "url": "https://joy-pulse-mobile.vercel.app"
+      }
     },
     {
       "product": "loyalty",
@@ -408,7 +446,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: sửa chữ trong admin."
+      }
     },
     {
       "product": "loyalty",
@@ -443,7 +485,12 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Có shop mẫu: khách thấy deal theo hạng, đăng nhập, mua.",
+        "url": "https://joy-member-deals.vercel.app"
+      }
     },
     {
       "product": "wishlist",
@@ -482,7 +529,11 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: số liệu trong admin Wishlist."
+      }
     },
     {
       "product": "loyalty",
@@ -521,7 +572,11 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: số liệu milestone trong hồ sơ khách ở admin."
+      }
     },
     {
       "product": "loyalty",
@@ -556,7 +611,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: khách ở từng market chỉ thấy milestone của market mình."
+      }
     },
     {
       "product": "loyalty",
@@ -605,7 +664,11 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: khách thấy gói membership trả phí, đăng ký, thấy quyền lợi."
+      }
     },
     {
       "product": "loyalty",
@@ -635,7 +698,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: mẫu cài đặt trong admin."
+      }
     },
     {
       "product": "loyalty",
@@ -670,7 +737,12 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Có hành trình khách: email báo điểm, widget thấy điểm được tặng.",
+        "url": "/loyalty/points-giveaway/#/store"
+      }
     },
     {
       "product": "loyalty",
@@ -742,7 +814,11 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: khách mở quiz trong widget, làm từng câu, nhận thưởng."
+      }
     },
     {
       "product": "loyalty",
@@ -776,7 +852,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: Ways to redeem chỉ hiện quà và giá điểm của market khách."
+      }
     },
     {
       "product": "loyalty",
@@ -806,7 +886,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "missing",
+        "note": "Chưa có: lịch và điều kiện đổi quà sẽ đổi Ways to redeem của khách; bản tạm dừng nên chưa bổ sung."
+      }
     },
     {
       "product": "loyalty",
@@ -830,7 +914,12 @@
       "kind": "prototype",
       "aliases": [],
       "legacy": [],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Có màn khách: widget người giới thiệu, ưu đãi của bạn bè, checkout, email thưởng.",
+        "url": "/loyalty/referral-order-tiers/#/demo/storefront"
+      }
     },
     {
       "product": "loyalty",
@@ -861,7 +950,12 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Admin và widget khách nằm cạnh nhau trên cùng một trang, luôn cùng mức thưởng.",
+        "url": "https://referral-points-order-value.vercel.app"
+      }
     },
     {
       "product": "loyalty",
@@ -902,7 +996,12 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Ghi chú UAT có mục riêng \"B · Widget khách\" với ảnh widget.",
+        "url": "https://joy-repeat-milestone-final.vercel.app"
+      }
     },
     {
       "product": "loyalty",
@@ -935,7 +1034,12 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Bản này là màn khách (widget).",
+        "url": "https://joy-reward-unlocks.vercel.app"
+      }
     },
     {
       "product": "loyalty",
@@ -957,7 +1061,11 @@
       "kind": "prototype",
       "aliases": [],
       "legacy": [],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: chỉ đổi cách merchant cài Place order và Birthday; thẻ Ways to earn của khách giữ nguyên (màn sửa đã có cột xem trước thẻ này)."
+      }
     },
     {
       "product": "loyalty",
@@ -991,7 +1099,11 @@
         }
       ],
       "parity": null,
-      "entryNote": "Mở màn chọn scenario trước"
+      "entryNote": "Mở màn chọn scenario trước",
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: khách thấy thẻ làm survey, làm survey SEA, nhận thưởng."
+      }
     },
     {
       "product": "loyalty",
@@ -1025,7 +1137,12 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Admin và widget khách (đổi quà, gửi bạn, áp vào giỏ) nằm cạnh nhau trên cùng một trang.",
+        "url": "https://send-gift-to-friend.vercel.app"
+      }
     },
     {
       "product": "loyalty",
@@ -1050,7 +1167,11 @@
         "Button link"
       ],
       "legacy": [],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: nút Shop now trên widget và loyalty page dẫn khách tới đúng trang."
+      }
     },
     {
       "product": "loyalty",
@@ -1076,7 +1197,11 @@
         "plan badge"
       ],
       "legacy": [],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: chỉ đổi gói nào được tạo store credit trong admin; khách dùng store credit như cũ."
+      }
     },
     {
       "product": "loyalty",
@@ -1107,7 +1232,12 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Editor widget có xem trước thẻ My coupons khách thấy.",
+        "url": "https://sync-shopify-discounts.vercel.app"
+      }
     },
     {
       "product": "loyalty",
@@ -1142,7 +1272,12 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Bản này chính là widget khách thấy (playground Widget V4).",
+        "url": "https://joy-widget-v4-proto.vercel.app/editor.html"
+      }
     },
     {
       "product": "loyalty",
@@ -1178,7 +1313,11 @@
           "current": true
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "building",
+        "note": "Đang bổ sung: khách trong danh sách test thấy hạng mới, khách thường vẫn thấy hạng cũ."
+      }
     },
     {
       "product": "loyalty",
@@ -1223,7 +1362,11 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "none",
+        "note": "Không cần: thông báo tính năng mới trong admin."
+      }
     },
     {
       "product": "loyalty",
@@ -1264,7 +1407,12 @@
           "current": false
         }
       ],
-      "parity": null
+      "parity": null,
+      "storefront": {
+        "state": "has",
+        "note": "Dùng component widget Joy thật: hồ sơ khách bật đồng ý, thẻ kiếm điểm.",
+        "url": "https://whatsapp-consent-phone-reward.vercel.app"
+      }
     }
   ]
 }

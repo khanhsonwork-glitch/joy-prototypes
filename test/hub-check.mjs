@@ -97,6 +97,10 @@ await check('Home: bốn bands, counts, card metadata và hai tabs',async()=> {
         assert.equal(await card.locator('.stage-chip').getAttribute('title'),`Trạng thái trên Notion: ${f.stage}`);
       }
       assert.equal(await card.locator('.entry-note').count(),f.entryNote?1:0);
+      // Every card says whether the shopper side is covered (Thomas 18/11).
+      assert.ok(f.storefront && ['has','none','building','missing'].includes(f.storefront.state) && f.storefront.note, `storefront missing: ${f.slug}`);
+      assert.equal(await card.locator('.sf-chip').count(),1);
+      if(f.storefront.state==='has' && !f.quarantined) assert.ok(f.storefront.url, `storefront url missing: ${f.slug}`);
       if(f.entryNote) assert.equal(await card.locator('.entry-note').textContent(),f.entryNote);
       assert.equal(await card.locator('.card-meta i').count(),0);
       assert.equal(await card.getByRole('link',{name:`Chi tiết ${f.name}`,exact:true}).count(),1);
