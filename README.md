@@ -6,7 +6,7 @@
 
 <p align="center">
   Mọi prototype của Joy Loyalty và Joy Wishlist ở một link.<br>
-  Bấm như app thật, dữ liệu giả, mỗi Pull Request có link xem thử riêng.
+  Bấm như app thật, dữ liệu giả. Repo nhà: <a href="https://git.avada.net/avada/starlink-team/joy-prototypes">git.avada.net/avada/starlink-team/joy-prototypes</a>.
 </p>
 
 <p align="center">
@@ -17,9 +17,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/live.yml"><img src="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/live.yml/badge.svg" alt="Deploy live"></a>
-  <a href="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/pull-request.yml"><img src="https://github.com/khanhsonwork-glitch/joy-prototypes/actions/workflows/pull-request.yml/badge.svg" alt="Check và link xem thử"></a>
+  <a href="https://git.avada.net/avada/starlink-team/joy-prototypes/-/pipelines"><img src="https://git.avada.net/avada/starlink-team/joy-prototypes/badges/main/pipeline.svg" alt="Pipeline main"></a>
 </p>
+
+> Từ 19/11/2026 repo nhà là **git.avada.net/avada/starlink-team/joy-prototypes** (một git chung cho cả team, CI/CD trên GitLab). Bản GitHub cũ chỉ còn để đọc. Gửi duyệt = mở Merge Request trên GitLab; chỗ nào bên dưới còn ghi Pull Request / GitHub thì đọc là MR / GitLab.
 
 Repo này chỉ chứa prototype tĩnh với dữ liệu giả: không có code production của Joy, không có dữ liệu merchant/khách, không có secret.
 
@@ -29,8 +30,8 @@ Repo này chỉ chứa prototype tĩnh với dữ liệu giả: không có code 
 | **Bộ khung chuẩn** | Một lệnh tạo prototype mới trong khung Shopify admin + Polaris, đủ 9 trạng thái, form, modal, drawer, chạy được từ 375px tới 1440px. |
 | **Cổng kiểm tự động** | Mỗi Pull Request quét secret, link nội bộ, email thật, tên merchant thật (cả chữ trong ảnh), license, rồi test trình duyệt trước khi có link xem thử. |
 
-- **Link chung (live):** https://joy-prototypes.web.app — chỉ đổi khi một Pull Request được merge vào `main`.
-- **Link xem thử:** mỗi Pull Request có link riêng `https://joy-prototypes--pr<số>-….web.app`, bot tự comment vào PR và cập nhật sau mỗi lần push.
+- **Link chung (live):** https://joy-prototypes.web.app — chỉ đổi khi một Merge Request được merge vào `main` (CI kiểm đủ rồi tự deploy).
+- **Link xem thử:** MR mở từ nhánh tên `preview/<việc>` có link riêng `https://joy-prototypes--mr<số>-….web.app` (in ở job `preview`, mục Environments). Nhánh thường vẫn được kiểm đủ nhưng không có link xem thử.
 
 Prototype khác trong hub là link tới trang riêng của chúng (khai báo trong `hub/data/registry.json`); source của chúng không nằm ở đây.
 
@@ -70,8 +71,8 @@ Lệnh đầu chép bộ khung chuẩn vào `demos/birthday-reward/`, thêm th�
 
 Cần Node 22.12 trở lên (`node -v`; thiếu thì `nvm install 22 && nvm use 22`) và quyền push vào repo (nhờ người giữ hub mời làm collaborator). Bước 1 chỉ làm một lần trên mỗi máy.
 
-1. **Cài:** `git clone https://github.com/khanhsonwork-glitch/joy-prototypes.git && cd joy-prototypes && npm ci`
-2. **Mở nhánh:** `git switch main && git pull && git switch -c <tên-việc>` (ví dụ `birthday-reward`)
+1. **Cài:** `git clone https://git.avada.net/avada/starlink-team/joy-prototypes.git && cd joy-prototypes && npm ci`
+2. **Mở nhánh:** `git switch main && git pull && git switch -c preview/<tên-việc>` (ví dụ `preview/birthday-reward`; tiền tố `preview/` để có link xem thử)
 3. **Tạo prototype:** `npm run new -- birthday-reward "Birthday reward"` — chép bộ khung chuẩn vào `demos/birthday-reward/`, cài, thêm thẻ "Đang review" vào hub và chụp ảnh thẻ. Tuỳ chọn: `--product wishlist`, `--area "Membership"`.
 4. **Sửa:** `npm run dev -- birthday-reward`, sửa màn trong `demos/birthday-reward/src/pages/` theo [`GUIDELINE.md`](GUIDELINE.md) (khung, component, 9 trạng thái, điều cấm). Xem mẫu chuẩn trước: https://joy-prototypes.web.app/starter/
 5. **Kiểm:** `npm run shot -- birthday-reward --replace` (ảnh thẻ mới), rồi `npm run check` — đúng bộ kiểm CI sẽ chạy.
@@ -118,14 +119,14 @@ THIRD_PARTY_LICENSES.md License của dependency và font
 privacy/blocklist.json  Mã băm tên merchant/brand thật cần chặn
 scripts/                build, dev, serve, new-demo (npm run new), shot, check-*
 test/                   Test trình duyệt (hub, starter) và test cho cổng kiểm + lệnh scaffold
-.github/workflows/      pull-request.yml: check + link xem thử · live.yml: merge vào main → link chung
+.gitlab-ci.yml          MR: check (+ link xem thử với nhánh preview/*) · merge vào main: check → deploy link chung
 ```
 
 ## Người giữ hub
 
-- Firebase project `joy-prototypes` (gói Spark miễn phí). CI deploy bằng service account lưu trong GitHub Secret `FIREBASE_SERVICE_ACCOUNT_JOY_PROTOTYPES`; không ai cần đăng nhập Firebase để làm việc hằng ngày.
-- `main` được bảo vệ: bắt buộc PR, bắt buộc check `check_and_preview` xanh, áp cả cho admin, cấm force-push.
-- PR từ fork vẫn được check nhưng không có link xem thử (fork không đọc được secret): mời người đó làm collaborator.
+- Firebase project `joy-prototypes` (gói Spark miễn phí). CI deploy bằng một service account chỉ có quyền Firebase Hosting, lưu ở biến CI `FIREBASE_SA_B64` (Masked + Protected: chỉ chạy trên `main` và nhánh `preview/*`); không ai cần đăng nhập Firebase để làm việc hằng ngày.
+- `main` được bảo vệ: chỉ Maintainer merge, không ai đẩy thẳng, cấm force-push; MR chỉ merge khi pipeline xanh. Nhánh `preview/*` cũng được bảo vệ (Maintainer đẩy được) vì job xem thử cần khoá deploy.
+- Developer mở MR từ nhánh thường: vẫn được kiểm đủ, không có link xem thử.
 
 ## Khi bị lỗi
 

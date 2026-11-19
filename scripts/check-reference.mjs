@@ -40,6 +40,8 @@ export function touchedDemos(root = ROOT) {
   const git = args => spawnSync('git', args, {cwd: root, encoding: 'utf8'});
   let out = null;
   if (process.env.GITHUB_EVENT_NAME === 'pull_request') out = git(['diff', '--name-only', 'HEAD^1', 'HEAD']);
+  // GitLab Merge Request pipeline: GitLab hands over the commit the MR branched from.
+  else if (process.env.CI_MERGE_REQUEST_DIFF_BASE_SHA) out = git(['diff', '--name-only', process.env.CI_MERGE_REQUEST_DIFF_BASE_SHA, 'HEAD']);
   else {
     const base = git(['merge-base', 'HEAD', 'origin/main']);
     if (base.status === 0) out = git(['diff', '--name-only', base.stdout.trim()]);

@@ -18,6 +18,7 @@ const blocklist = loadBlocklist();
 // Planted values are assembled at runtime so the source scan of this file stays clean.
 const REAL_EMAIL = ['rosa', 'gmail.com'].join('@');
 const NOTION_LINK = ['notion', 'so/abc123'].join('.');
+const COMPANY_GIT = ['git', 'avada', 'net'].join('.');
 
 await check('Hidden card with a link fails; hidden card without links and a normal card pass', () => {
   const card = {product: 'loyalty', slug: 'old-build', quarantined: true};
@@ -29,10 +30,13 @@ await check('Hidden card with a link fails; hidden card without links and a norm
 });
 
 await check('Image text rules: internal notes, task codes, internal links and real emails fail; sample data passes', () => {
-  for (const text of ['Anh chup staging 7 ngay', 'UAT note round 2', 'see JOY-3901', NOTION_LINK, `contact ${REAL_EMAIL}`, 'SUA THANH: bo nut nay']) {
+  for (const text of ['Anh chup staging 7 ngay', 'UAT note round 2', 'see JOY-3901', NOTION_LINK, `contact ${REAL_EMAIL}`, 'SUA THANH: bo nut nay',
+    // Company GitLab: only this repo's own home may be named; other repos, users and look-alikes still fail.
+    ...['avada/starlink-team/joy', 'avada/starlink-team/joy-prototypes-old', 'sonbk/brain'].map(p => `https://${COMPANY_GIT}/${p}`)]) {
     assert(textProblems('planted', text, blocklist).length, `not caught: ${text}`);
   }
-  for (const text of ['Ava Nguyen ava@example.com 1,240 points', 'Pomelo Park hello@pomelopark.com', 'for.anna@pomelo.example', 'Create reward Save']) {
+  for (const text of ['Ava Nguyen ava@example.com 1,240 points', 'Pomelo Park hello@pomelopark.com', 'for.anna@pomelo.example', 'Create reward Save',
+    `git clone https://${COMPANY_GIT}/avada/starlink-team/joy-prototypes.git`, `https://${COMPANY_GIT}/avada/starlink-team/joy-prototypes/-/pipelines`]) {
     assert.deepEqual(textProblems('sample', text, blocklist), [], `false alarm: ${text}`);
   }
 });

@@ -11,7 +11,9 @@ const TEXT = /\.(html|js|jsx|mjs|cjs|ts|tsx|css|json|txt|svg|md|ya?ml|xml|csv|gi
 const SKIP = /(^|\/)(node_modules|dist|evidence|\.git|\.firebase)(\/|$)|package-lock\.json$|privacy\/blocklist\.json$/;
 export const INTERNAL = [
   [/notion\.(so|site)\//i, 'link Notion nội bộ'],
-  [/gitlab\.com|git\.avada\.net|avada\.slack\.com|docs\.google\.com|drive\.google\.com/i, 'link nội bộ'],
+  // The repo's own home on the company GitLab may be named (README, CI file); any other company link stays blocked.
+  [/gitlab\.com|git\.avada\.net[^\s"'`<>)\]*]*|avada\.slack\.com|docs\.google\.com|drive\.google\.com/i, 'link nội bộ',
+    /^git\.avada\.net\/avada\/starlink-team\/joy-prototypes(\.git|\/-\/[a-z/.]+|\/badges\/main\/pipeline\.svg)?$/i],
   [/[a-z0-9-]+\.myshopify\.com/i, 'store Shopify', /pomelo-park-goods\.myshopify\.com/],
 ];
 // Fake people use example.com or the fictional brand; the one product address is what Joy prints in every email.
