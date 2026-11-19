@@ -108,7 +108,7 @@ function buildHome(out, registry) {
     const dates = [...f.legacy.map(l => l.updated), f.updated].filter(Boolean).sort();
     return {slug: `proto-${f.product}-${f.slug}`, name: f.name, area: f.area,
       line: [...new Set(f.surfaces)].join(' · ') + (f.product === 'wishlist' ? ' · Joy Wishlist' : ''),
-      created: f.created || dates[0] || '', href: canonical(f, f.product), shot: f.shot || ''};
+      created: f.created || dates[0] || '', href: canonical(f, f.product), shot: f.shot || '', products: featureProducts(f)};
   });
   const json = value => JSON.stringify(value).replace(/</g, '\\u003c');
   for (const key of ['__FEATURES_JSON__', '__PROTOTYPES_JSON__', '__NB__']) if (!tpl.includes(key)) throw Error(`hub/home/index.tpl.html: missing ${key}`);
