@@ -40,6 +40,11 @@ a{color:inherit}
 .dev{position:absolute;top:20px;right:var(--gutter);z-index:3;display:flex;gap:4px;font-size:13px}
 .dev a{display:inline-flex;align-items:center;min-height:36px;color:var(--ink-4);text-decoration:none;padding:0 10px;border-radius:var(--radius-sm)}
 .dev a:hover{color:var(--ink);background:var(--tint)}
+/* Alex 19/11: Joy Loyalty | Joy Wishlist switch, top left; each app keeps its own list (Ly owns the Wishlist side) */
+.apps{position:absolute;top:16px;left:var(--gutter);z-index:3;display:inline-flex;gap:2px;padding:3px;background:var(--tint);border:1px solid var(--rule);border-radius:var(--radius-pill)}
+.apps a{display:inline-flex;align-items:center;min-height:34px;padding:0 14px;border-radius:var(--radius-pill);font:500 14px/1 var(--font);color:var(--ink-3);text-decoration:none;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.apps a:hover{color:var(--ink)}
+.apps a[aria-current=page]{background:var(--sheet);color:var(--ink);box-shadow:var(--shadow-1)}
 .logo{display:block;width:fit-content;line-height:0}
 .logo img{display:block;height:72px;width:auto}
 .hero h1{margin-top:48px;font-size:46px;line-height:1.1;letter-spacing:-.025em;max-width:11em;text-wrap:balance}
@@ -181,8 +186,12 @@ a{color:inherit}
 /* mobile 375 → 4 col, 16 margin; cards become compact rows so 25 features stay scannable */
 @media (max-width:640px){
   :root{--gutter:16px}
-  .dev{top:14px}
-  .hero .wrap{padding-top:64px;padding-bottom:48px;gap:36px}
+  .dev{top:56px;gap:0;font-size:12px}
+  .dev a{padding:0 6px}
+  .apps{top:12px}
+  .apps a{min-height:32px;padding:0 10px;font-size:13px}
+  .apps .full{display:none}
+  .hero .wrap{padding-top:76px;padding-bottom:48px;gap:36px}
   .logo img{height:52px}
   .hero h1{margin-top:28px;font-size:32px;line-height:1.14}
   .hero .sub{font-size:16px}
@@ -213,6 +222,7 @@ a{color:inherit}
 <a class="skip" href="#features">Bỏ qua tới danh sách tính năng</a>
 <main>
 <section class="hero" aria-labelledby="h1">
+  <nav class="apps" aria-label="Chọn app"><a href="/" data-app="loyalty"><span class="full">Joy&nbsp;</span>Loyalty</a><a href="/?product=wishlist" data-app="wishlist"><span class="full">Joy&nbsp;</span>Wishlist</a></nav>
   <nav class="dev" aria-label="Toàn bộ app cho dev"><a href="__NB__/admin/">Admin đầy đủ</a><a href="__NB__/store/">Storefront đầy đủ</a></nav>
   <div class="wrap">
     <div>
@@ -299,8 +309,14 @@ const ymd = s => { const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exe
 const AREA = { 'Programs': 'Tích điểm', 'Reward programs': 'Đổi điểm', 'Membership': 'Hạng & hội viên', 'Referral': 'Giới thiệu & tặng',
   'On-site content': 'Widget & trang', 'Navigation': 'Widget & trang', 'Analytics': 'Báo cáo', 'Dashboard': 'Báo cáo',
   'Customers': 'Khác', 'Settings': 'Khác', 'Subscription': 'Khác', 'Integrations': 'Khác', 'Prototype': 'Khác' };
-const P = Array.isArray(PROTOTYPES) ? PROTOTYPES.filter(p => p && p.href && p.name) : [];
-const all = FEATURES.map((f, i) => ({ real: true, f, i, d: ymd(f.created) || liveDate(f), g: groupOf(f) }))
+// Which app's list: ?product=wishlist → Joy Wishlist, anything else → Joy Loyalty. The real builds are all Joy Loyalty.
+const APP = new URLSearchParams(location.search).get('product') === 'wishlist' ? 'wishlist' : 'loyalty';
+document.querySelectorAll('.apps a').forEach(a => { if (a.dataset.app === APP) a.setAttribute('aria-current', 'page'); });
+// "Admin / Storefront đầy đủ" open the full Joy Loyalty app: not shown on the Wishlist side (Ly fills that side herself).
+if (APP === 'wishlist') document.querySelector('nav.dev').hidden = true;
+const inApp = p => (Array.isArray(p.products) && p.products.length ? p.products : ['loyalty']).includes(APP);
+const P = Array.isArray(PROTOTYPES) ? PROTOTYPES.filter(p => p && p.href && p.name && inApp(p)) : [];
+const all = (APP === 'loyalty' ? FEATURES : []).map((f, i) => ({ real: true, f, i, d: ymd(f.created) || liveDate(f), g: groupOf(f) }))
   .concat(P.map((p, i) => ({ real: false, f: p, i: 1000 + i, d: ymd(p.created), g: AREA[p.area] || groupOf(p) })))
   .sort((a, b) => (b.d ? b.d.getTime() : -Infinity) - (a.d ? a.d.getTime() : -Infinity) || a.i - b.i);
 const full = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
@@ -365,6 +381,7 @@ if (all.length > 4 && groups.length > 1) {
     document.getElementById('empty').hidden = shown > 0;
   });
 }
-if (!all.length) { const e = document.getElementById('empty'); e.hidden = false; e.textContent = 'Chưa có prototype nào. Toàn bộ app vẫn mở được ở góc trên.'; }
+if (APP === 'wishlist') document.getElementById('fh').firstChild.textContent = 'Prototype Joy Wishlist ';
+if (!all.length) { const e = document.getElementById('empty'); e.hidden = false; e.textContent = 'Chưa có prototype nào.'; }
 </script>
 </body></html>

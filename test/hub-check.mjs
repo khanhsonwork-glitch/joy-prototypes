@@ -83,7 +83,7 @@ await check('Home: trang Joy North Bloom, một danh sách mọi prototype theo 
   assert.equal(await page.locator('img[alt="Joy"]').count(),1,'Joy logo');
   assert.deepEqual(await page.locator('nav.dev a').evaluateAll(n=>n.map(a=>a.getAttribute('href'))),[`${NB}/admin/`,`${NB}/store/`],'full admin + storefront');
   const active=features.filter(f=>f.status!=='paused'&&!f.quarantined);
-  const expected=[...realBuilds.map(f=>({key:f.slug,created:f.created,href:`${NB}/f/${f.slug}/`})),...active.map(f=>({key:`proto-${f.product}-${f.slug}`,created:createdOf(f),href:canonical(f)}))]
+  const expected=[...realBuilds.map(f=>({key:f.slug,created:f.created,href:`${NB}/f/${f.slug}/`})),...active.filter(f=>[f.product,...(f.alsoIn||[])].includes('loyalty')).map(f=>({key:`proto-${f.product}-${f.slug}`,created:createdOf(f),href:canonical(f)}))]
     .sort((a,b)=>b.created.localeCompare(a.created));
   await eventually(async()=>assert.equal(await homeCards().count(),expected.length));
   const got=await homeCards().evaluateAll(n=>n.map(li=>({href:li.querySelector('a').getAttribute('href'),date:(li.querySelector('.tag.dt')||{}).textContent||''})));
@@ -103,8 +103,24 @@ await check('Home: trang Joy North Bloom, một danh sách mọi prototype theo 
   // Real builds show the admin + storefront screenshot pair; HTML designs show their card shot.
   for(let y=0;y<14000;y+=800){await page.mouse.wheel(0,800);await page.waitForTimeout(60);}
   await eventually(async()=>assert.equal(await page.locator('#grid > li .thumb.has-img').count(),expected.filter(c=>!c.key.startsWith('proto-')||active.find(f=>`proto-${f.product}-${f.slug}`===c.key)?.shot).length));
-  await go('/?product=wishlist');
-  assert.equal(await homeCards().count(),expected.length,'old ?product= links land on the same list');
+  // Alex 19/11: Joy Loyalty | Joy Wishlist switch top left; each app shows only its own prototypes.
+  assert.deepEqual(await page.locator('nav.apps a').evaluateAll(n=>n.map(a=>[a.getAttribute('href'),a.getAttribute('aria-current')])),[['/','page'],['/?product=wishlist',null]]);
+  await page.locator('nav.apps a').nth(1).click(); await page.waitForURL(/product=wishlist/);
+  const wl=active.filter(f=>[f.product,...(f.alsoIn||[])].includes('wishlist')).map(f=>canonical(f));
+  await eventually(async()=>assert.equal(await homeCards().count(),wl.length));
+  assert.deepEqual((await homeCards().evaluateAll(n=>n.map(li=>li.querySelector('a').getAttribute('href')))).sort(),[...wl].sort(),'wishlist list = wishlist prototypes only');
+  assert.equal(await page.locator(`#grid a[href^="${NB}/f/"]`).count(),0,'no Joy Loyalty real build on the Wishlist side');
+  assert.equal(await page.locator('nav.apps a[aria-current=page]').textContent(),'Joy\u00a0Wishlist');
+  assert(await page.locator('nav.dev').isHidden(),'full Loyalty app links hidden on Wishlist');
+  await go('/');
+  for(const width of [1440,768,390,360]) {
+    await page.setViewportSize({width,height:844});
+    const [apps,dev,logo]=await Promise.all(['nav.apps','nav.dev','.logo'].map(sel=>page.locator(sel).boundingBox()));
+    assert(apps.x<width/2,`switch sits top left at ${width}`);
+    assert(apps.x+apps.width<dev.x||apps.y+apps.height<=dev.y,`switch and full-app links overlap at ${width}`);
+    assert(apps.y+apps.height<=logo.y,`switch overlaps the logo at ${width}`);
+  }
+  await page.setViewportSize({width:1440,height:900});
 });
 await check('F4a: every product redirect and static info route',async()=> {
   const expectedRules=[];
