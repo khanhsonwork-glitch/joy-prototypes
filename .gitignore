@@ -7,3 +7,4 @@ evidence/
 .DS_Store
 
 tmp-work/
+.npm/
