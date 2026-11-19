@@ -1054,6 +1054,28 @@
     },
     {
       "product": "loyalty",
+      "slug": "store-credit-checkout",
+      "name": "Store credit at checkout",
+      "area": "On-site content",
+      "surfaces": [
+        "Admin"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-19",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-store-credit-checkout.jpg",
+      "reviewUrl": "/loyalty/store-credit-checkout/#/demo/checkout-page",
+      "kind": "prototype",
+      "aliases": [],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "store-credit-plan-gate",
       "name": "Store credit plan gate",
       "area": "Reward programs",
