@@ -1,0 +1,32 @@
+/* Store credit at checkout — Quick Redeem card additions. Colors/spacing trace to Polaris tokens; this is only
+   the custom switch control (Polaris 12 has no exported Switch), same pattern as demos/store-credit-plan-gate. */
+.scc-switch {
+  width: 36px;
+  height: 20px;
+  border-radius: var(--p-border-radius-full);
+  border: 0;
+  padding: 2px;
+  background: var(--p-color-bg-fill-disabled);
+  cursor: pointer;
+  display: inline-flex;
+  flex: none;
+}
+.scc-switch[aria-checked='true'] {
+  background: var(--p-color-bg-inverse);
+  justify-content: flex-end;
+}
+.scc-switch[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.scc-switch span {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--p-border-radius-full);
+  background: var(--p-color-bg-surface);
+}
+.scc-switch:focus-visible {
+  outline: 2px solid var(--p-color-border-focus);
+  outline-offset: 2px;
+}
+.kit-proto__link { display: block; }

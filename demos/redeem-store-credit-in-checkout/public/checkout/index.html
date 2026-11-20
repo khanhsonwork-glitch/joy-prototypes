@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>North Bloom · Checkout</title>
+<style>
+  @font-face{font-family:Inter;src:url(fonts/inter-var.woff2) format("woff2");font-weight:100 900}
+
+  :root{
+    --nb-ink:#170a69; --nb-plum:#911a4b; --nb-line:#e3e3e3; --nb-bg:#fafafa; --nb-white:#fff;
+    --nb-muted:#6b6b84; --nb-radius:8px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,sans-serif;color:#1a1a1a;background:var(--nb-bg);}
+  a{color:#1773b0;text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* Shopify checkout chrome: slim top bar with store logo, two-column body */
+  .co-topbar{background:#fff;border-bottom:1px solid var(--nb-line);padding:16px 24px;}
+  .co-topbar img{height:28px;display:block}
+  .co-shell{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 61px);}
+  @media (max-width:959px){.co-shell{grid-template-columns:1fr;}}
+  .co-left{padding:40px clamp(24px,6vw,96px) 60px;max-width:560px;margin-left:auto;width:100%;}
+  @media (max-width:959px){.co-left{margin:0 auto;}}
+  .co-right{background:var(--nb-bg);border-left:1px solid var(--nb-line);padding:40px clamp(24px,6vw,64px) 60px;}
+  @media (max-width:959px){.co-right{border-left:none;border-top:1px solid var(--nb-line);order:-1;}}
+  .co-right-inner{max-width:420px;margin-right:auto;}
+
+  .co-step{margin-bottom:28px;}
+  .co-step__label{font-size:13px;color:var(--nb-muted);display:flex;justify-content:space-between;}
+  .co-step__value{font-size:14px;margin-top:4px;color:#1a1a1a;}
+  .co-divider{border:0;border-top:1px solid var(--nb-line);margin:28px 0;}
+
+  .co-pay-cta{margin-top:28px;background:#000;color:#fff;border:0;border-radius:999px;padding:16px 24px;
+    font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    width:100%;cursor:pointer;}
+
+  /* cart line items */
+  .co-line{display:flex;gap:14px;align-items:center;margin-bottom:18px;}
+  .co-line img{width:56px;height:56px;border-radius:6px;object-fit:cover;border:1px solid var(--nb-line);background:#fff;flex:none;}
+  .co-line__thumb{position:relative;}
+  .co-line__qty{position:absolute;top:-8px;right:-8px;background:#6b6b84;color:#fff;font-size:11px;
+    width:20px;height:20px;border-radius:999px;display:flex;align-items:center;justify-content:center;}
+  .co-line__title{font-size:14px;font-weight:600;}
+  .co-line__variant{font-size:12px;color:var(--nb-muted);margin-top:2px;}
+  .co-line__price{font-size:14px;font-weight:600;margin-left:auto;white-space:nowrap;}
+
+  /* discount code field — real checkout look */
+  .co-discount{display:flex;gap:8px;margin:20px 0 8px;}
+  .co-discount input{flex:1;border:1px solid #c9c9c9;border-radius:6px;padding:11px 12px;font-size:14px;font-family:inherit;}
+  .co-discount input:focus{outline:2px solid var(--nb-ink);outline-offset:1px;}
+  .co-discount button{border:1px solid #c9c9c9;background:#f3f3f3;border-radius:6px;padding:0 18px;
+    font-size:14px;font-weight:600;cursor:pointer;color:#555;}
+  .co-applied-code{display:flex;align-items:center;justify-content:space-between;background:#fff;
+    border:1px solid var(--nb-line);border-radius:6px;padding:9px 12px;margin:8px 0;font-size:13px;}
+  .co-applied-code__tag{display:inline-flex;align-items:center;gap:6px;background:#eef1ea;border-radius:4px;padding:3px 10px;font-weight:600;}
+  .co-applied-code button.co-x{background:none;border:0;cursor:pointer;color:#555;font-size:15px;line-height:1;padding:2px 4px;}
+
+  .co-totals{margin-top:18px;}
+  .co-totals__row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:#444;}
+  .co-totals__row--credit{color:var(--nb-plum);}
+  .co-totals__row--total{font-size:18px;font-weight:700;color:#000;border-top:1px solid var(--nb-line);
+    margin-top:8px;padding-top:14px;}
+  .co-totals__currency{font-size:12px;color:var(--nb-muted);font-weight:400;}
+
+  /* Joy Quick Redeem block, placed under Discount code, matches extension s-box card shell */
+  .joy-box{border:1px solid var(--nb-line);border-radius:8px;padding:16px;margin-top:16px;background:#fff;}
+  .joy-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .joy-label{font-size:13px;color:#555;margin-bottom:2px;}
+  .joy-balance{font-size:20px;font-weight:700;color:#1a1a1a;}
+  .joy-btn{border-radius:999px;border:1px solid #1a1a1a;background:#1a1a1a;color:#fff;font-size:13px;
+    font-weight:600;padding:9px 18px;cursor:pointer;white-space:nowrap;}
+  .joy-btn:disabled{opacity:.45;cursor:not-allowed;}
+  .joy-btn--plain{background:none;border:0;color:#1773b0;font-weight:600;padding:0;font-size:13px;cursor:pointer;}
+  .joy-input-row{display:flex;gap:8px;margin-top:12px;align-items:center;}
+  .joy-input-row .prefix{font-size:15px;color:#555;}
+  .joy-input-row input{flex:1;border:1px solid #c9c9c9;border-radius:6px;padding:9px 10px;font-size:15px;font-family:inherit;max-width:140px;}
+  .joy-input-row input:focus{outline:2px solid var(--nb-ink);outline-offset:1px;}
+  .joy-input-row input.invalid{border-color:#c0392b;}
+  .joy-error{color:#c0392b;font-size:12px;margin-top:6px;}
+  .joy-note{font-size:12px;color:#777;margin-top:10px;}
+  .joy-banner{border-radius:6px;padding:10px 12px;font-size:13px;margin-top:12px;display:flex;gap:8px;align-items:flex-start;}
+  .joy-banner--info{background:#e6f2fb;color:#0a4d78;}
+  .joy-banner--warn{background:#fdf2e3;color:#7a4a00;}
+  .joy-banner--crit{background:#fbe9e7;color:#a32b1f;}
+  .joy-banner a{font-weight:600;}
+  .joy-heading{font-size:14px;font-weight:700;margin-bottom:4px;}
+
+  /* Prototype control panel */
+  .proto{position:fixed;bottom:14px;right:14px;z-index:999;font-family:Inter,sans-serif;}
+  .proto__toggle{background:#111;color:#fff;border:0;border-radius:999px;padding:8px 16px;font-size:12px;
+    font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;}
+  .proto__panel{display:none;position:absolute;bottom:40px;right:0;background:#fff7e0;border:1px solid #e3c572;
+    border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:16px;width:290px;max-height:70vh;overflow:auto;}
+  .proto__panel.open{display:block;}
+  .proto__panel h4{margin:0 0 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#7a5c00;}
+  .proto__panel label{display:block;font-size:12.5px;margin:7px 0;cursor:pointer;line-height:1.3;}
+  .proto__panel label small{display:block;color:#8a7230;font-size:11px;}
+  .proto__panel a{display:block;margin-top:10px;font-size:11px;}
+</style>
+</head>
+<body>
+
+<div class="co-topbar">
+  <img src="img/logo.png" alt="North Bloom">
+</div>
+
+<div class="co-shell">
+  <div class="co-left">
+    <div class="co-step">
+      <div class="co-step__label"><span>Contact</span><a href="#" class="js-noop">Change</a></div>
+      <div class="co-step__value" id="contactValue">ava@example.com</div>
+    </div>
+    <hr class="co-divider">
+    <div class="co-step">
+      <div class="co-step__label"><span>Ship to</span><a href="#" class="js-noop">Change</a></div>
+      <div class="co-step__value">128 Bloom Street, Brooklyn, NY 11201, United States</div>
+    </div>
+    <hr class="co-divider">
+    <div class="co-step">
+      <div class="co-step__label"><span>Shipping method</span></div>
+      <div class="co-step__value">Standard — Free</div>
+    </div>
+    <hr class="co-divider">
+    <div class="co-step">
+      <div class="co-step__label"><span>Payment</span></div>
+      <div class="co-step__value">•••• •••• •••• 4242 — Visa</div>
+    </div>
+    <button class="co-pay-cta" type="button">Pay now</button>
+  </div>
+
+  <div class="co-right">
+    <div class="co-right-inner">
+      <div class="co-line">
+        <div class="co-line__thumb">
+          <img src="img/serum.png" alt="Hyaluronic Acid Serum">
+          <span class="co-line__qty">2</span>
+        </div>
+        <div>
+          <div class="co-line__title">Hyaluronic Acid Serum</div>
+          <div class="co-line__variant">30 ml</div>
+        </div>
+        <div class="co-line__price">$156.00</div>
+      </div>
+      <div class="co-line">
+        <div class="co-line__thumb">
+          <img src="img/retinol.jpg" alt="Bio-Retinol Serum">
+          <span class="co-line__qty">1</span>
+        </div>
+        <div>
+          <div class="co-line__title">Bio-Retinol Serum</div>
+          <div class="co-line__variant">30 ml</div>
+        </div>
+        <div class="co-line__price">$188.00</div>
+      </div>
+      <div class="co-line">
+        <div class="co-line__thumb">
+          <img src="img/cleanser.jpg" alt="Aloe + Amino Acid Cleanser">
+          <span class="co-line__qty">3</span>
+        </div>
+        <div>
+          <div class="co-line__title">Aloe + Amino Acid Cleanser</div>
+          <div class="co-line__variant">150 ml</div>
+        </div>
+        <div class="co-line__price">$144.00</div>
+      </div>
+      <div class="co-line">
+        <div class="co-line__thumb">
+          <img src="img/cream.png" alt="Grape Stem Cell Cream">
+          <span class="co-line__qty">2</span>
+        </div>
+        <div>
+          <div class="co-line__title">Grape Stem Cell Cream</div>
+          <div class="co-line__variant">50 ml</div>
+        </div>
+        <div class="co-line__price">$304.00</div>
+      </div>
+
+      <!-- Discount code — real Shopify checkout field -->
+      <div id="discountArea">
+        <div class="co-discount">
+          <input type="text" placeholder="Discount code or gift card" id="discountInput">
+          <button type="button" id="discountApplyBtn">Apply</button>
+        </div>
+      </div>
+
+      <!-- Joy Quick Redeem block — placed directly under Discount code, same column -->
+      <div class="joy-box" id="joyBox"></div>
+
+      <div class="co-totals" id="totalsArea"></div>
+    </div>
+  </div>
+</div>
+
+<div class="proto">
+  <button class="proto__toggle" id="protoToggle">Prototype</button>
+  <div class="proto__panel" id="protoPanel">
+    <h4>Screen state · not part of the product</h4>
+    <div id="stateList"></div>
+    <a href="states.html">All 9 checkout states →</a>
+    <a href="../#/demo/checkout-page">Merchant setting in the Joy app →</a>
+  </div>
+</div>
+
+<script src="joy.js"></script>
+</body>
+</html>

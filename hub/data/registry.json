@@ -1054,6 +1054,35 @@
     },
     {
       "product": "loyalty",
+      "slug": "redeem-store-credit-in-checkout",
+      "name": "Redeem store credit in checkout",
+      "area": "Store credit",
+      "surfaces": [
+        "Admin",
+        "Storefront"
+      ],
+      "status": "review",
+      "stage": null,
+      "updated": "2026-11-20",
+      "round": null,
+      "notion": null,
+      "prd": null,
+      "migrated": true,
+      "shot": "/shots/loyalty-redeem-store-credit-in-checkout.jpg",
+      "reviewUrl": "/loyalty/redeem-store-credit-in-checkout/#/demo/checkout-page",
+      "kind": "prototype",
+      "aliases": [
+        "store credit",
+        "checkout",
+        "quick redeem",
+        "shopify plus",
+        "change amount"
+      ],
+      "legacy": [],
+      "parity": null
+    },
+    {
+      "product": "loyalty",
       "slug": "store-credit-plan-gate",
       "name": "Store credit plan gate",
       "area": "Reward programs",

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Store credit at checkout — prototype index</title>
+<style>
+  body{font-family:-apple-system,Inter,sans-serif;max-width:920px;margin:40px auto;padding:0 24px;color:#1a1a1a;}
+  h1{font-size:22px;}
+  p.lede{color:#555;font-size:14px;}
+  .compare img{max-width:100%;border:1px solid #e3e3e3;border-radius:8px;margin:16px 0 28px;}
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #eee;vertical-align:top;}
+  th{color:#777;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em;}
+  a.deep{font-weight:600;color:#1773b0;}
+  .pill{display:inline-block;background:#f1f2f4;border-radius:999px;padding:2px 10px;font-size:11px;color:#555;margin-left:6px;}
+</style>
+</head>
+<body>
+  <h1>Store credit at checkout — customer screens (North Bloom)</h1>
+  <p class="lede">Demo store North Bloom (a Shopify Plus shop). Block sits in Order summary, right under Discount code — same
+  spot as the Quick Redeem block today. Text matches the real checkout extension's copy pattern. Each row opens the live
+  screen directly; the Prototype panel at the bottom-right can switch between all states on any screen.</p>
+
+  <div class="compare">
+    <img src="img/compare-before-after.png" alt="Before: points-only Quick Redeem. After: store credit applied, $792 to $742">
+  </div>
+
+  <table>
+    <tr><th>State</th><th>What it shows</th><th>Open</th></tr>
+    <tr><td>Today <span class="pill">baseline</span></td><td>Current production Quick Redeem — points only, no store credit</td><td><a class="deep" href="./#/before">./#/before</a></td></tr>
+    <tr><td>Default</td><td>Balance $100, input defaults to the max usable amount</td><td><a class="deep" href="./#/default">./#/default</a></td></tr>
+    <tr><td>Over the cap</td><td>Merchant cap $50, customer types $100 → "Maximum is $50.00"</td><td><a class="deep" href="./#/max-exceeded">./#/max-exceeded</a></td></tr>
+    <tr><td>Applied</td><td>$50 applied across 4 items; ✕ to remove, "Change amount"; total $792 → $742</td><td><a class="deep" href="./#/applied">./#/applied</a></td></tr>
+    <tr><td>Change amount</td><td>Editing the already-applied amount</td><td><a class="deep" href="./#/change-amount">./#/change-amount</a></td></tr>
+    <tr><td>Conflict</td><td>Order-level code WELCOME10 blocks store credit, named explicitly</td><td><a class="deep" href="./#/conflict">./#/conflict</a></td></tr>
+    <tr><td>Expired</td><td>Credit code expired before payment; re-apply link</td><td><a class="deep" href="./#/expired">./#/expired</a></td></tr>
+    <tr><td>Guest</td><td>Not logged in — sign-in prompt, same slot as the coupon prompt today</td><td><a class="deep" href="./#/guest">./#/guest</a></td></tr>
+    <tr><td>Held elsewhere</td><td>Balance $100, $70 held in another tab/order → max $30</td><td><a class="deep" href="./#/held">./#/held</a></td></tr>
+  </table>
+
+  <p style="margin-top:28px;font-size:13px;"><a class="deep" href="../#/demo/checkout-page">← Merchant setting in the Joy app (On-site content › Checkout page › Quick Redeem)</a></p>
+  <p style="font-size:12px;color:#999;">Static prototype, no backend calls.</p>
+</body>
+</html>
