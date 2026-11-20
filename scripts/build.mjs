@@ -84,6 +84,18 @@ function buildHub() {
     const sources = selfHosted ? [] : [route, `${route}/`];
     return sources.map(source => ({source, destination: selfHosted ? `${route}/${target.search}${target.hash}` : destination, type: 302}));
   }));
+  // Short links (Alex 20/11): joy-prototypes.web.app/<slug> in any letter case opens the prototype, so a link typed
+  // as /Redeem-store-credit-in-checkout works. Firebase checks redirects before files, so a short link is one path
+  // segment and never a name the bundle already uses at the top level (assets, loyalty, starter…).
+  const taken = new Set(['archive', ...fs.readdirSync(out).map(name => name.replace(/\.[^.]+$/, '').toLowerCase())]);
+  const shortLinks = [];
+  for (const f of registry.features.filter(f => !f.quarantined)) {
+    if (taken.has(f.slug)) continue;
+    taken.add(f.slug);
+    const route = canonical(f, f.product);
+    shortLinks.push({regex: `(?i)^/${f.slug}/?$`, destination: f.migrated ? `${route}/` : route, type: 302});
+  }
+  redirects.push(...shortLinks);
   const rewrites = [{source: '/', destination: '/index.html'}, {source: '/archive', destination: '/archive/index.html'}];
   // Generated, never committed: redirects follow hub/data/registry.json, so nobody hand-edits deploy config.
   const hosting = {public: 'hub', ignore: ['firebase.json', '**/.*'], redirects, rewrites, headers: [noindex, freshPages]};

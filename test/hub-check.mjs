@@ -134,11 +134,27 @@ await check('F4a: every product redirect and static info route',async()=> {
     }
     await fs.access(path.join(deploy,route,'info/index.html'));
   }
-  assert.deepEqual(config.redirects,expectedRules);
+  assert.deepEqual(config.redirects.filter(r=>r.source),expectedRules);
   assert(!config.rewrites.some(r=>r.source.includes(':product')||r.source.includes(':slug')),'Unknown info routes must fall through to 404.html');
 });
+await check('Short links: /<slug> in any letter case opens the prototype (Alex 20/11)',async()=> {
+  const short=config.redirects.filter(r=>r.regex);
+  assert(short.length>=features.filter(f=>!f.quarantined).length-1,'one short link per card');
+  for(const rule of short) {
+    const slug=rule.regex.match(/\^\/([a-z0-9-]+)\//)[1];
+    const f=features.find(x=>x.slug===slug&&!x.quarantined); assert(f,`short link for an unknown card: ${slug}`);
+    assert.equal(rule.destination,f.migrated?`${canonical(f,f.product)}/`:canonical(f,f.product));
+    const typed='/'+slug[0].toUpperCase()+slug.slice(1);
+    for(const p of [typed,`/${slug}/`]) {
+      const response=await context.request.get(url(p),{maxRedirects:0,timeout:15000});
+      assert.equal(response.status(),302,p); assert.equal(response.headers().location,rule.destination);
+    }
+  }
+  for(const p of ['/loyalty','/assets','/starter/','/archive']) assert(!short.some(r=>new RegExp(r.regex.replace('(?i)',''),'i').test(p)),`short link shadows ${p}`);
+  return `${short.length} short links`;
+});
 await check('HTTP redirects (302, same as Firebase Hosting)',async()=> {
-  for(const rule of config.redirects) {
+  for(const rule of config.redirects.filter(r=>r.source)) {
     const response=await context.request.get(url(rule.source),{maxRedirects:0,timeout:15000});
     assert.equal(response.status(),302,rule.source); assert.equal(response.headers().location,rule.destination);
   }

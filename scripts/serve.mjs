@@ -31,7 +31,9 @@ const server = http.createServer((req, res) => {
     return res.end();
   }
   let file = fileFor(pathname);
-  const redirect = !file && (config.redirects || []).find(r => r.source === pathname);
+  // Firebase regex rules are RE2; the only flag used here is a leading (?i) (short links, any letter case).
+  const matches = r => r.source ? r.source === pathname : new RegExp(r.regex.replace(/^\(\?i\)/, ''), r.regex.startsWith('(?i)') ? 'i' : '').test(pathname);
+  const redirect = !file && (config.redirects || []).find(matches);
   if (redirect) {
     res.writeHead(redirect.type || 301, {Location: redirect.destination});
     return res.end();
